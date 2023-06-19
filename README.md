@@ -6,11 +6,13 @@ This is an API developed with Nest.js that uses TypeScript as the programming la
 
 Before running the application, make sure to configure the following environment variables:
 
+```
 DB_HOST=localhost
 DB_PORT=3306
 DB_USERNAME=root
 DB_PASSWORD=root
 DB_NAME=nova-up
+```
 
 These variables are necessary to establish the connection with the MySQL database.
 
@@ -20,7 +22,9 @@ These variables are necessary to establish the connection with the MySQL databas
 
 2. Install the dependencies using Yarn:
 
-$ yarn install
+```
+yarn install
+```
 
 ## Docker Execution
 
@@ -30,7 +34,9 @@ To facilitate the setup and execution of the environment, a `docker-compose.yml`
 
 2. Run the following command to start the database services:
 
-$ docker-compose up
+```
+docker-compose up
+```
 
 This will create a Docker container for the MySQL database.
 
@@ -38,13 +44,15 @@ This will create a Docker container for the MySQL database.
 
 You can now run the application in different modes:
 
+```
 Development mode:
-$ yarn run start
+yarn run start
 
 Development mode with automatic restart:
-$ yarn run start:dev
+yarn run start:dev
 
 Production mode:
-$ yarn run start:prod
+yarn run start:prod
+```
 
-Great! You can now use the API in your local environment.
+You can now use the API in your local environment.
