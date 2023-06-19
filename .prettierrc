@@ -1,4 +1,8 @@
 {
-  "singleQuote": true,
-  "trailingComma": "all"
+   "useTabs": false,
+   "tabWidth": 3,
+   "printWidth": 80,
+   "singleQuote": true,
+   "trailingComma": "all",
+   "editorconfig": true
 }
