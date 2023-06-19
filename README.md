@@ -2,7 +2,7 @@
 
 This is an API developed with Nest.js that uses TypeScript as the programming language and TypeORM as the ORM to interact with the database.
 
-# API Documentation
+## API Documentation
 
 This project is configured with Swagger, an open-source software framework that helps developers design, build, document, and consume RESTful web services.
 
