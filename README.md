@@ -2,6 +2,19 @@
 
 This is an API developed with Nest.js that uses TypeScript as the programming language and TypeORM as the ORM to interact with the database.
 
+# API Documentation
+
+This project is configured with Swagger, an open-source software framework that helps developers design, build, document, and consume RESTful web services.
+
+You can access the Swagger UI and the API documentation by navigating to the following URL path in your application:
+
+```
+http://locahost:3000/api
+
+```
+
+The Swagger UI provides an interactive documentation where you can explore all the endpoints, models and even try out the API directly from the browser.
+
 ## Configuration
 
 Before running the application, make sure to configure the following environment variables:
