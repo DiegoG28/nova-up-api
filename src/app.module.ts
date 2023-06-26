@@ -7,6 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { CareersModule } from './modules/careers/careers.module';
 import { EventRegistrationsModule } from './modules/event-registrations/event-registrations.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
    imports: [
@@ -15,6 +16,7 @@ import { EventRegistrationsModule } from './modules/event-registrations/event-re
       PostsModule,
       CareersModule,
       EventRegistrationsModule,
+      UsersModule,
       DatabaseModule,
    ],
    controllers: [AppController],

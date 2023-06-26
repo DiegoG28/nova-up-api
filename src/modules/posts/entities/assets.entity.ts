@@ -13,7 +13,7 @@ enum AssetTypeEnum {
    Image = 'Imagen',
 }
 
-@Entity({ name: 'recursos' })
+@Entity({ name: 'recurso' })
 export class PostAsset {
    @PrimaryGeneratedColumn({ name: 'id_recurso' })
    id: number;

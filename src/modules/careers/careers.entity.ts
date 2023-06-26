@@ -1,14 +1,24 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+   Entity,
+   PrimaryGeneratedColumn,
+   Column,
+   OneToMany,
+   ManyToMany,
+} from 'typeorm';
 import { Post } from '../posts/entities/posts.entity';
+import { User } from '../users/entities/users.entity';
 
 @Entity({ name: 'carrera' })
 export class Career {
    @PrimaryGeneratedColumn({ name: 'id_carrera' })
    id: number;
 
-   @Column({ name: 'nombre_carrera', length: 150 })
-   name: string;
-
    @OneToMany(() => Post, (post) => post.career)
    posts: Post[];
+
+   @ManyToMany(() => User, (user) => user.careers)
+   users: User[];
+
+   @Column({ name: 'nombre_carrera', length: 150 })
+   name: string;
 }
