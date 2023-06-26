@@ -10,5 +10,5 @@ export class Career {
    name: string;
 
    @OneToMany(() => Post, (post) => post.career)
-   posts: Post;
+   posts: Post[];
 }

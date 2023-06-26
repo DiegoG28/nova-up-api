@@ -15,8 +15,8 @@ export class StudentsService {
       return this.studentsRepository.find();
    }
 
-   findOne(id: number): Promise<Student | null> {
-      return this.studentsRepository.findOneBy({ id });
+   findOne(tuition: number): Promise<Student | null> {
+      return this.studentsRepository.findOneBy({ tuition });
    }
 
    async create(createStudentDto: CreateStudentDto): Promise<Student> {
@@ -24,7 +24,7 @@ export class StudentsService {
       return this.studentsRepository.save(newStudent);
    }
 
-   async remove(id: number): Promise<void> {
-      await this.studentsRepository.delete(id);
+   async remove(tuition: number): Promise<void> {
+      await this.studentsRepository.delete(tuition);
    }
 }

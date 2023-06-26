@@ -4,9 +4,12 @@ import {
    PrimaryGeneratedColumn,
    ManyToOne,
    JoinColumn,
+   OneToMany,
 } from 'typeorm';
 import { PostCategory } from './categories.entity';
 import { Career } from 'src/modules/careers/careers.entity';
+import { PostAsset } from './assets.entity';
+import { EventRegistration } from '../../event-registrations/event-registrations.entity';
 
 enum PostTypeEnum {
    Event = 'Evento',
@@ -27,6 +30,15 @@ export class Post {
    @ManyToOne(() => Career, (career) => career.posts)
    @JoinColumn({ name: 'id_carrera' })
    career: Career;
+
+   @OneToMany(() => PostAsset, (postAsset) => postAsset.post)
+   assets: PostAsset[];
+
+   @OneToMany(
+      () => EventRegistration,
+      (eventRegistration) => eventRegistration.post,
+   )
+   eventRegistrations: EventRegistration[];
 
    @Column({ name: 'titulo_publicacion', length: 120 })
    title: string;
