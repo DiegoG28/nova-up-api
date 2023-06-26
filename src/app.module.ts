@@ -10,16 +10,16 @@ import { EventRegistrationsModule } from './modules/event-registrations/event-re
 import { UsersModule } from './modules/users/users.module';
 
 @Module({
-   imports: [
-      ConfigModule.forRoot(),
-      StudentsModule,
-      PostsModule,
-      CareersModule,
-      EventRegistrationsModule,
-      UsersModule,
-      DatabaseModule,
-   ],
-   controllers: [AppController],
-   providers: [AppService],
+  imports: [
+    ConfigModule.forRoot(),
+    StudentsModule,
+    PostsModule,
+    CareersModule,
+    EventRegistrationsModule,
+    UsersModule,
+    DatabaseModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
