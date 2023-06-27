@@ -1,9 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
 import { EventRegistration } from '../event-registrations/event-registrations.entity';
 
 @Entity({ name: 'alumno' })
 export class Student {
-   @PrimaryGeneratedColumn({ name: 'matricula' })
+   @PrimaryColumn({ name: 'matricula' })
    tuition: number;
 
    @OneToMany(
