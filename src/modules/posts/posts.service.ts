@@ -9,4 +9,15 @@ export class PostsService {
       @InjectRepository(Post)
       private readonly postsRepository: Repository<Post>,
    ) {}
+
+   findAll(): Promise<Post[]> {
+      return this.postsRepository.find({
+         relations: [
+            'category',
+            'career',
+            'assets',
+            'eventRegistrations.student',
+         ],
+      });
+   }
 }
