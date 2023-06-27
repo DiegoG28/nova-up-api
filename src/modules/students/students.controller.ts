@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { Student } from './students.entity';
-import { CreateStudentDto } from './dtos/CreateStudentDto';
+import { CreateStudentDto } from './dtos/create-student.dto';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Estudiantes')
