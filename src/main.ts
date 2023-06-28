@@ -7,7 +7,10 @@ async function bootstrap() {
    const app = await NestFactory.create(AppModule);
 
    const document = SwaggerModule.createDocument(app, swaggerConfig);
-   SwaggerModule.setup('api', app, document);
+   SwaggerModule.setup('api', app, document, {
+      customCssUrl:
+         'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.1.0/swagger-ui.min.css',
+   });
 
    await app.listen(3000);
 }
