@@ -1,21 +1,20 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
+import { EventRegistration } from '../event-registrations/event-registrations.entity';
 
 @Entity({ name: 'alumno' })
 export class Student {
-  @ApiProperty()
-  @PrimaryGeneratedColumn({ name: 'id_alumno' })
-  id: number;
+   @PrimaryColumn({ name: 'matricula' })
+   tuition: number;
 
-  @ApiProperty()
-  @Column({ name: 'matricula' })
-  tuition: number;
+   @OneToMany(
+      () => EventRegistration,
+      (eventRegistration) => eventRegistration.student,
+   )
+   eventRegistrations: EventRegistration[];
 
-  @ApiProperty()
-  @Column({ name: 'nombre_alumno', length: 150 })
-  name: string;
+   @Column({ name: 'nombre_alumno', length: 150 })
+   name: string;
 
-  @ApiProperty()
-  @Column({ name: 'apellidos_alumno', length: 150 })
-  lastName: string;
+   @Column({ name: 'apellidos_alumno', length: 150 })
+   lastName: string;
 }
