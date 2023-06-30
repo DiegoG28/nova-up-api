@@ -3,8 +3,8 @@ import { PostTypeEnum } from '../entities/posts.entity';
 
 export class PostDto {
    id: number;
-   categoryName: PostCategoryDto;
-   careerName: PostCareerDto;
+   category: PostCategoryDto;
+   career: PostCareerDto;
    assets: PostAssetDto[];
    eventRegistrations: PostEventRegistrationDto[];
    title: string;
