@@ -1,6 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { Post } from './entities/posts.entity';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PostDto } from './dtos/posts.dto';
 
@@ -12,7 +11,7 @@ export class PostsController {
    @ApiOperation({ summary: 'Obtener todas las publicaciones' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostDto] })
    @Get()
-   findAll(): Promise<Post[]> {
+   findAll(): Promise<PostDto[]> {
       return this.postsService.findAll();
    }
 }

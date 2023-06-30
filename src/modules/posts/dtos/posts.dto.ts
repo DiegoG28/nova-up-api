@@ -3,10 +3,9 @@ import { PostTypeEnum } from '../entities/posts.entity';
 
 export class PostDto {
    id: number;
-   category: PostCategoryDto;
-   career: PostCareerDto;
+   categoryName: string;
+   careerName: string;
    assets: PostAssetDto[];
-   eventRegistrations: PostEventRegistrationDto[];
    title: string;
    description: string;
    summary: string;
@@ -18,27 +17,6 @@ export class PostDto {
    isPinned: boolean;
    tags: string;
    comments: string;
-}
-
-class PostCategoryDto {
-   id: number;
-   name: string;
-}
-
-class PostCareerDto {
-   id: number;
-   name: string;
-}
-
-class PostEventRegistrationDto {
-   id: number;
-   student: PostStudentDto;
-}
-
-class PostStudentDto {
-   tuition: number;
-   name: string;
-   lastName: string;
 }
 
 export class PostAssetDto {
