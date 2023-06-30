@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Post } from './posts.entity';
 
-enum AssetTypeEnum {
+export enum AssetTypeEnum {
    PDF = 'Pdf',
    Link = 'Enlace',
    Image = 'Imagen',

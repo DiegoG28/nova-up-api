@@ -11,7 +11,7 @@ import { Career } from 'src/modules/careers/careers.entity';
 import { PostAsset } from './assets.entity';
 import { EventRegistration } from '../../event-registrations/event-registrations.entity';
 
-enum PostTypeEnum {
+export enum PostTypeEnum {
    Event = 'Evento',
    ExternalConvocatory = 'Convocatoria externa',
    InternalConvocatory = 'Convocatoria interna',
