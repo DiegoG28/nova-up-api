@@ -11,12 +11,8 @@ export class PostsService {
       private readonly postsRepository: Repository<Post>,
    ) {}
 
-   async findAll(): Promise<PostDto[]> {
-      const posts: Post[] = await this.postsRepository.find({
-         relations: ['category', 'career', 'assets'],
-      });
-
-      const mappedPosts: PostDto[] = posts.map((post) => {
+   private mapPostsToDto(posts: Post[]): PostDto[] {
+      return posts.map((post) => {
          const { category, career, ...rest } = post;
          return {
             ...rest,
@@ -24,7 +20,22 @@ export class PostsService {
             careerName: career.name,
          };
       });
+   }
 
-      return mappedPosts;
+   async findAll(): Promise<PostDto[]> {
+      const posts: Post[] = await this.postsRepository.find({
+         relations: ['category', 'career', 'assets'],
+      });
+
+      return this.mapPostsToDto(posts);
+   }
+
+   async findByCategoryId(categoryId: number): Promise<PostDto[]> {
+      const posts: Post[] = await this.postsRepository.find({
+         where: { category: { id: categoryId } },
+         relations: ['category', 'career', 'assets'],
+      });
+
+      return this.mapPostsToDto(posts);
    }
 }
