@@ -14,7 +14,7 @@ export enum AssetTypeEnum {
 }
 
 @Entity({ name: 'recurso' })
-export class PostAsset {
+export class Asset {
    @PrimaryGeneratedColumn({ name: 'id_recurso' })
    id: number;
 

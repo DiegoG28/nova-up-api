@@ -6,9 +6,9 @@ import {
    JoinColumn,
    OneToMany,
 } from 'typeorm';
-import { PostCategory } from './categories.entity';
+import { Category } from './categories.entity';
 import { Career } from 'src/modules/careers/careers.entity';
-import { PostAsset } from './assets.entity';
+import { Asset } from './assets.entity';
 import { EventRegistration } from '../../event-registrations/event-registrations.entity';
 
 export enum PostTypeEnum {
@@ -23,16 +23,16 @@ export class Post {
    @PrimaryGeneratedColumn({ name: 'id_publicacion' })
    id: number;
 
-   @ManyToOne(() => PostCategory, (postCategory) => postCategory.posts)
+   @ManyToOne(() => Category, (category) => category.posts)
    @JoinColumn({ name: 'id_categoria' })
-   category: PostCategory;
+   category: Category;
 
    @ManyToOne(() => Career, (career) => career.posts)
    @JoinColumn({ name: 'id_carrera' })
    career: Career;
 
-   @OneToMany(() => PostAsset, (postAsset) => postAsset.post)
-   assets: PostAsset[];
+   @OneToMany(() => Asset, (asset) => asset.post)
+   assets: Asset[];
 
    @OneToMany(
       () => EventRegistration,
