@@ -7,6 +7,7 @@ import { PostsModule } from './modules/posts/posts.module';
 import { CareersModule } from './modules/careers/careers.module';
 import { EventRegistrationsModule } from './modules/event-registrations/event-registrations.module';
 import { UsersModule } from './modules/users/users.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 
 @Module({
    imports: [
@@ -16,6 +17,7 @@ import { UsersModule } from './modules/users/users.module';
       EventRegistrationsModule,
       UsersModule,
       DatabaseModule,
+      CategoriesModule,
    ],
    controllers: [AppController],
    providers: [AppService],

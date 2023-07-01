@@ -6,7 +6,7 @@ import {
    JoinColumn,
    OneToMany,
 } from 'typeorm';
-import { Category } from './categories.entity';
+import { Category } from '../../categories/categories.entity';
 import { Career } from 'src/modules/careers/careers.entity';
 import { Asset } from './assets.entity';
 import { EventRegistration } from '../../event-registrations/event-registrations.entity';
