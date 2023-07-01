@@ -18,10 +18,10 @@ export class StudentsController {
    }
 
    @ApiOperation({ summary: 'Obtener un estudiante por ID' })
-   @ApiParam({ name: 'matricula', description: 'matrícula del estudiante' })
+   @ApiParam({ name: 'tuition', description: 'Matrícula del estudiante' })
    @ApiResponse({ status: 200, description: 'Éxito', type: StudentDto })
-   @Get(':id')
-   findOne(@Param('matrícula') tuition: string): Promise<Student> {
+   @Get(':tuition')
+   findOne(@Param('tuition') tuition: string): Promise<Student> {
       return this.studentsService.findOne(parseInt(tuition, 10));
    }
 

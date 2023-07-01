@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
 
@@ -14,6 +14,17 @@ export class PostsController {
    @Get()
    findAll(): Promise<PostDto[]> {
       return this.postsService.findAll();
+   }
+
+   @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
+   @ApiParam({ name: 'categoryId', description: 'ID de la categoría' })
+   @ApiResponse({ status: 200, description: 'Éxito', type: [PostDto] })
+   @Get('category/:categoryId')
+   findByCategoryId(
+      @Param('categoryId') categoryId: string,
+   ): Promise<PostDto[]> {
+      console.log(categoryId);
+      return this.postsService.findByCategoryId(parseInt(categoryId, 10));
    }
 
    @Post()
