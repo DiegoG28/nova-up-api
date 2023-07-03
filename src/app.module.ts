@@ -11,7 +11,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 
 @Module({
    imports: [
-      StudentsModule,
+      // StudentsModule,
       PostsModule,
       CareersModule,
       EventRegistrationsModule,

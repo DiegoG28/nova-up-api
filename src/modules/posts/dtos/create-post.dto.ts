@@ -1,12 +1,12 @@
 import {
    IsArray,
    IsBoolean,
-   IsDate,
    IsEnum,
    IsISO8601,
-   IsNumber,
+   IsInt,
    IsPositive,
    IsString,
+   MaxLength,
    ValidateNested,
 } from 'class-validator';
 import { AssetTypeEnum } from '../entities/assets.entity';
@@ -15,11 +15,11 @@ import { PostTypeEnum } from '../entities/posts.entity';
 import { Type } from 'class-transformer';
 
 export class CreatePostDto {
-   @IsNumber()
+   @IsInt()
    @IsPositive()
    categoryId: number;
 
-   @IsNumber()
+   @IsInt()
    @IsPositive()
    careerId: number;
 
@@ -29,12 +29,14 @@ export class CreatePostDto {
    assets: CreatePostAssetDto[];
 
    @IsString()
+   @MaxLength(120)
    title: PostDto['title'];
 
    @IsString()
    description: PostDto['description'];
 
    @IsString()
+   @MaxLength(120)
    summary: PostDto['summary'];
 
    @IsISO8601()
@@ -64,6 +66,7 @@ export class CreatePostDto {
 
 export class CreatePostAssetDto {
    @IsString()
+   @MaxLength(120)
    name: string;
 
    @IsEnum(AssetTypeEnum)
