@@ -10,7 +10,7 @@ import {
    ValidateNested,
 } from 'class-validator';
 import { AssetTypeEnum } from '../entities/assets.entity';
-import { PostDto } from './posts.dto';
+import { PostAssetDto, PostDto } from './posts.dto';
 import { PostTypeEnum } from '../entities/posts.entity';
 import { Type } from 'class-transformer';
 
@@ -61,6 +61,7 @@ export class CreatePostDto {
    tags: PostDto['tags'];
 
    @IsString()
+   @MaxLength(255)
    comments: PostDto['comments'];
 }
 
@@ -71,4 +72,21 @@ export class CreatePostAssetDto {
 
    @IsEnum(AssetTypeEnum)
    type: AssetTypeEnum;
+}
+
+export class CreatePostResponseDto {
+   category: { id: number };
+   career: { id: number };
+   assets: PostAssetDto[];
+   title: PostDto['title'];
+   description: PostDto['description'];
+   summary: PostDto['summary'];
+   publishDate: PostDto['publishDate'];
+   eventDate: PostDto['eventDate'];
+   isApproved: PostDto['isApproved'];
+   isCanceled: PostDto['isCanceled'];
+   type: PostDto['type'];
+   isPinned: PostDto['isPinned'];
+   tags: PostDto['tags'];
+   comments: PostDto['comments'];
 }

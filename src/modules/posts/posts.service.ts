@@ -69,7 +69,6 @@ export class PostsService {
          await queryRunner.manager.save(createdPost);
 
          await queryRunner.commitTransaction();
-
          return createdPost;
       } catch (err) {
          await queryRunner.rollbackTransaction();

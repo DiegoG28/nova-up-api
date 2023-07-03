@@ -1,8 +1,21 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import {
+   Controller,
+   Get,
+   Post,
+   Body,
+   Param,
+   ParseIntPipe,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+   ApiBadRequestResponse,
+   ApiOperation,
+   ApiParam,
+   ApiResponse,
+   ApiTags,
+} from '@nestjs/swagger';
 import { PostDto } from './dtos/posts.dto';
-import { CreatePostDto } from './dtos/create-post.dto';
+import { CreatePostDto, CreatePostResponseDto } from './dtos/create-post.dto';
 
 @ApiTags('Publicaciones')
 @Controller('posts')
@@ -19,14 +32,21 @@ export class PostsController {
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
    @ApiParam({ name: 'categoryId', description: 'ID de la categoría' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostDto] })
+   @ApiBadRequestResponse()
    @Get('category/:categoryId')
    findByCategoryId(
-      @Param('categoryId') categoryId: string,
+      @Param('categoryId', ParseIntPipe) categoryId: number,
    ): Promise<PostDto[]> {
       console.log(categoryId);
-      return this.postsService.findByCategoryId(parseInt(categoryId, 10));
+      return this.postsService.findByCategoryId(categoryId);
    }
 
+   @ApiOperation({ summary: 'Crear una nueva publicación' })
+   @ApiResponse({
+      status: 201,
+      description: 'Publicación creada',
+      type: CreatePostResponseDto,
+   })
    @Post()
    async create(@Body() createPostDto: CreatePostDto) {
       const newPost = this.postsService.create(createPostDto);
