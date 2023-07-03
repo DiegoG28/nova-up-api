@@ -16,6 +16,7 @@ export enum PostTypeEnum {
    ExternalConvocatory = 'Convocatoria externa',
    InternalConvocatory = 'Convocatoria interna',
    Project = 'Proyecto',
+   Research = 'Investigación',
 }
 
 @Entity({ name: 'publicacion' })
