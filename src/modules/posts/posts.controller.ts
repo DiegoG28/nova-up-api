@@ -5,15 +5,10 @@ import {
    Body,
    Param,
    ParseIntPipe,
+   Delete,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import {
-   ApiBadRequestResponse,
-   ApiOperation,
-   ApiParam,
-   ApiResponse,
-   ApiTags,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PostDto } from './dtos/posts.dto';
 import { CreatePostDto, CreatePostResponseDto } from './dtos/create-post.dto';
 
@@ -32,7 +27,6 @@ export class PostsController {
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
    @ApiParam({ name: 'categoryId', description: 'ID de la categoría' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostDto] })
-   @ApiBadRequestResponse()
    @Get('category/:categoryId')
    findByCategoryId(
       @Param('categoryId', ParseIntPipe) categoryId: number,
@@ -51,5 +45,10 @@ export class PostsController {
    async create(@Body() createPostDto: CreatePostDto) {
       const newPost = this.postsService.create(createPostDto);
       return newPost;
+   }
+
+   @Delete(':postId')
+   async remove(@Param('postId', ParseIntPipe) postId: number) {
+      this.postsService.remove(postId);
    }
 }

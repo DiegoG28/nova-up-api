@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { Post } from './entities/posts.entity';
@@ -51,7 +51,7 @@ export class PostsService {
 
       const queryRunner = this.dataSource.createQueryRunner();
 
-      queryRunner.connect;
+      queryRunner.connect();
       await queryRunner.startTransaction();
 
       try {
@@ -74,6 +74,27 @@ export class PostsService {
          await queryRunner.rollbackTransaction();
 
          throw err;
+      } finally {
+         await queryRunner.release();
+      }
+   }
+
+   async remove(postId: number): Promise<void> {
+      const queryRunner = this.dataSource.createQueryRunner();
+
+      queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      try {
+         const post = await this.postsRepository.findOne({
+            where: { id: postId },
+            relations: ['assets'],
+         });
+         console.log(post ? true : false);
+         if (!post) throw new NotFoundException();
+         await this.postsRepository.delete(postId);
+      } catch (err) {
+         await queryRunner.rollbackTransaction();
       } finally {
          await queryRunner.release();
       }
