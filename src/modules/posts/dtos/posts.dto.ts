@@ -1,10 +1,12 @@
+import { CareerDto } from 'src/modules/careers/dtos/careers.dto';
 import { AssetTypeEnum } from '../entities/assets.entity';
 import { PostTypeEnum } from '../entities/posts.entity';
+import { CategorieDto } from 'src/modules/categories/dtos/categories.dto';
 
 export class PostDto {
    id: number;
-   categoryName: string;
-   careerName: string;
+   category: CategorieDto;
+   career: CareerDto;
    assets: PostAssetDto[];
    title: string;
    description: string;

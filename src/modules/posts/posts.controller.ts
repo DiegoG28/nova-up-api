@@ -7,6 +7,7 @@ import {
    ParseIntPipe,
    Delete,
    NotFoundException,
+   Put,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -46,6 +47,21 @@ export class PostsController {
    async create(@Body() createPostDto: CreatePostDto) {
       const newPost = this.postsService.create(createPostDto);
       return newPost;
+   }
+
+   @ApiOperation({ summary: 'Actualizar una publicación' })
+   @ApiParam({ name: 'postId', description: 'Id de la publicación' })
+   @ApiResponse({
+      status: 200,
+      description: 'Publicación actualizada',
+      type: PostDto,
+   })
+   @Put(':postId')
+   async update(
+      @Param('postId', ParseIntPipe) postId: number,
+      @Body() post: PostDto,
+   ) {
+      return this.postsService.update(postId, post);
    }
 
    @ApiOperation({ summary: 'Elimina una publicación' })

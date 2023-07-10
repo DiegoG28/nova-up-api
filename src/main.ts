@@ -17,12 +17,12 @@ async function bootstrap() {
    });
 
    app.use('/assets', express.static(path.join(__dirname, '../assets')));
-   app.useGlobalPipes(
+   /*app.useGlobalPipes(
       new ValidationPipe({
          whitelist: true,
          forbidNonWhitelisted: true,
       }),
-   );
+   );*/
 
    await app.listen(parseInt(process.env.PORT) || 3000);
 }
