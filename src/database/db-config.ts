@@ -14,6 +14,12 @@ export const dataSourceOptions: DataSourceOptions = {
    ssl: false,
 };
 
-const dataSource = new DataSource(dataSourceOptions);
+let dataSource: DataSource;
+
+try {
+   dataSource = new DataSource(dataSourceOptions);
+} catch (error) {
+   console.error(`Failed to make a connection to the database: ${error}`);
+}
 
 export default dataSource;
