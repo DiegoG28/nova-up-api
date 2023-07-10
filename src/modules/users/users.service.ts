@@ -1,31 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserRole } from './entities/roles.entity';
-import { UserDepartment } from './entities/department.entity';
-import { User } from './entities/users.entity';
+import { Role } from '../catalogs/roles/roles.entity';
+import { User } from './users.entity';
 import { CreateUserDto } from './dtos/create-users.dto';
+import { Department } from '../catalogs/departments/departments.entity';
 
 @Injectable()
 export class UsersService {
    constructor(
-      @InjectRepository(UserRole)
-      private readonly userRoleRepository: Repository<UserRole>,
-      @InjectRepository(UserDepartment)
-      private readonly userDepartmentRepository: Repository<UserDepartment>,
       @InjectRepository(User)
-      private readonly userRepository: Repository<User>,
+      private readonly usersRepository: Repository<User>,
+      @InjectRepository(Role)
+      private readonly rolesRepository: Repository<Role>,
+      @InjectRepository(Department)
+      private readonly departmentsRepository: Repository<Department>,
    ) {}
 
    findAll(): Promise<User[]> {
-      const users = this.userRepository.find({
+      const users = this.usersRepository.find({
          relations: ['role', 'department'],
       });
       return users;
    }
 
    findOne(email: string): Promise<User | null> {
-      return this.userRepository.findOne({
+      return this.usersRepository.findOne({
          where: { email },
          relations: ['role', 'department'],
       });
@@ -33,9 +33,11 @@ export class UsersService {
 
    async create(user: CreateUserDto): Promise<User | null> {
       const newUser = new User();
-      newUser.role = await this.userRoleRepository.findOneBy({ id: user.role });
-      newUser.department = await this.userDepartmentRepository.findOneBy({
-         id: user.department,
+      newUser.role = await this.rolesRepository.findOneBy({
+         id: user.roleId,
+      });
+      newUser.department = await this.departmentsRepository.findOneBy({
+         id: user.departmentId,
       });
       newUser.email = user.email;
       newUser.password = user.password;
@@ -44,27 +46,27 @@ export class UsersService {
          return null;
       }
 
-      const savedUser = await this.userRepository.save(newUser);
+      const savedUser = await this.usersRepository.save(newUser);
       return savedUser;
    }
 
    async remove(id: number): Promise<User> {
-      const user = await this.userRepository.findOne({
+      const user = await this.usersRepository.findOne({
          where: { id },
          relations: ['role', 'department'],
       });
-      await this.userRepository.delete(id);
+      await this.usersRepository.delete(id);
       return user;
    }
 
    async update(id: number, user: CreateUserDto): Promise<User | null> {
       const newUser = new User();
-      newUser.role = await this.userRoleRepository.findOneBy({
-         id: user.role,
+      newUser.role = await this.rolesRepository.findOneBy({
+         id: user.roleId,
       });
 
-      newUser.department = await this.userDepartmentRepository.findOneBy({
-         id: user.department,
+      newUser.department = await this.departmentsRepository.findOneBy({
+         id: user.departmentId,
       });
 
       newUser.email = user.email;
@@ -74,7 +76,7 @@ export class UsersService {
          return null;
       }
 
-      const updateResult = await this.userRepository.update(id, {
+      const updateResult = await this.usersRepository.update(id, {
          email: newUser.email,
          password: newUser.password,
          role: newUser.role,

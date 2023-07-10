@@ -7,22 +7,22 @@ import {
    ManyToOne,
    PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserRole } from './roles.entity';
-import { UserDepartment } from './department.entity';
+import { Role } from '../catalogs/roles/roles.entity';
 import { Career } from 'src/modules/careers/careers.entity';
+import { Department } from 'src/modules/catalogs/departments/departments.entity';
 
 @Entity({ name: 'usuario' })
 export class User {
    @PrimaryGeneratedColumn({ name: 'id_usuario' })
    id: number;
 
-   @ManyToOne(() => UserRole, (userRole) => userRole.users)
+   @ManyToOne(() => Role, (role) => role.users)
    @JoinColumn({ name: 'id_rol' })
-   role: UserRole;
+   role: Role;
 
-   @ManyToOne(() => UserDepartment, (userDepartment) => userDepartment.users)
+   @ManyToOne(() => Department, (department) => department.users)
    @JoinColumn({ name: 'id_departamento' })
-   department: UserDepartment;
+   department: Department;
 
    @ManyToMany(() => Career, (career) => career.users)
    @JoinTable({

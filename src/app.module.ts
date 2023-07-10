@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { StudentsModule } from './modules/students/students.module';
 import { DatabaseModule } from './database/database.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { CareersModule } from './modules/careers/careers.module';
 import { EventRegistrationsModule } from './modules/event-registrations/event-registrations.module';
 import { UsersModule } from './modules/users/users.module';
-import { CategoriesModule } from './modules/categories/categories.module';
+import { DepartmentsModule } from './modules/catalogs/departments/departments.module';
+import { CatalogsModule } from './modules/catalogs/catalogs.module';
 
 @Module({
    imports: [
@@ -17,7 +17,8 @@ import { CategoriesModule } from './modules/categories/categories.module';
       EventRegistrationsModule,
       UsersModule,
       DatabaseModule,
-      CategoriesModule,
+      CatalogsModule,
+      DepartmentsModule,
    ],
    controllers: [AppController],
    providers: [AppService],
