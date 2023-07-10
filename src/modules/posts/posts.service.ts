@@ -90,11 +90,17 @@ export class PostsService {
             where: { id: postId },
             relations: ['assets'],
          });
-         console.log(post ? true : false);
          if (!post) throw new NotFoundException();
+         if (post.assets.length > 0) {
+            post.assets.map(async (asset) => {
+               await this.assetsRepository.delete(asset.id);
+            });
+         }
          await this.postsRepository.delete(postId);
       } catch (err) {
+         console.log(err);
          await queryRunner.rollbackTransaction();
+         throw err;
       } finally {
          await queryRunner.release();
       }

@@ -6,6 +6,7 @@ import {
    Param,
    ParseIntPipe,
    Delete,
+   NotFoundException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -47,8 +48,20 @@ export class PostsController {
       return newPost;
    }
 
+   @ApiOperation({ summary: 'Elimina una publicación' })
+   @ApiResponse({
+      status: 404,
+      description: 'Publicación no encontrada',
+   })
+   @ApiParam({ name: 'postId', description: 'ID de la publicación' })
    @Delete(':postId')
    async remove(@Param('postId', ParseIntPipe) postId: number) {
-      this.postsService.remove(postId);
+      try {
+         await this.postsService.remove(postId);
+      } catch (error) {
+         if (error instanceof NotFoundException) {
+            throw error;
+         }
+      }
    }
 }
