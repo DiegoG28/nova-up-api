@@ -47,7 +47,7 @@ export class Post {
    @Column({ type: 'text', name: 'descripcion' })
    description: string;
 
-   @Column({ name: 'resumen', length: 90 })
+   @Column({ name: 'resumen', length: 110 })
    summary: string;
 
    @Column({ name: 'fecha' })
