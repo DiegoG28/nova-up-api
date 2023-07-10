@@ -29,7 +29,7 @@ export class PostsService {
       });
    }*/
 
-   async findAll(): Promise<PostDto[]> {
+   async findAll(): Promise<Post[]> {
       const posts: Post[] = await this.postsRepository.find({
          relations: ['category', 'career', 'assets'],
       });
@@ -37,13 +37,26 @@ export class PostsService {
       return posts;
    }
 
-   async findByCategoryId(categoryId: number): Promise<PostDto[]> {
+   async findByCategoryId(categoryId: number): Promise<Post[]> {
       const posts: Post[] = await this.postsRepository.find({
          where: { category: { id: categoryId } },
          relations: ['category', 'career', 'assets'],
       });
 
       return posts;
+   }
+
+   async findById(postId: number): Promise<Post> {
+      const post = await this.postsRepository.findOne({
+         where: { id: postId },
+         relations: ['category', 'career', 'assets'],
+      });
+
+      if (!post) {
+         throw new NotFoundException('Post not found');
+      }
+
+      return post;
    }
 
    async create(createPostDto: CreatePostDto): Promise<Post> {
@@ -86,10 +99,8 @@ export class PostsService {
       await queryRunner.startTransaction();
 
       try {
-         const post = await this.postsRepository.findOne({
-            where: { id: postId },
-            relations: ['assets'],
-         });
+         const post = await this.findById(postId);
+
          if (!post) throw new NotFoundException();
 
          if (post.assets.length > 0) {
@@ -115,10 +126,8 @@ export class PostsService {
       await queryRunner.startTransaction();
 
       try {
-         const post = await this.postsRepository.findOne({
-            where: { id: postId },
-            relations: ['assets'],
-         });
+         const post = await this.findById(postId);
+
          if (!post) throw new NotFoundException();
 
          const existingAssets = post.assets;
