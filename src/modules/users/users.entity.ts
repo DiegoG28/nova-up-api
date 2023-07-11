@@ -7,7 +7,7 @@ import {
    ManyToOne,
    PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Role } from '../catalogs/roles/roles.entity';
+import { Role } from '../catalogs/entities/roles.entity';
 import { Career } from 'src/modules/careers/careers.entity';
 import { Department } from 'src/modules/catalogs/entities/departments.entity';
 
