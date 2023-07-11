@@ -58,7 +58,12 @@ export class PostsService {
          relations: ['category', 'assets'],
       });
 
-      return posts;
+      const filteredPosts: Post[] = filterAssetsByType(
+         posts,
+         AssetTypeEnum.Image,
+      );
+
+      return filteredPosts;
    }
 
    async findById(postId: number): Promise<Post> {
