@@ -4,7 +4,16 @@ import { DataSource, Repository } from 'typeorm';
 import { Post } from './entities/posts.entity';
 import { PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
-import { Asset } from './entities/assets.entity';
+import { Asset, AssetTypeEnum } from './entities/assets.entity';
+
+function filterAssetsByType(posts: Post[], assetType: string): Post[] {
+   const filteredPosts: Post[] = posts.map((post) => ({
+      ...post,
+      assets: post.assets.filter((asset) => asset.type === assetType),
+   }));
+
+   return filteredPosts;
+}
 
 @Injectable()
 export class PostsService {
@@ -28,19 +37,25 @@ export class PostsService {
          };
       });
    }*/
-
    async findAll(): Promise<Post[]> {
       const posts: Post[] = await this.postsRepository.find({
-         relations: ['category', 'career', 'assets'],
+         select: ['id', 'title', 'summary', 'category', 'assets'],
+         relations: ['category', 'assets'],
       });
 
-      return posts;
+      const filteredPosts: Post[] = filterAssetsByType(
+         posts,
+         AssetTypeEnum.Image,
+      );
+
+      return filteredPosts;
    }
 
    async findByCategoryId(categoryId: number): Promise<Post[]> {
       const posts: Post[] = await this.postsRepository.find({
          where: { category: { id: categoryId } },
-         relations: ['category', 'career', 'assets'],
+         select: ['id', 'title', 'summary', 'category', 'assets'],
+         relations: ['category', 'assets'],
       });
 
       return posts;

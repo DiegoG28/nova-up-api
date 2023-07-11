@@ -12,7 +12,9 @@ import {
 import { PostsService } from './posts.service';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PostDto } from './dtos/posts.dto';
+import { PostCardDto } from './dtos/posts-cards.dto';
 import { CreatePostDto, CreatePostResponseDto } from './dtos/create-post.dto';
+import { Post as Posts } from './entities/posts.entity';
 
 @ApiTags('Publicaciones')
 @Controller('posts')
@@ -20,19 +22,19 @@ export class PostsController {
    constructor(private readonly postsService: PostsService) {}
 
    @ApiOperation({ summary: 'Obtener todas las publicaciones' })
-   @ApiResponse({ status: 200, description: 'Éxito', type: [PostDto] })
+   @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Get()
-   findAll(): Promise<PostDto[]> {
+   findAll(): Promise<Posts[]> {
       return this.postsService.findAll();
    }
 
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
    @ApiParam({ name: 'categoryId', description: 'ID de la categoría' })
-   @ApiResponse({ status: 200, description: 'Éxito', type: [PostDto] })
+   @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Get('category/:categoryId')
    findByCategoryId(
       @Param('categoryId', ParseIntPipe) categoryId: number,
-   ): Promise<PostDto[]> {
+   ): Promise<Posts[]> {
       console.log(categoryId);
       return this.postsService.findByCategoryId(categoryId);
    }
