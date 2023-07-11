@@ -14,7 +14,7 @@ import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PostDto } from './dtos/posts.dto';
 import { PostCardDto } from './dtos/posts-cards.dto';
 import { CreatePostDto, CreatePostResponseDto } from './dtos/create-post.dto';
-import { Post as Posts } from './entities/posts.entity';
+import { Post as PostEntity } from './entities/posts.entity';
 
 @ApiTags('Publicaciones')
 @Controller('posts')
@@ -24,8 +24,18 @@ export class PostsController {
    @ApiOperation({ summary: 'Obtener todas las publicaciones' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Get()
-   findAll(): Promise<Posts[]> {
+   findAll(): Promise<PostEntity[]> {
       return this.postsService.findAll();
+   }
+
+   @ApiOperation({ summary: 'Obtener una publicación' })
+   @ApiParam({ name: 'postId', description: 'ID de la publicación' })
+   @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
+   @Get('/:postId')
+   findById(
+      @Param('postId', ParseIntPipe) postId: number,
+   ): Promise<PostEntity> {
+      return this.postsService.findById(postId);
    }
 
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
@@ -34,7 +44,7 @@ export class PostsController {
    @Get('category/:categoryId')
    findByCategoryId(
       @Param('categoryId', ParseIntPipe) categoryId: number,
-   ): Promise<Posts[]> {
+   ): Promise<PostEntity[]> {
       console.log(categoryId);
       return this.postsService.findByCategoryId(categoryId);
    }
