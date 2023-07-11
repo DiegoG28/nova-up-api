@@ -6,7 +6,6 @@ import { PostsModule } from './modules/posts/posts.module';
 import { CareersModule } from './modules/careers/careers.module';
 import { EventRegistrationsModule } from './modules/event-registrations/event-registrations.module';
 import { UsersModule } from './modules/users/users.module';
-import { DepartmentsModule } from './modules/catalogs/departments/departments.module';
 import { CatalogsModule } from './modules/catalogs/catalogs.module';
 
 @Module({
@@ -18,7 +17,6 @@ import { CatalogsModule } from './modules/catalogs/catalogs.module';
       UsersModule,
       DatabaseModule,
       CatalogsModule,
-      DepartmentsModule,
    ],
    controllers: [AppController],
    providers: [AppService],

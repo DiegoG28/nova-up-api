@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { Role } from '../catalogs/roles/roles.entity';
 import { Career } from 'src/modules/careers/careers.entity';
-import { Department } from 'src/modules/catalogs/departments/departments.entity';
+import { Department } from 'src/modules/catalogs/entities/departments.entity';
 
 @Entity({ name: 'usuario' })
 export class User {

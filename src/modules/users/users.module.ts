@@ -4,7 +4,7 @@ import { Role } from '../catalogs/roles/roles.entity';
 import { User } from './users.entity';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { Department } from '../catalogs/departments/departments.entity';
+import { Department } from '../catalogs/entities/departments.entity';
 
 @Module({
    imports: [TypeOrmModule.forFeature([Role, User, Department])],
