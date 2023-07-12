@@ -7,6 +7,7 @@ export class PostCardDto {
    summary: string;
    category: CategoryDto;
    assets: PostCardAssetDto[];
+   isApproved: boolean;
 }
 
 export class PostCardAssetDto {

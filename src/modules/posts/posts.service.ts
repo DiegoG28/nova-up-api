@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, FindManyOptions, Repository } from 'typeorm';
 import { Post } from './entities/posts.entity';
 import { PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
@@ -27,21 +27,19 @@ export class PostsService {
       private readonly dataSource: DataSource,
    ) {}
 
-   /*private mapPostsToDto(posts: Post[]): PostDto[] {
-      return posts.map((post) => {
-         const { category, career, ...rest } = post;
-         return {
-            ...rest,
-            categoryName: category.name,
-            careerName: career.name,
-         };
-      });
-   }*/
-   async findAll(): Promise<Post[]> {
-      const posts: Post[] = await this.postsRepository.find({
-         select: ['id', 'title', 'summary', 'category', 'assets'],
+   async findAll(isApproved?: string): Promise<Post[]> {
+      const queryOptions: FindManyOptions<Post> = {
+         select: ['id', 'title', 'summary', 'category', 'assets', 'isApproved'],
          relations: ['category', 'assets'],
-      });
+      };
+
+      if (typeof isApproved !== 'undefined') {
+         queryOptions.where = {
+            isApproved: isApproved === 'true',
+         };
+      }
+
+      const posts: Post[] = await this.postsRepository.find(queryOptions);
 
       const filteredPosts: Post[] = filterAssetsByType(
          posts,
@@ -51,12 +49,24 @@ export class PostsService {
       return filteredPosts;
    }
 
-   async findByCategoryId(categoryId: number): Promise<Post[]> {
-      const posts: Post[] = await this.postsRepository.find({
+   async findByCategoryId(
+      categoryId: number,
+      isApproved?: string,
+   ): Promise<Post[]> {
+      const queryOptions: FindManyOptions<Post> = {
          where: { category: { id: categoryId } },
-         select: ['id', 'title', 'summary', 'category', 'assets'],
+         select: ['id', 'title', 'summary', 'category', 'assets', 'isApproved'],
          relations: ['category', 'assets'],
-      });
+      };
+
+      if (typeof isApproved !== 'undefined') {
+         queryOptions.where = {
+            ...queryOptions.where,
+            isApproved: isApproved === 'true',
+         };
+      }
+
+      const posts: Post[] = await this.postsRepository.find(queryOptions);
 
       const filteredPosts: Post[] = filterAssetsByType(
          posts,

@@ -8,9 +8,16 @@ import {
    Delete,
    NotFoundException,
    Put,
+   Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+   ApiOperation,
+   ApiParam,
+   ApiQuery,
+   ApiResponse,
+   ApiTags,
+} from '@nestjs/swagger';
 import { PostDto } from './dtos/posts.dto';
 import { PostCardDto } from './dtos/posts-cards.dto';
 import { CreatePostDto, CreatePostResponseDto } from './dtos/create-post.dto';
@@ -22,10 +29,17 @@ export class PostsController {
    constructor(private readonly postsService: PostsService) {}
 
    @ApiOperation({ summary: 'Obtener todas las publicaciones' })
+   @ApiQuery({
+      name: 'approved',
+      description:
+         'Determina si se desea obtener las publicaciones aprobadas o no aprobadas',
+      type: Boolean,
+      required: false,
+   })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Get()
-   findAll(): Promise<PostEntity[]> {
-      return this.postsService.findAll();
+   findAll(@Query('approved') approved?: string): Promise<PostEntity[]> {
+      return this.postsService.findAll(approved);
    }
 
    @ApiOperation({ summary: 'Obtener una publicación' })
@@ -40,13 +54,20 @@ export class PostsController {
 
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
    @ApiParam({ name: 'categoryId', description: 'ID de la categoría' })
+   @ApiQuery({
+      name: 'approved',
+      description:
+         'Determina si se desea obtener las publicaciones aprobadas o no aprobadas',
+      type: Boolean,
+      required: false,
+   })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Get('category/:categoryId')
    findByCategoryId(
       @Param('categoryId', ParseIntPipe) categoryId: number,
+      @Query('approved') approved?: string,
    ): Promise<PostEntity[]> {
-      console.log(categoryId);
-      return this.postsService.findByCategoryId(categoryId);
+      return this.postsService.findByCategoryId(categoryId, approved);
    }
 
    @ApiOperation({ summary: 'Crear una nueva publicación' })
