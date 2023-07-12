@@ -5,11 +5,13 @@ import {
    JoinTable,
    ManyToMany,
    ManyToOne,
+   OneToMany,
    PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Role } from '../catalogs/entities/roles.entity';
 import { Career } from 'src/modules/careers/careers.entity';
 import { Department } from 'src/modules/catalogs/entities/departments.entity';
+import { Post } from '../posts/entities/posts.entity';
 
 @Entity({ name: 'usuario' })
 export class User {
@@ -23,6 +25,9 @@ export class User {
    @ManyToOne(() => Department, (department) => department.users)
    @JoinColumn({ name: 'id_departamento' })
    department: Department;
+
+   @OneToMany(() => Post, (post) => post.user)
+   posts: Post[];
 
    @ManyToMany(() => Career, (career) => career.users)
    @JoinTable({

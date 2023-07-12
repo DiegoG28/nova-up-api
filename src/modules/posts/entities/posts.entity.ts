@@ -10,6 +10,7 @@ import { Category } from '../../catalogs/entities/categories.entity';
 import { Career } from 'src/modules/careers/careers.entity';
 import { Asset } from './assets.entity';
 import { EventRegistration } from '../../event-registrations/event-registrations.entity';
+import { User } from 'src/modules/users/users.entity';
 
 export enum PostTypeEnum {
    Event = 'Evento',
@@ -31,6 +32,10 @@ export class Post {
    @ManyToOne(() => Career, (career) => career.posts)
    @JoinColumn({ name: 'id_carrera' })
    career: Career;
+
+   @ManyToOne(() => User, (user) => user.posts)
+   @JoinColumn({ name: 'id_usuario' })
+   user: User;
 
    @OneToMany(() => Asset, (asset) => asset.post)
    assets: Asset[];
