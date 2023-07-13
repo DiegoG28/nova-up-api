@@ -41,8 +41,7 @@ export class PostsController {
    @Get()
    async findAll(@Query('approved') approved?: string): Promise<PostCardDto[]> {
       const posts = await this.postsService.findAll(approved);
-      const postsDto = this.postsService.mapToPostCardDto(posts);
-      return postsDto;
+      return posts;
    }
 
    @ApiOperation({ summary: 'Obtener las últimas publicaciones' })
@@ -57,9 +56,7 @@ export class PostsController {
    @Get('/latest')
    async findLatest(@Query('limit') limit: string): Promise<PostBannerDto[]> {
       const latestPosts = await this.postsService.findLatest(parseInt(limit));
-      const latesPostsDto: PostBannerDto[] =
-         this.postsService.mapToPostBannerDto(latestPosts);
-      return latesPostsDto;
+      return latestPosts;
    }
 
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
@@ -81,8 +78,7 @@ export class PostsController {
          categoryId,
          approved,
       );
-      const postsDto = this.postsService.mapToPostCardDto(posts);
-      return postsDto;
+      return posts;
    }
 
    @ApiOperation({ summary: 'Obtener una publicación' })
@@ -92,9 +88,13 @@ export class PostsController {
    async findById(
       @Param('postId', ParseIntPipe) postId: number,
    ): Promise<PostDto> {
-      const post = await this.postsService.findById(postId);
-      const postDto = this.postsService.mapToPostDto(post);
-      return postDto;
+      try {
+         const post = await this.postsService.findById(postId);
+         if (!post) throw new NotFoundException('Post not found');
+         return post;
+      } catch (err) {
+         throw err;
+      }
    }
 
    @ApiOperation({ summary: 'Crear una nueva publicación' })
@@ -119,9 +119,15 @@ export class PostsController {
    @Put(':postId')
    async update(
       @Param('postId', ParseIntPipe) postId: number,
-      @Body() post: UpdatePostDto,
+      @Body() updatedPost: UpdatePostDto,
    ) {
-      return this.postsService.update(postId, post);
+      try {
+         const post = await this.postsService.findOne(postId);
+         if (!post) throw new NotFoundException('Post not found');
+         return this.postsService.update(post, updatedPost);
+      } catch (err) {
+         throw err;
+      }
    }
 
    @ApiOperation({ summary: 'Elimina una publicación' })
@@ -133,11 +139,11 @@ export class PostsController {
    @Delete(':postId')
    async remove(@Param('postId', ParseIntPipe) postId: number) {
       try {
-         await this.postsService.remove(postId);
+         const post = await this.postsService.findOne(postId);
+         if (!post) throw new NotFoundException('Post not found');
+         await this.postsService.remove(post);
       } catch (error) {
-         if (error instanceof NotFoundException) {
-            throw error;
-         }
+         throw error;
       }
    }
 }
