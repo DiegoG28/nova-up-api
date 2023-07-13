@@ -33,11 +33,41 @@ export class PostsService {
          relations: ['category', 'assets'],
       };
 
+      if (typeof isApproved === 'undefined' || isApproved === 'false') {
+         //We should validate token here because not all users can see all posts or not approved posts
+      }
+
       if (typeof isApproved !== 'undefined') {
          queryOptions.where = {
             isApproved: isApproved === 'true',
          };
       }
+
+      const posts: Post[] = await this.postsRepository.find(queryOptions);
+
+      const filteredPosts: Post[] = filterAssetsByType(
+         posts,
+         AssetTypeEnum.Image,
+      );
+
+      return filteredPosts;
+   }
+
+   async findLatest(limit = 5): Promise<Post[]> {
+      const queryOptions: FindManyOptions<Post> = {
+         select: [
+            'id',
+            'title',
+            'summary',
+            'category',
+            'assets',
+            'isApproved',
+            'publishDate',
+         ],
+         relations: ['category', 'assets'],
+         order: { publishDate: 'DESC' },
+         take: limit,
+      };
 
       const posts: Post[] = await this.postsRepository.find(queryOptions);
 

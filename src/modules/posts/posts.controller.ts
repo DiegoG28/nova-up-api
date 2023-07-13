@@ -42,6 +42,20 @@ export class PostsController {
       return this.postsService.findAll(approved);
    }
 
+   @ApiOperation({ summary: 'Obtener las últimas publicaciones' })
+   @ApiQuery({
+      name: 'limit',
+      description: 'Cantidad de publicaciones a obtener',
+      type: Number,
+      required: false,
+      schema: { default: 5 },
+   })
+   @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
+   @Get('/latest')
+   findLatest(@Query('limit') limit: string): Promise<PostEntity[]> {
+      return this.postsService.findLatest(parseInt(limit));
+   }
+
    @ApiOperation({ summary: 'Obtener una publicación' })
    @ApiParam({ name: 'postId', description: 'ID de la publicación' })
    @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
