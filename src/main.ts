@@ -8,7 +8,7 @@ import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-   const app = await NestFactory.create(AppModule, { cors: false });
+   const app = await NestFactory.create(AppModule, { cors: true });
 
    const document = SwaggerModule.createDocument(app, swaggerConfig);
    SwaggerModule.setup('api', app, document, {
