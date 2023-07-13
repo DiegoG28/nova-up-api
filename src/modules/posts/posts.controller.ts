@@ -59,6 +59,14 @@ export class PostsController {
       return latestPosts;
    }
 
+   @ApiOperation({ summary: 'Obtener las publicaciones fijadas' })
+   @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
+   @Get('/pinned')
+   async findPinned(): Promise<PostCardDto[]> {
+      const pinnedPosts = await this.postsService.findPinned();
+      return pinnedPosts;
+   }
+
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
    @ApiParam({ name: 'categoryId', description: 'ID de la categoría' })
    @ApiQuery({

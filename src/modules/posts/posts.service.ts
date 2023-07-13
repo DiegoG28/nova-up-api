@@ -31,6 +31,12 @@ export class PostsService {
       return postsBannerDto;
    }
 
+   async findPinned(): Promise<PostCardDto[]> {
+      const posts = await this.postsRepository.findPinned();
+      const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
+      return postsCardDto;
+   }
+
    async findByCategoryId(
       categoryId: number,
       isApproved?: string,

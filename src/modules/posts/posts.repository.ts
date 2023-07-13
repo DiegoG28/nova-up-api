@@ -61,6 +61,13 @@ export class PostsRepository {
       return await this.postsRepository.find(queryOptions);
    }
 
+   async findPinned(): Promise<Post[]> {
+      const queryOptions = this.getPostCardQueryOptions('true');
+      queryOptions.where = { isPinned: true };
+      const posts = await this.postsRepository.find(queryOptions);
+      return posts;
+   }
+
    async findByCategoryId(
       categoryId: number,
       isApproved?: string,
