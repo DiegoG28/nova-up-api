@@ -2,18 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, FindManyOptions, Repository } from 'typeorm';
 import { Post } from './entities/posts.entity';
-import { PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
-import { Asset, AssetTypeEnum } from './entities/assets.entity';
-
-function filterAssetsByType(posts: Post[], assetType: string): Post[] {
-   const filteredPosts: Post[] = posts.map((post) => ({
-      ...post,
-      assets: post.assets.filter((asset) => asset.type === assetType),
-   }));
-
-   return filteredPosts;
-}
+import { UpdatePostDto } from './dtos/update-post.dto';
+import { Asset } from './entities/assets.entity';
+import { PostCardDto } from './dtos/posts-cards.dto';
+import { PostBannerDto } from './dtos/posts-banner.dto';
+import { PostDto } from './dtos/posts.dto';
 
 @Injectable()
 export class PostsService {
@@ -27,33 +21,7 @@ export class PostsService {
       private readonly dataSource: DataSource,
    ) {}
 
-   async findAll(isApproved?: string): Promise<Post[]> {
-      const queryOptions: FindManyOptions<Post> = {
-         select: ['id', 'title', 'summary', 'category', 'assets', 'isApproved'],
-         relations: ['category', 'assets'],
-      };
-
-      if (typeof isApproved === 'undefined' || isApproved === 'false') {
-         //We should validate token here because not all users can see all posts or not approved posts
-      }
-
-      if (typeof isApproved !== 'undefined') {
-         queryOptions.where = {
-            isApproved: isApproved === 'true',
-         };
-      }
-
-      const posts: Post[] = await this.postsRepository.find(queryOptions);
-
-      const filteredPosts: Post[] = filterAssetsByType(
-         posts,
-         AssetTypeEnum.Image,
-      );
-
-      return filteredPosts;
-   }
-
-   async findLatest(limit = 5): Promise<Post[]> {
+   private getPostCardQueryOptions(isApproved?: string): FindManyOptions<Post> {
       const queryOptions: FindManyOptions<Post> = {
          select: [
             'id',
@@ -62,48 +30,110 @@ export class PostsService {
             'category',
             'assets',
             'isApproved',
-            'publishDate',
+            'tags',
          ],
          relations: ['category', 'assets'],
+      };
+
+      if (typeof isApproved !== 'undefined') {
+         queryOptions.where = {
+            isApproved: isApproved === 'true',
+         };
+      }
+
+      return queryOptions;
+   }
+
+   getCoverImage(assets: Asset[]): string {
+      const coverImage = assets.find((asset) => asset.isCoverImage);
+      if (coverImage && coverImage.name) return coverImage.name;
+      return '';
+   }
+
+   mapToPostCardDto(posts: Post[]): PostCardDto[] {
+      return posts.map((post) => {
+         const coverImage = this.getCoverImage(post.assets);
+         return {
+            id: post.id,
+            title: post.title,
+            summary: post.summary,
+            category: post.category,
+            coverImage,
+            isApproved: post.isApproved,
+            tags: post.tags,
+         };
+      });
+   }
+
+   mapToPostBannerDto(posts: Post[]): PostBannerDto[] {
+      return posts.map((post) => {
+         const coverImage = this.getCoverImage(post.assets);
+         return {
+            id: post.id,
+            title: post.title,
+            summary: post.summary,
+            coverImage,
+         };
+      });
+   }
+
+   mapToPostDto(post: Post): PostDto {
+      const coverImage = this.getCoverImage(post.assets);
+      const postAssetsDto = post.assets
+         .filter((asset) => !asset.isCoverImage)
+         .map((asset) => {
+            return {
+               id: asset.id,
+               name: asset.name,
+               type: asset.type,
+            };
+         });
+
+      return { ...post, coverImage, assets: postAssetsDto };
+   }
+
+   // --------------------------------------------------------------------------
+
+   async findAll(isApproved?: string): Promise<Post[]> {
+      if (typeof isApproved === 'undefined' || isApproved === 'false') {
+         //We should validate token here because not all users can see all posts or not approved posts
+      }
+
+      const queryOptions = this.getPostCardQueryOptions(isApproved);
+
+      const posts = await this.postsRepository.find(queryOptions);
+
+      return posts;
+   }
+
+   async findLatest(limit = 5): Promise<Post[]> {
+      const queryOptions: FindManyOptions<Post> = {
+         where: { isApproved: true },
+         select: ['id', 'title', 'summary', 'assets', 'publishDate'],
+         relations: ['assets'],
          order: { publishDate: 'DESC' },
          take: limit,
       };
 
-      const posts: Post[] = await this.postsRepository.find(queryOptions);
-
-      const filteredPosts: Post[] = filterAssetsByType(
-         posts,
-         AssetTypeEnum.Image,
-      );
-
-      return filteredPosts;
+      return await this.postsRepository.find(queryOptions);
    }
 
    async findByCategoryId(
       categoryId: number,
       isApproved?: string,
    ): Promise<Post[]> {
-      const queryOptions: FindManyOptions<Post> = {
-         where: { category: { id: categoryId } },
-         select: ['id', 'title', 'summary', 'category', 'assets', 'isApproved'],
-         relations: ['category', 'assets'],
-      };
-
-      if (typeof isApproved !== 'undefined') {
-         queryOptions.where = {
-            ...queryOptions.where,
-            isApproved: isApproved === 'true',
-         };
+      if (typeof isApproved === 'undefined' || isApproved === 'false') {
+         //We should validate token here because not all users can see all posts or not approved posts
       }
 
-      const posts: Post[] = await this.postsRepository.find(queryOptions);
+      const queryOptions = this.getPostCardQueryOptions(isApproved);
 
-      const filteredPosts: Post[] = filterAssetsByType(
-         posts,
-         AssetTypeEnum.Image,
-      );
+      queryOptions.where = {
+         ...queryOptions.where,
+         category: { id: categoryId },
+      };
 
-      return filteredPosts;
+      return await this.postsRepository.find(queryOptions);
    }
 
    async findById(postId: number): Promise<Post> {
@@ -179,7 +209,7 @@ export class PostsService {
       }
    }
 
-   async update(postId: number, updatedPostData: PostDto): Promise<Post> {
+   async update(postId: number, updatedPostData: UpdatePostDto): Promise<Post> {
       const queryRunner = this.dataSource.createQueryRunner();
 
       queryRunner.connect();

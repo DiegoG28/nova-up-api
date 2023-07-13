@@ -25,6 +25,9 @@ export class Asset {
    @Column({ name: 'nombre_recurso', length: 120 })
    name: string;
 
+   @Column({ name: 'portada', default: false })
+   isCoverImage: boolean;
+
    @Column({ type: 'enum', enum: AssetTypeEnum, name: 'tipo_recurso' })
    type: AssetTypeEnum;
 }

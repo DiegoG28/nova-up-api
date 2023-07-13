@@ -1,13 +1,12 @@
 import { CareerDto } from 'src/modules/careers/dtos/careers.dto';
-import { AssetTypeEnum } from '../entities/assets.entity';
-import { PostTypeEnum } from '../entities/posts.entity';
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
+import { PostAssetDto } from './posts.dto';
+import { PostTypeEnum } from '../entities/posts.entity';
 
-export class PostDto {
+export class UpdatePostDto {
    id: number;
    category: CategoryDto;
    career: CareerDto;
-   coverImage: string;
    assets: PostAssetDto[];
    title: string;
    description: string;
@@ -20,10 +19,4 @@ export class PostDto {
    isPinned: boolean;
    tags: string;
    comments: string;
-}
-
-export class PostAssetDto {
-   id: number;
-   name: string;
-   type: AssetTypeEnum;
 }

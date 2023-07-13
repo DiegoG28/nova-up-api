@@ -21,7 +21,8 @@ import {
 import { PostDto } from './dtos/posts.dto';
 import { PostCardDto } from './dtos/posts-cards.dto';
 import { CreatePostDto, CreatePostResponseDto } from './dtos/create-post.dto';
-import { Post as PostEntity } from './entities/posts.entity';
+import { PostBannerDto } from './dtos/posts-banner.dto';
+import { UpdatePostDto } from './dtos/update-post.dto';
 
 @ApiTags('Publicaciones')
 @Controller('posts')
@@ -38,8 +39,10 @@ export class PostsController {
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Get()
-   findAll(@Query('approved') approved?: string): Promise<PostEntity[]> {
-      return this.postsService.findAll(approved);
+   async findAll(@Query('approved') approved?: string): Promise<PostCardDto[]> {
+      const posts = await this.postsService.findAll(approved);
+      const postsDto = this.postsService.mapToPostCardDto(posts);
+      return postsDto;
    }
 
    @ApiOperation({ summary: 'Obtener las últimas publicaciones' })
@@ -50,20 +53,13 @@ export class PostsController {
       required: false,
       schema: { default: 5 },
    })
-   @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
+   @ApiResponse({ status: 200, description: 'Éxito', type: [PostBannerDto] })
    @Get('/latest')
-   findLatest(@Query('limit') limit: string): Promise<PostEntity[]> {
-      return this.postsService.findLatest(parseInt(limit));
-   }
-
-   @ApiOperation({ summary: 'Obtener una publicación' })
-   @ApiParam({ name: 'postId', description: 'ID de la publicación' })
-   @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
-   @Get('/:postId')
-   findById(
-      @Param('postId', ParseIntPipe) postId: number,
-   ): Promise<PostEntity> {
-      return this.postsService.findById(postId);
+   async findLatest(@Query('limit') limit: string): Promise<PostBannerDto[]> {
+      const latestPosts = await this.postsService.findLatest(parseInt(limit));
+      const latesPostsDto: PostBannerDto[] =
+         this.postsService.mapToPostBannerDto(latestPosts);
+      return latesPostsDto;
    }
 
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
@@ -77,11 +73,28 @@ export class PostsController {
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Get('category/:categoryId')
-   findByCategoryId(
+   async findByCategoryId(
       @Param('categoryId', ParseIntPipe) categoryId: number,
       @Query('approved') approved?: string,
-   ): Promise<PostEntity[]> {
-      return this.postsService.findByCategoryId(categoryId, approved);
+   ): Promise<PostCardDto[]> {
+      const posts = await this.postsService.findByCategoryId(
+         categoryId,
+         approved,
+      );
+      const postsDto = this.postsService.mapToPostCardDto(posts);
+      return postsDto;
+   }
+
+   @ApiOperation({ summary: 'Obtener una publicación' })
+   @ApiParam({ name: 'postId', description: 'ID de la publicación' })
+   @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
+   @Get('/:postId')
+   async findById(
+      @Param('postId', ParseIntPipe) postId: number,
+   ): Promise<PostDto> {
+      const post = await this.postsService.findById(postId);
+      const postDto = this.postsService.mapToPostDto(post);
+      return postDto;
    }
 
    @ApiOperation({ summary: 'Crear una nueva publicación' })
@@ -101,12 +114,12 @@ export class PostsController {
    @ApiResponse({
       status: 200,
       description: 'Publicación actualizada',
-      type: PostDto,
+      type: UpdatePostDto,
    })
    @Put(':postId')
    async update(
       @Param('postId', ParseIntPipe) postId: number,
-      @Body() post: PostDto,
+      @Body() post: UpdatePostDto,
    ) {
       return this.postsService.update(postId, post);
    }
