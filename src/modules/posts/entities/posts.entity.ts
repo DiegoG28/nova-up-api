@@ -74,7 +74,7 @@ export class Post {
    })
    type: PostTypeEnum;
 
-   @Column({ name: 'fijado' })
+   @Column({ name: 'fijado', default: false })
    isPinned: boolean;
 
    @Column({ type: 'text', name: 'etiquetas' })

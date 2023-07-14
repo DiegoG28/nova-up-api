@@ -1,22 +1,41 @@
 import { CareerDto } from 'src/modules/careers/dtos/careers.dto';
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
 import { PostAssetDto } from './posts.dto';
-import { PostTypeEnum } from '../entities/posts.entity';
+import {
+   Allow,
+   IsArray,
+   IsBoolean,
+   IsInt,
+   IsOptional,
+   IsPositive,
+   ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+import { BasePostAssetDto, BasePostDto } from './base.dto';
 
-export class UpdatePostDto {
+export class UpdatePostDto extends BasePostDto {
+   @IsInt()
+   @IsPositive()
    id: number;
+
+   @Allow()
    category: CategoryDto;
+
+   @Allow()
    career: CareerDto;
+
+   @IsArray()
+   @ValidateNested({ each: true })
+   @Type(() => UpdateAssetPostDto)
    assets: PostAssetDto[];
-   title: string;
-   description: string;
-   summary: string;
-   publishDate: Date;
-   eventDate: Date;
-   isApproved: boolean;
-   isCanceled: boolean;
-   type: PostTypeEnum;
+
+   @IsBoolean()
    isPinned: boolean;
-   tags: string;
-   comments: string;
+}
+
+export class UpdateAssetPostDto extends BasePostAssetDto {
+   @IsOptional()
+   @IsInt()
+   @IsPositive()
+   id: number;
 }

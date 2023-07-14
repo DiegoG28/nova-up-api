@@ -118,21 +118,19 @@ export class PostsController {
    }
 
    @ApiOperation({ summary: 'Actualizar una publicación' })
-   @ApiParam({ name: 'postId', description: 'Id de la publicación' })
    @ApiResponse({
       status: 200,
       description: 'Publicación actualizada',
       type: UpdatePostDto,
    })
-   @Put(':postId')
-   async update(
-      @Param('postId', ParseIntPipe) postId: number,
-      @Body() updatedPost: UpdatePostDto,
-   ) {
+   @Put()
+   async update(@Body() updatePostRequest: UpdatePostDto) {
       try {
-         const post = await this.postsService.findOne(postId);
-         if (!post) throw new NotFoundException('Post not found');
-         return this.postsService.update(post, updatedPost);
+         const postToUpdate = await this.postsService.findOne(
+            updatePostRequest.id,
+         );
+         if (!postToUpdate) throw new NotFoundException('Post not found');
+         return this.postsService.update(postToUpdate, updatePostRequest);
       } catch (err) {
          throw err;
       }

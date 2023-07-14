@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, FindManyOptions, Repository } from 'typeorm';
-import { Post } from './entities/posts.entity';
+import { DataSource, FindManyOptions, In, Repository } from 'typeorm';
+import { Post, PostTypeEnum } from './entities/posts.entity';
 import { Asset } from './entities/assets.entity';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { UpdatePostDto } from './dtos/update-post.dto';
@@ -61,9 +61,15 @@ export class PostsRepository {
       return await this.postsRepository.find(queryOptions);
    }
 
-   async findPinned(): Promise<Post[]> {
-      const queryOptions = this.getPostCardQueryOptions('true');
-      queryOptions.where = { isPinned: true };
+   async findPinnedConvocatories(isApproved?: string): Promise<Post[]> {
+      const queryOptions = this.getPostCardQueryOptions(isApproved);
+      queryOptions.where = {
+         isPinned: true,
+         type: In([
+            PostTypeEnum.InternalConvocatory,
+            PostTypeEnum.ExternalConvocatory,
+         ]),
+      };
       const posts = await this.postsRepository.find(queryOptions);
       return posts;
    }
@@ -144,15 +150,23 @@ export class PostsRepository {
       }
    }
 
-   async update(post: Post, updatedPostData: UpdatePostDto): Promise<Post> {
+   async updatePin(post: Post, pinStatus: boolean): Promise<void> {
+      post.isPinned = pinStatus;
+      await this.postsRepository.save(post);
+   }
+
+   async update(
+      postToUpdate: Post,
+      updatePostRequest: UpdatePostDto,
+   ): Promise<Post> {
       const queryRunner = this.dataSource.createQueryRunner();
 
       queryRunner.connect();
       await queryRunner.startTransaction();
 
       try {
-         const existingAssets = post.assets;
-         const updatedAssets = updatedPostData.assets;
+         const existingAssets = postToUpdate.assets;
+         const updatedAssets = updatePostRequest.assets;
 
          //Delete assets that not coming on the data request
          const assetsToDelete = existingAssets.filter(
@@ -170,9 +184,14 @@ export class PostsRepository {
          const createdAssets = this.assetsRepository.create(assetsToCreate);
          await queryRunner.manager.save(createdAssets);
 
-         post.assets.push(...createdAssets);
+         postToUpdate.assets.push(...createdAssets);
 
-         const updatedPost = await queryRunner.manager.save(post);
+         //We asign the rest of requestData except assets
+         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+         const { assets, ...updateFields } = updatePostRequest;
+         Object.assign(postToUpdate, updateFields);
+
+         const updatedPost = await queryRunner.manager.save(postToUpdate);
 
          await queryRunner.commitTransaction();
          return updatedPost;

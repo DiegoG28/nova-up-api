@@ -1,20 +1,16 @@
 import {
    IsArray,
    IsBoolean,
-   IsEnum,
-   IsISO8601,
    IsInt,
    IsPositive,
-   IsString,
-   MaxLength,
    ValidateNested,
 } from 'class-validator';
-import { AssetTypeEnum } from '../entities/assets.entity';
-import { PostAssetDto, PostDto } from './posts.dto';
-import { PostTypeEnum } from '../entities/posts.entity';
+import { PostDto } from './posts.dto';
 import { Type } from 'class-transformer';
+import { BasePostAssetDto, BasePostDto } from './base.dto';
+import { AssetTypeEnum } from '../entities/assets.entity';
 
-export class CreatePostDto {
+export class CreatePostDto extends BasePostDto {
    @IsInt()
    @IsPositive()
    categoryId: number;
@@ -27,57 +23,22 @@ export class CreatePostDto {
    @ValidateNested({ each: true })
    @Type(() => CreatePostAssetDto)
    assets: CreatePostAssetDto[];
-
-   @IsString()
-   @MaxLength(120)
-   title: PostDto['title'];
-
-   @IsString()
-   description: PostDto['description'];
-
-   @IsString()
-   @MaxLength(120)
-   summary: PostDto['summary'];
-
-   @IsISO8601()
-   publishDate: PostDto['publishDate'];
-
-   @IsISO8601()
-   eventDate: PostDto['eventDate'];
-
-   @IsBoolean()
-   isApproved: PostDto['isApproved'];
-
-   @IsBoolean()
-   isCanceled: PostDto['isCanceled'];
-
-   @IsEnum(PostTypeEnum)
-   type: PostDto['type'];
-
-   @IsBoolean()
-   isPinned: PostDto['isPinned'];
-
-   @IsString()
-   tags: PostDto['tags'];
-
-   @IsString()
-   @MaxLength(255)
-   comments: PostDto['comments'];
 }
 
-export class CreatePostAssetDto {
-   @IsString()
-   @MaxLength(120)
-   name: string;
-
-   @IsEnum(AssetTypeEnum)
-   type: AssetTypeEnum;
+export class CreatePostAssetDto extends BasePostAssetDto {
+   @IsBoolean()
+   isCoverImage: boolean;
 }
 
 export class CreatePostResponseDto {
    category: { id: number };
    career: { id: number };
-   assets: PostAssetDto[];
+   assets: {
+      id: number;
+      type: AssetTypeEnum;
+      name: string;
+      isCoverImage: boolean;
+   };
    title: PostDto['title'];
    description: PostDto['description'];
    summary: PostDto['summary'];

@@ -5,7 +5,7 @@ import { PostsMapperService } from './posts-mapper.service';
 import { PostBannerDto } from './dtos/posts-banner.dto';
 import { PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
-import { Post } from './entities/posts.entity';
+import { Post, PostTypeEnum } from './entities/posts.entity';
 import { UpdatePostDto } from './dtos/update-post.dto';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class PostsService {
    }
 
    async findPinned(): Promise<PostCardDto[]> {
-      const posts = await this.postsRepository.findPinned();
+      const posts = await this.postsRepository.findPinnedConvocatories('true');
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
       return postsCardDto;
    }
@@ -71,10 +71,33 @@ export class PostsService {
       return createdPost;
    }
 
-   async update(post: Post, updatedPostData: UpdatePostDto): Promise<Post> {
+   async update(
+      postToUpdate: Post,
+      updatePostRequest: UpdatePostDto,
+   ): Promise<Post> {
+      const postRequestType = updatePostRequest.type;
+
+      const pinnedPosts = await this.postsRepository.findPinnedConvocatories();
+
+      //Override isPinned from existing convocatories posts
+      if (pinnedPosts.length > 0) {
+         pinnedPosts.forEach(async (pinnedPost) => {
+            if (pinnedPost.type === postRequestType) {
+               await this.postsRepository.updatePin(pinnedPost, false);
+            }
+         });
+      }
+
+      //Avoid no convocatory post pinning
+      if (
+         updatePostRequest.type !== PostTypeEnum.ExternalConvocatory &&
+         updatePostRequest.type !== PostTypeEnum.InternalConvocatory
+      ) {
+         updatePostRequest.isPinned = false;
+      }
       const updatedPost = await this.postsRepository.update(
-         post,
-         updatedPostData,
+         postToUpdate,
+         updatePostRequest,
       );
       return updatedPost;
    }

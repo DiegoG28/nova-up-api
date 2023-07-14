@@ -1,29 +1,16 @@
 import { CareerDto } from 'src/modules/careers/dtos/careers.dto';
-import { AssetTypeEnum } from '../entities/assets.entity';
-import { PostTypeEnum } from '../entities/posts.entity';
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
+import { BasePostAssetDto, BasePostDto } from './base.dto';
 
-export class PostDto {
+export class PostDto extends BasePostDto {
    id: number;
    category: CategoryDto;
    career: CareerDto;
    coverImage: string;
    assets: PostAssetDto[];
-   title: string;
-   description: string;
-   summary: string;
-   publishDate: Date;
-   eventDate: Date;
-   isApproved: boolean;
-   isCanceled: boolean;
-   type: PostTypeEnum;
    isPinned: boolean;
-   tags: string;
-   comments: string;
 }
 
-export class PostAssetDto {
+export class PostAssetDto extends BasePostAssetDto {
    id: number;
-   name: string;
-   type: AssetTypeEnum;
 }
