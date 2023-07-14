@@ -78,11 +78,13 @@ export class PostsService {
       const postRequestType = updatePostRequest.type;
 
       const pinnedPosts = await this.postsRepository.findPinnedConvocatories();
-
       //Override isPinned from existing convocatories posts
       if (pinnedPosts.length > 0) {
          pinnedPosts.forEach(async (pinnedPost) => {
-            if (pinnedPost.type === postRequestType) {
+            if (
+               pinnedPost.type === postRequestType &&
+               pinnedPost.id !== updatePostRequest.id
+            ) {
                await this.postsRepository.updatePin(pinnedPost, false);
             }
          });

@@ -24,6 +24,7 @@ export class PostsRepository {
             'id',
             'title',
             'summary',
+            'type',
             'category',
             'assets',
             'isApproved',
@@ -152,6 +153,7 @@ export class PostsRepository {
 
    async updatePin(post: Post, pinStatus: boolean): Promise<void> {
       post.isPinned = pinStatus;
+      console.log('wwenas', post);
       await this.postsRepository.save(post);
    }
 
