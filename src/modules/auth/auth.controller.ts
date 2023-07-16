@@ -15,12 +15,15 @@ export class AuthController {
       type: SignInResponseDto,
    })
    @Post('login')
-   signIn(@Body() signInDto: SignInDto) {
+   async signIn(@Body() signInDto: SignInDto) {
       try {
-         const signInResponse = this.authService.signIn(signInDto.googleToken);
+         const signInResponse = await this.authService.signIn(
+            signInDto.googleToken,
+         );
          if (!signInResponse) {
             throw new UnauthorizedException('Unauthorized user');
          }
+         return signInResponse;
       } catch (err) {
          throw err;
       }

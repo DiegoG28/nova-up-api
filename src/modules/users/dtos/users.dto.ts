@@ -1,7 +1,6 @@
 export class UsersDto {
    id: number;
    email: string;
-   password: string;
    role: {
       id: number;
       name: string;

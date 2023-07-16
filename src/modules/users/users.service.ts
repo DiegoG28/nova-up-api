@@ -52,7 +52,7 @@ export class UsersService {
    async remove(id: number): Promise<User> {
       const user = await this.usersRepository.findOne({
          where: { id },
-         relations: ['role', 'department'],
+         relations: ['role', 'department', 'careers'],
       });
       await this.usersRepository.delete(id);
       return user;
