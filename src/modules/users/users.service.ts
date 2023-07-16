@@ -40,7 +40,6 @@ export class UsersService {
          id: user.departmentId,
       });
       newUser.email = user.email;
-      newUser.password = user.password;
 
       if (!newUser.role || !newUser.department) {
          return null;
@@ -70,7 +69,6 @@ export class UsersService {
       });
 
       newUser.email = user.email;
-      newUser.password = user.password;
 
       if (!newUser.role || !newUser.department) {
          return null;
@@ -78,7 +76,6 @@ export class UsersService {
 
       const updateResult = await this.usersRepository.update(id, {
          email: newUser.email,
-         password: newUser.password,
          role: newUser.role,
       });
       if (updateResult.affected === 0) {

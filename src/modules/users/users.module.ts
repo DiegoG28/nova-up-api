@@ -10,5 +10,6 @@ import { Department } from '../catalogs/entities/departments.entity';
    imports: [TypeOrmModule.forFeature([Role, User, Department])],
    controllers: [UsersController],
    providers: [UsersService],
+   exports: [UsersService],
 })
 export class UsersModule {}

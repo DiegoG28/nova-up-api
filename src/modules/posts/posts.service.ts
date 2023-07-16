@@ -56,7 +56,7 @@ export class PostsService {
 
    async findById(postId: number): Promise<PostDto | null> {
       const post = await this.postsRepository.findById(postId);
-      if (!post) return;
+      if (!post) return null;
       const postDto = this.postsMapperService.mapToPostDto(post);
       return postDto;
    }

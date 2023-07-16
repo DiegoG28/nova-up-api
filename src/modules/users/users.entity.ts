@@ -43,7 +43,4 @@ export class User {
 
    @Column({ name: 'correo', length: 255 })
    email: string;
-
-   @Column({ name: 'clave', length: 10 })
-   password: string;
 }

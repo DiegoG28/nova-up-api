@@ -7,6 +7,7 @@ import { CareersModule } from './modules/careers/careers.module';
 import { EventRegistrationsModule } from './modules/event-registrations/event-registrations.module';
 import { UsersModule } from './modules/users/users.module';
 import { CatalogsModule } from './modules/catalogs/catalogs.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
    imports: [
