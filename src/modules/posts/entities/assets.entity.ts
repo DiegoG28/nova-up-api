@@ -7,14 +7,14 @@ import {
 } from 'typeorm';
 import { Post } from './posts.entity';
 
-enum AssetTypeEnum {
+export enum AssetTypeEnum {
    PDF = 'Pdf',
    Link = 'Enlace',
    Image = 'Imagen',
 }
 
 @Entity({ name: 'recurso' })
-export class PostAsset {
+export class Asset {
    @PrimaryGeneratedColumn({ name: 'id_recurso' })
    id: number;
 
@@ -24,6 +24,9 @@ export class PostAsset {
 
    @Column({ name: 'nombre_recurso', length: 120 })
    name: string;
+
+   @Column({ name: 'portada', default: false })
+   isCoverImage: boolean;
 
    @Column({ type: 'enum', enum: AssetTypeEnum, name: 'tipo_recurso' })
    type: AssetTypeEnum;

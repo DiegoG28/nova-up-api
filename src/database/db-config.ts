@@ -11,14 +11,15 @@ export const dataSourceOptions: DataSourceOptions = {
    entities: ['dist/modules/**/*.entity{.ts,.js}'],
    synchronize: false,
    migrations: ['dist/database/migrations/*{.ts,.js}'],
-   ssl: true,
-   extra: {
-      ssl: {
-         rejectUnauthorized: false,
-      },
-   },
+   ssl: false,
 };
 
-const dataSource = new DataSource(dataSourceOptions);
+let dataSource: DataSource;
+
+try {
+   dataSource = new DataSource(dataSourceOptions);
+} catch (error) {
+   console.error(`Failed to make a connection to the database: ${error}`);
+}
 
 export default dataSource;

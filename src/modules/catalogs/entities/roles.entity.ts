@@ -1,8 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from './users.entity';
+import { User } from '../../users/users.entity';
 
 @Entity({ name: 'rol' })
-export class UserRole {
+export class Role {
    @PrimaryGeneratedColumn({ name: 'id_rol' })
    id: number;
 

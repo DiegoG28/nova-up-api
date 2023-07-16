@@ -6,16 +6,18 @@ import {
    JoinColumn,
    OneToMany,
 } from 'typeorm';
-import { PostCategory } from './categories.entity';
+import { Category } from '../../catalogs/entities/categories.entity';
 import { Career } from 'src/modules/careers/careers.entity';
-import { PostAsset } from './assets.entity';
+import { Asset } from './assets.entity';
 import { EventRegistration } from '../../event-registrations/event-registrations.entity';
+import { User } from 'src/modules/users/users.entity';
 
-enum PostTypeEnum {
+export enum PostTypeEnum {
    Event = 'Evento',
    ExternalConvocatory = 'Convocatoria externa',
    InternalConvocatory = 'Convocatoria interna',
    Project = 'Proyecto',
+   Research = 'Investigación',
 }
 
 @Entity({ name: 'publicacion' })
@@ -23,16 +25,20 @@ export class Post {
    @PrimaryGeneratedColumn({ name: 'id_publicacion' })
    id: number;
 
-   @ManyToOne(() => PostCategory, (postCategory) => postCategory.posts)
+   @ManyToOne(() => Category, (category) => category.posts)
    @JoinColumn({ name: 'id_categoria' })
-   category: PostCategory;
+   category: Category;
 
    @ManyToOne(() => Career, (career) => career.posts)
    @JoinColumn({ name: 'id_carrera' })
    career: Career;
 
-   @OneToMany(() => PostAsset, (postAsset) => postAsset.post)
-   assets: PostAsset[];
+   @ManyToOne(() => User, (user) => user.posts)
+   @JoinColumn({ name: 'id_usuario' })
+   user: User;
+
+   @OneToMany(() => Asset, (asset) => asset.post)
+   assets: Asset[];
 
    @OneToMany(
       () => EventRegistration,
@@ -46,7 +52,7 @@ export class Post {
    @Column({ type: 'text', name: 'descripcion' })
    description: string;
 
-   @Column({ name: 'resumen', length: 90 })
+   @Column({ name: 'resumen', length: 110 })
    summary: string;
 
    @Column({ name: 'fecha' })
@@ -68,7 +74,7 @@ export class Post {
    })
    type: PostTypeEnum;
 
-   @Column({ name: 'fijado' })
+   @Column({ name: 'fijado', default: false })
    isPinned: boolean;
 
    @Column({ type: 'text', name: 'etiquetas' })
