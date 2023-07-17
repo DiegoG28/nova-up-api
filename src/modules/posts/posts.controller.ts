@@ -51,6 +51,7 @@ export class PostsController {
       @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
       //const { user } = request.userPayload;
+      //const userRole = user.role.name;
 
       //We'll validate this later.
       const posts = await this.postsService.findAll('Admin', approved);
