@@ -1,10 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { OAuth2Client, TokenPayload } from 'google-auth-library';
-
+import { OAuth2Client } from 'google-auth-library';
 import { UsersService } from '../users/users.service';
-import { SignInResponseDto } from './dtos/sign-in.dto';
+import { JwtPayload, SignInResponseDto } from './dtos/sign-in.dto';
 
 @Injectable()
 export class AuthService {
@@ -14,30 +13,28 @@ export class AuthService {
       private configService: ConfigService,
    ) {}
 
-   async signIn(googleToken: string): Promise<SignInResponseDto | null> {
-      const client = new OAuth2Client(
-         this.configService.get<string>('GOOGLE_CLIENT_ID'),
-      );
+   async signIn(googleToken: string): Promise<SignInResponseDto> {
+      const googleClientId = this.configService.get<string>('GOOGLE_CLIENT_ID');
 
-      let googlePayload: TokenPayload;
-      try {
-         const ticket = await client.verifyIdToken({
-            idToken: googleToken,
-            audience: this.configService.get<string>('GOOGLE_CLIENT_ID'),
-         });
-         googlePayload = ticket.getPayload();
-      } catch (e) {
+      const client = new OAuth2Client(googleClientId);
+
+      const ticket = await client.verifyIdToken({
+         idToken: googleToken,
+         audience: googleClientId,
+      });
+      const googlePayload = ticket.getPayload();
+
+      if (!googlePayload)
          throw new UnauthorizedException('Invalid Google token.');
-      }
 
-      const email = googlePayload['email'];
+      const { email } = googlePayload;
+
+      if (!email)
+         throw new UnauthorizedException('Email not provided in Google token.');
 
       const user = await this.usersService.findOne(email);
 
-      if (!user) {
-         return null;
-      }
-      const payload = { sub: user.id, user: user };
+      const payload: JwtPayload = { sub: user.id, user };
 
       return {
          accessToken: await this.jwtService.signAsync(payload),

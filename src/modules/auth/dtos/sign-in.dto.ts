@@ -1,4 +1,5 @@
 import { IsJWT } from 'class-validator';
+import { User } from 'src/modules/users/users.entity';
 
 export class SignInDto {
    @IsJWT()
@@ -7,4 +8,9 @@ export class SignInDto {
 
 export class SignInResponseDto {
    accessToken: string;
+}
+
+export class JwtPayload {
+   sub: number;
+   user: User;
 }

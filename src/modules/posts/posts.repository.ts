@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, FindManyOptions, In, Repository } from 'typeorm';
 import { Post, PostTypeEnum } from './entities/posts.entity';
@@ -124,6 +124,10 @@ export class PostsRepository {
          return createdPost;
       } catch (err) {
          await queryRunner.rollbackTransaction();
+         throw new InternalServerErrorException(
+            'Failed to create post',
+            err.message,
+         );
       } finally {
          await queryRunner.release();
       }
@@ -199,6 +203,10 @@ export class PostsRepository {
          return updatedPost;
       } catch (err) {
          await queryRunner.rollbackTransaction();
+         throw new InternalServerErrorException(
+            'Failed to update post',
+            err.message,
+         );
       } finally {
          await queryRunner.release();
       }

@@ -6,4 +6,5 @@ export const swaggerConfig = new DocumentBuilder()
       'API para la página web Nova de la Universidad Politécnica de Quintana Roo',
    )
    .setVersion('1.0')
+   .addBearerAuth()
    .build();

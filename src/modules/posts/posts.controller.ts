@@ -9,9 +9,12 @@ import {
    NotFoundException,
    Put,
    Query,
+   Req,
+   //UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import {
+   ApiBearerAuth,
    ApiOperation,
    ApiParam,
    ApiQuery,
@@ -23,8 +26,12 @@ import { PostCardDto } from './dtos/posts-cards.dto';
 import { CreatePostDto, CreatePostResponseDto } from './dtos/create-post.dto';
 import { PostBannerDto } from './dtos/posts-banner.dto';
 import { UpdatePostDto } from './dtos/update-post.dto';
+import { RequestWithPayload } from 'src/libs/interfaces';
+// import { Roles } from '../auth/auth.decorators';
+// import { RolesGuard } from '../auth/roles.guard';
 
 @ApiTags('Publicaciones')
+@ApiBearerAuth()
 @Controller('posts')
 export class PostsController {
    constructor(private readonly postsService: PostsService) {}
@@ -39,8 +46,12 @@ export class PostsController {
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Get()
-   async findAll(@Query('approved') approved?: string): Promise<PostCardDto[]> {
-      const posts = await this.postsService.findAll(approved);
+   async findAll(
+      @Req() request: RequestWithPayload,
+      @Query('approved') approved?: string,
+   ): Promise<PostCardDto[]> {
+      const { user } = request.userPayload;
+      const posts = await this.postsService.findAll(user.role.name, approved);
       return posts;
    }
 
@@ -97,9 +108,7 @@ export class PostsController {
       @Param('postId', ParseIntPipe) postId: number,
    ): Promise<PostDto> {
       try {
-         const post = await this.postsService.findById(postId);
-         if (!post) throw new NotFoundException('Post not found');
-         return post;
+         return await this.postsService.findById(postId);
       } catch (err) {
          throw err;
       }
@@ -126,11 +135,7 @@ export class PostsController {
    @Put()
    async update(@Body() updatePostRequest: UpdatePostDto) {
       try {
-         const postToUpdate = await this.postsService.findOne(
-            updatePostRequest.id,
-         );
-         if (!postToUpdate) throw new NotFoundException('Post not found');
-         return this.postsService.update(postToUpdate, updatePostRequest);
+         return this.postsService.update(updatePostRequest);
       } catch (err) {
          throw err;
       }

@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+   Injectable,
+   NotFoundException,
+   UnauthorizedException,
+} from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { PostCardDto } from './dtos/posts-cards.dto';
 import { PostsMapperService } from './posts-mapper.service';
@@ -15,9 +19,17 @@ export class PostsService {
       private readonly postsMapperService: PostsMapperService,
    ) {}
 
-   async findAll(isApproved?: string): Promise<PostCardDto[]> {
+   async findAll(
+      userRole: string,
+      isApproved?: string,
+   ): Promise<PostCardDto[]> {
       if (typeof isApproved === 'undefined' || isApproved === 'false') {
          //We should validate token here because not all users can see all posts or not approved posts
+         if (userRole !== 'Admin' && userRole !== 'Supervisor') {
+            throw new UnauthorizedException(
+               'You do not have permissons to access this resource.',
+            );
+         }
       }
 
       const posts = await this.postsRepository.findAll(isApproved);
@@ -54,16 +66,18 @@ export class PostsService {
       return postsCardDto;
    }
 
-   async findById(postId: number): Promise<PostDto | null> {
+   async findById(postId: number): Promise<PostDto> {
       const post = await this.postsRepository.findById(postId);
-      if (!post) return null;
+      if (!post) throw new NotFoundException('Post not found');
       const postDto = this.postsMapperService.mapToPostDto(post);
       return postDto;
    }
 
    //We use this to get a Post entity instead the PostDto
-   async findOne(postId: number): Promise<Post | null> {
-      return this.postsRepository.findById(postId);
+   async findOne(postId: number): Promise<Post> {
+      const post = await this.postsRepository.findById(postId);
+      if (!post) throw new NotFoundException('Post not found');
+      return post;
    }
 
    async create(createPostDto: CreatePostDto): Promise<Post> {
@@ -71,10 +85,11 @@ export class PostsService {
       return createdPost;
    }
 
-   async update(
-      postToUpdate: Post,
-      updatePostRequest: UpdatePostDto,
-   ): Promise<Post> {
+   async update(updatePostRequest: UpdatePostDto): Promise<Post> {
+      const postToUpdate = await this.findOne(updatePostRequest.id);
+
+      if (!postToUpdate) throw new NotFoundException('Post not found');
+
       const postRequestType = updatePostRequest.type;
 
       const pinnedPosts = await this.postsRepository.findPinnedConvocatories();

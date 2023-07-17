@@ -1,7 +1,8 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignInDto, SignInResponseDto } from './dtos/sign-in.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from './auth.decorators';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -14,16 +15,11 @@ export class AuthController {
       description: 'Usuario logueado exitosamente',
       type: SignInResponseDto,
    })
+   @Public()
    @Post('login')
    async signIn(@Body() signInDto: SignInDto) {
       try {
-         const signInResponse = await this.authService.signIn(
-            signInDto.googleToken,
-         );
-         if (!signInResponse) {
-            throw new UnauthorizedException('Unauthorized user');
-         }
-         return signInResponse;
+         return await this.authService.signIn(signInDto.googleToken);
       } catch (err) {
          throw err;
       }
