@@ -27,6 +27,7 @@ import { CreatePostDto, CreatePostResponseDto } from './dtos/create-post.dto';
 import { PostBannerDto } from './dtos/posts-banner.dto';
 import { UpdatePostDto } from './dtos/update-post.dto';
 import { RequestWithPayload } from 'src/libs/interfaces';
+import { Public } from '../auth/auth.decorators';
 // import { Roles } from '../auth/auth.decorators';
 // import { RolesGuard } from '../auth/roles.guard';
 
@@ -45,16 +46,22 @@ export class PostsController {
       required: false,
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
+   @Public()
    @Get()
    async findAll(
       @Req() request: RequestWithPayload,
       @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
-      //const { user } = request.userPayload;
-      //const userRole = user.role.name;
+      const requestPayload = request.userPayload;
 
-      //We'll validate this later.
-      const posts = await this.postsService.findAll('Admin', approved);
+      if (!requestPayload) {
+         const posts = await this.postsService.findAll('', approved);
+         return posts;
+      }
+
+      const { user } = requestPayload;
+
+      const posts = await this.postsService.findAll(user.role.name, approved);
       return posts;
    }
 

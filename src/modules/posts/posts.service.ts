@@ -1,7 +1,7 @@
 import {
+   ForbiddenException,
    Injectable,
    NotFoundException,
-   UnauthorizedException,
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { PostCardDto } from './dtos/posts-cards.dto';
@@ -23,10 +23,11 @@ export class PostsService {
       userRole: string,
       isApproved?: string,
    ): Promise<PostCardDto[]> {
+      console.log(userRole);
       if (typeof isApproved === 'undefined' || isApproved === 'false') {
          //We should validate token here because not all users can see all posts or not approved posts
-         if (userRole !== 'Admin' && userRole !== 'Supervisor') {
-            throw new UnauthorizedException(
+         if (!userRole || userRole === 'Editor') {
+            throw new ForbiddenException(
                'You do not have permissons to access this resource.',
             );
          }
