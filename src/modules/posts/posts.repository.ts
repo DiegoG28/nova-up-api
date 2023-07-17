@@ -178,7 +178,8 @@ export class PostsRepository {
          const assetsToDelete = existingAssets.filter(
             (asset) =>
                !updatedAssets.some(
-                  (updatedAsset) => updatedAsset.id === asset.id,
+                  (updatedAsset) =>
+                     updatedAsset.id === asset.id && !asset.isCoverImage,
                ),
          );
          await this.assetsRepository.remove(assetsToDelete);
