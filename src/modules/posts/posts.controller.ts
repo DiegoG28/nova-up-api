@@ -50,8 +50,10 @@ export class PostsController {
       @Req() request: RequestWithPayload,
       @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
-      const { user } = request.userPayload;
-      const posts = await this.postsService.findAll(user.role.name, approved);
+      //const { user } = request.userPayload;
+
+      //We'll validate this later.
+      const posts = await this.postsService.findAll('Admin', approved);
       return posts;
    }
 
