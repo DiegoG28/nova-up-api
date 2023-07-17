@@ -178,11 +178,13 @@ export class PostsRepository {
          const assetsToDelete = existingAssets.filter(
             (asset) =>
                !updatedAssets.some(
-                  (updatedAsset) =>
-                     updatedAsset.id === asset.id && !asset.isCoverImage,
+                  (updatedAsset) => updatedAsset.id === asset.id,
                ),
          );
-         await this.assetsRepository.remove(assetsToDelete);
+         const assetsWithoutImage = assetsToDelete.filter(
+            (asset) => !asset.isCoverImage,
+         );
+         await this.assetsRepository.remove(assetsWithoutImage);
 
          //Create assets that coming on the data request and doesn't exist
          const assetsToCreate = updatedAssets.filter(
