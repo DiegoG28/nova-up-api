@@ -1,4 +1,3 @@
-import { CareerDto } from 'src/modules/careers/dtos/careers.dto';
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
 import { PostAssetDto } from './posts.dto';
 import {
@@ -20,9 +19,6 @@ export class UpdatePostDto extends BasePostDto {
 
    @Allow()
    category: CategoryDto;
-
-   @Allow()
-   career: CareerDto;
 
    @IsArray()
    @ValidateNested({ each: true })

@@ -68,7 +68,7 @@ export class UsersService {
    async remove(id: number): Promise<User | null> {
       const user = await this.usersRepository.findOne({
          where: { id },
-         relations: ['role', 'department', 'careers'],
+         relations: ['role', 'department'],
       });
 
       if (!user) return null;

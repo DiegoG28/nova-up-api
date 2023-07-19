@@ -15,10 +15,6 @@ export class CreatePostDto extends BasePostDto {
    @IsPositive()
    categoryId: number;
 
-   @IsInt()
-   @IsPositive()
-   careerId: number;
-
    @IsArray()
    @ValidateNested({ each: true })
    @Type(() => CreatePostAssetDto)
@@ -32,7 +28,6 @@ export class CreatePostAssetDto extends BasePostAssetDto {
 
 export class CreatePostResponseDto {
    category: { id: number };
-   career: { id: number };
    assets: {
       id: number;
       type: AssetTypeEnum;

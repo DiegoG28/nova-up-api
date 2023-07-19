@@ -21,15 +21,15 @@ export class PostsService {
 
    async findAll(
       userRole: string,
-      isApproved?: boolean,
+      showApproved?: boolean,
    ): Promise<PostCardDto[]> {
-      if (!isApproved && userRole !== 'Admin') {
+      if (!showApproved && userRole !== 'Admin') {
          throw new ForbiddenException(
             'You do not have permissons to access this resource.',
          );
       }
 
-      const posts = await this.postsRepository.findAll(isApproved);
+      const posts = await this.postsRepository.findAll(showApproved);
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
       return postsCardDto;
    }
@@ -41,23 +41,20 @@ export class PostsService {
    }
 
    async findPinned(): Promise<PostCardDto[]> {
-      const posts = await this.postsRepository.findPinnedConvocatories(true);
+      const posts = await this.postsRepository.findPinned(true);
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
       return postsCardDto;
    }
 
-   async findByCategoryId(
-      categoryId: number,
-      isApproved?: boolean,
-   ): Promise<PostCardDto[]> {
-      if (!isApproved) {
-         //We should validate token here because not all users can see all posts or not approved posts
-      }
+   async findByUser(userId: number): Promise<PostCardDto[]> {
+      const posts = await this.postsRepository.findByUser(userId);
+      const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
 
-      const posts = await this.postsRepository.findByCategoryId(
-         categoryId,
-         isApproved,
-      );
+      return postsCardDto;
+   }
+
+   async findByCategory(categoryId: number): Promise<PostCardDto[]> {
+      const posts = await this.postsRepository.findByCategory(categoryId);
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
 
       return postsCardDto;
@@ -89,7 +86,7 @@ export class PostsService {
 
       const postRequestType = updatePostRequest.type;
 
-      const pinnedPosts = await this.postsRepository.findPinnedConvocatories();
+      const pinnedPosts = await this.postsRepository.findPinned();
       //Override isPinned from existing convocatories posts
       if (pinnedPosts.length > 0) {
          pinnedPosts.forEach(async (pinnedPost) => {

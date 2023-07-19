@@ -53,9 +53,9 @@ export class PostsController {
       @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
       const userRole = req.userPayload?.user?.role?.name || '';
-      const isApproved =
+      const showApproved =
          approved !== undefined ? approved === 'true' : undefined;
-      const posts = await this.postsService.findAll(userRole, isApproved);
+      const posts = await this.postsService.findAll(userRole, showApproved);
       return posts;
    }
 
@@ -84,6 +84,18 @@ export class PostsController {
       return pinnedPosts;
    }
 
+   @ApiOperation({ summary: 'Obtener las publicaciones por usuario' })
+   @ApiParam({ name: 'userId', description: 'ID de usuario' })
+   @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
+   @Public()
+   @Get('category/:categoryId')
+   async findByUser(
+      @Param('userId', ParseIntPipe) userId: number,
+   ): Promise<PostCardDto[]> {
+      const posts = await this.postsService.findByUser(userId);
+      return posts;
+   }
+
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
    @ApiParam({ name: 'categoryId', description: 'ID de la categoría' })
    @ApiQuery({
@@ -98,14 +110,8 @@ export class PostsController {
    @Get('category/:categoryId')
    async findByCategoryId(
       @Param('categoryId', ParseIntPipe) categoryId: number,
-      @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
-      const isApproved = approved === 'true';
-
-      const posts = await this.postsService.findByCategoryId(
-         categoryId,
-         isApproved,
-      );
+      const posts = await this.postsService.findByCategory(categoryId);
       return posts;
    }
 

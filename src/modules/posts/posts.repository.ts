@@ -19,7 +19,7 @@ export class PostsRepository {
    ) {}
 
    private getPostCardQueryOptions(
-      isApproved?: boolean,
+      showApproved?: boolean,
    ): FindManyOptions<Post> {
       const queryOptions: FindManyOptions<Post> = {
          select: [
@@ -35,17 +35,17 @@ export class PostsRepository {
          relations: ['category', 'assets'],
       };
 
-      if (typeof isApproved !== 'undefined') {
+      if (typeof showApproved !== 'undefined') {
          queryOptions.where = {
-            isApproved: isApproved,
+            isApproved: showApproved,
          };
       }
 
       return queryOptions;
    }
 
-   async findAll(isApproved?: boolean): Promise<Post[]> {
-      const queryOptions = this.getPostCardQueryOptions(isApproved);
+   async findAll(showApproved?: boolean): Promise<Post[]> {
+      const queryOptions = this.getPostCardQueryOptions(showApproved);
 
       const posts = await this.postsRepository.find(queryOptions);
 
@@ -64,8 +64,8 @@ export class PostsRepository {
       return await this.postsRepository.find(queryOptions);
    }
 
-   async findPinnedConvocatories(isApproved?: boolean): Promise<Post[]> {
-      const queryOptions = this.getPostCardQueryOptions(isApproved);
+   async findPinned(showApproved?: boolean): Promise<Post[]> {
+      const queryOptions = this.getPostCardQueryOptions(showApproved);
       queryOptions.where = {
          isPinned: true,
          type: In([
@@ -77,11 +77,19 @@ export class PostsRepository {
       return posts;
    }
 
-   async findByCategoryId(
-      categoryId: number,
-      isApproved?: boolean,
-   ): Promise<Post[]> {
-      const queryOptions = this.getPostCardQueryOptions(isApproved);
+   async findByUser(userId: number): Promise<Post[]> {
+      const queryOptions = this.getPostCardQueryOptions();
+
+      queryOptions.where = {
+         ...queryOptions.where,
+         user: { id: userId },
+      };
+
+      return await this.postsRepository.find(queryOptions);
+   }
+
+   async findByCategory(categoryId: number): Promise<Post[]> {
+      const queryOptions = this.getPostCardQueryOptions(true);
 
       queryOptions.where = {
          ...queryOptions.where,
@@ -94,7 +102,7 @@ export class PostsRepository {
    async findById(postId: number): Promise<Post | null> {
       const post = await this.postsRepository.findOne({
          where: { id: postId },
-         relations: ['category', 'career', 'assets'],
+         relations: ['category', 'assets'],
       });
 
       return post;
@@ -116,7 +124,6 @@ export class PostsRepository {
 
          const createdPost = this.postsRepository.create({
             ...postData,
-            career: { id: postData.careerId },
             category: { id: postData.categoryId },
          });
          createdPost.assets = createdAssets;
