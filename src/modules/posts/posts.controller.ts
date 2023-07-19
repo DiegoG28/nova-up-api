@@ -10,7 +10,6 @@ import {
    Put,
    Query,
    Request,
-   //UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import {
@@ -29,7 +28,6 @@ import { UpdatePostDto } from './dtos/update-post.dto';
 import { RequestWithPayload } from 'src/libs/interfaces';
 import { Public } from '../auth/auth.decorators';
 // import { Roles } from '../auth/auth.decorators';
-// import { RolesGuard } from '../auth/roles.guard';
 
 @ApiTags('Publicaciones')
 @ApiBearerAuth()
@@ -52,6 +50,7 @@ export class PostsController {
       @Request() req: RequestWithPayload,
       @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
+      //We need validate possible undefined because the route is public
       const userRole = req.userPayload?.user?.role?.name || '';
       const showApproved =
          approved !== undefined ? approved === 'true' : undefined;
@@ -85,13 +84,12 @@ export class PostsController {
    }
 
    @ApiOperation({ summary: 'Obtener las publicaciones por usuario' })
-   @ApiParam({ name: 'userId', description: 'ID de usuario' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
-   @Public()
-   @Get('category/:categoryId')
+   @Get('user')
    async findByUser(
-      @Param('userId', ParseIntPipe) userId: number,
+      @Request() req: RequestWithPayload,
    ): Promise<PostCardDto[]> {
+      const userId = req.userPayload.sub;
       const posts = await this.postsService.findByUser(userId);
       return posts;
    }
@@ -137,8 +135,12 @@ export class PostsController {
       type: CreatePostResponseDto,
    })
    @Post()
-   async create(@Body() createPostDto: CreatePostDto) {
-      const newPost = this.postsService.create(createPostDto);
+   async create(
+      @Request() req: RequestWithPayload,
+      @Body() createPostDto: CreatePostDto,
+   ) {
+      const userId = req.userPayload.sub;
+      const newPost = this.postsService.create(createPostDto, userId);
       return newPost;
    }
 

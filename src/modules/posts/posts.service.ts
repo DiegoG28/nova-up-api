@@ -74,8 +74,11 @@ export class PostsService {
       return post;
    }
 
-   async create(createPostDto: CreatePostDto): Promise<Post> {
-      const createdPost = await this.postsRepository.create(createPostDto);
+   async create(createPostDto: CreatePostDto, userId: number): Promise<Post> {
+      const createdPost = await this.postsRepository.create(
+         createPostDto,
+         userId,
+      );
       return createdPost;
    }
 

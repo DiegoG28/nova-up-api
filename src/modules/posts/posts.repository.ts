@@ -108,7 +108,7 @@ export class PostsRepository {
       return post;
    }
 
-   async create(createPostDto: CreatePostDto): Promise<Post> {
+   async create(createPostDto: CreatePostDto, userId: number): Promise<Post> {
       const { assets, ...postData } = createPostDto;
 
       const queryRunner = this.dataSource.createQueryRunner();
@@ -125,6 +125,7 @@ export class PostsRepository {
          const createdPost = this.postsRepository.create({
             ...postData,
             category: { id: postData.categoryId },
+            user: { id: userId },
          });
          createdPost.assets = createdAssets;
          await queryRunner.manager.save(createdPost);
