@@ -53,7 +53,7 @@ export class PostsController {
       @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
       const requestPayload = request.userPayload;
-
+      console.log(requestPayload);
       if (!requestPayload) {
          const posts = await this.postsService.findAll('', approved);
          return posts;
