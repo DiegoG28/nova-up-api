@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { Role } from '../catalogs/entities/roles.entity';
 import { User } from './users.entity';
 import { CreateUserDto } from './dtos/create-users.dto';
 import { Department } from '../catalogs/entities/departments.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
@@ -15,10 +16,17 @@ export class UsersService {
       private readonly rolesRepository: Repository<Role>,
       @InjectRepository(Department)
       private readonly departmentsRepository: Repository<Department>,
+      private jwtService: JwtService,
    ) {}
 
-   findAll(): Promise<User[]> {
+   async findAll(token: string): Promise<User[]> {
+      const splitToken = token.split(' ')[1];
+      const decodedToken: any = this.jwtService.decode(splitToken);
+
       const users = this.usersRepository.find({
+         where: {
+            id: Not(In([1, decodedToken.user.id])),
+         },
          relations: ['role', 'department'],
       });
       return users;
@@ -37,54 +45,62 @@ export class UsersService {
 
    async create(user: CreateUserDto): Promise<User | null> {
       const newUser = new User();
-      newUser.role = await this.rolesRepository.findOneBy({
-         id: user.roleId,
-      });
-      newUser.department = await this.departmentsRepository.findOneBy({
+
+      const role = await this.rolesRepository.findOneBy({ id: user.roleId });
+      if (!role) return null;
+
+      newUser.role = role;
+
+      const department = await this.departmentsRepository.findOneBy({
          id: user.departmentId,
       });
-      newUser.email = user.email;
 
-      if (!newUser.role || !newUser.department) {
-         return null;
-      }
+      if (!department) return null;
+
+      newUser.department = department;
+
+      newUser.email = user.email;
 
       const savedUser = await this.usersRepository.save(newUser);
       return savedUser;
    }
 
-   async remove(id: number): Promise<User> {
+   async remove(id: number): Promise<User | null> {
       const user = await this.usersRepository.findOne({
          where: { id },
          relations: ['role', 'department', 'careers'],
       });
+
+      if (!user) return null;
       await this.usersRepository.delete(id);
       return user;
    }
 
    async update(id: number, user: CreateUserDto): Promise<User | null> {
       const newUser = new User();
-      newUser.role = await this.rolesRepository.findOneBy({
+      const role = await this.rolesRepository.findOneBy({
          id: user.roleId,
       });
 
-      newUser.department = await this.departmentsRepository.findOneBy({
+      if (!role) return null;
+
+      newUser.role = role;
+
+      const department = await this.departmentsRepository.findOneBy({
          id: user.departmentId,
       });
 
-      newUser.email = user.email;
+      if (!department) return null;
 
-      if (!newUser.role || !newUser.department) {
-         return null;
-      }
+      newUser.department = department;
+
+      newUser.email = user.email;
 
       const updateResult = await this.usersRepository.update(id, {
          email: newUser.email,
          role: newUser.role,
       });
-      if (updateResult.affected === 0) {
-         return null;
-      }
+      if (updateResult.affected === 0) return null;
       return newUser;
    }
 }

@@ -6,14 +6,22 @@ import {
    Param,
    Post,
    Put,
+   Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.entity';
 import { CreateUserDto } from './dtos/create-users.dto';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+   ApiBearerAuth,
+   ApiOperation,
+   ApiParam,
+   ApiResponse,
+   ApiTags,
+} from '@nestjs/swagger';
 import { UsersDto } from './dtos/users.dto';
 
 @ApiTags('Usuarios')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
    constructor(private readonly usersService: UsersService) {}
@@ -21,8 +29,8 @@ export class UsersController {
    @ApiOperation({ summary: 'Obtener todos los usuarios' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [UsersDto] })
    @Get()
-   findAll(): Promise<User[]> {
-      return this.usersService.findAll();
+   findAll(@Req() request): Promise<User[]> {
+      return this.usersService.findAll(request.headers.authorization);
    }
 
    @ApiOperation({ summary: 'Obtener un usuario por email' })
@@ -52,7 +60,7 @@ export class UsersController {
       type: UsersDto,
    })
    @Delete(':id')
-   remove(@Param('id') id: number): Promise<User> {
+   remove(@Param('id') id: number): Promise<User | null> {
       return this.usersService.remove(id);
    }
 

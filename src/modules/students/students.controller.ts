@@ -21,7 +21,7 @@ export class StudentsController {
    @ApiParam({ name: 'tuition', description: 'Matrícula del estudiante' })
    @ApiResponse({ status: 200, description: 'Éxito', type: StudentDto })
    @Get(':tuition')
-   findOne(@Param('tuition') tuition: string): Promise<Student> {
+   findOne(@Param('tuition') tuition: string): Promise<Student | null> {
       return this.studentsService.findOne(parseInt(tuition, 10));
    }
 
