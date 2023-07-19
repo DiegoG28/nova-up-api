@@ -68,6 +68,7 @@ export class PostsController {
       schema: { default: 5 },
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostBannerDto] })
+   @Public()
    @Get('/latest')
    async findLatest(@Query('limit') limit: string): Promise<PostBannerDto[]> {
       const latestPosts = await this.postsService.findLatest(parseInt(limit));
@@ -76,6 +77,7 @@ export class PostsController {
 
    @ApiOperation({ summary: 'Obtener las publicaciones fijadas' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
+   @Public()
    @Get('/pinned')
    async findPinned(): Promise<PostCardDto[]> {
       const pinnedPosts = await this.postsService.findPinned();
@@ -92,6 +94,7 @@ export class PostsController {
       required: false,
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
+   @Public()
    @Get('category/:categoryId')
    async findByCategoryId(
       @Param('categoryId', ParseIntPipe) categoryId: number,
@@ -109,6 +112,7 @@ export class PostsController {
    @ApiOperation({ summary: 'Obtener una publicación' })
    @ApiParam({ name: 'postId', description: 'ID de la publicación' })
    @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
+   @Public()
    @Get('/:postId')
    async findById(
       @Param('postId', ParseIntPipe) postId: number,

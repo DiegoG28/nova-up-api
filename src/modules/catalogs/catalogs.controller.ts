@@ -4,8 +4,10 @@ import { CatalogsService } from './catalogs.service';
 import { CatalogDto } from './dtos/catalog.dto';
 import { Category } from './entities/categories.entity';
 import { Department } from './entities/departments.entity';
+import { Public } from '../auth/auth.decorators';
 
 @ApiTags('Catálogos')
+@Public()
 @Controller('catalogs')
 export class CatalogsController {
    constructor(private readonly catalogsService: CatalogsService) {}
