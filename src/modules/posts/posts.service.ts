@@ -21,16 +21,12 @@ export class PostsService {
 
    async findAll(
       userRole: string,
-      isApproved?: string,
+      isApproved?: boolean,
    ): Promise<PostCardDto[]> {
-      console.log(userRole);
-      if (typeof isApproved === 'undefined' || isApproved === 'false') {
-         //We should validate token here because not all users can see all posts or not approved posts
-         if (!userRole || userRole === 'Editor') {
-            throw new ForbiddenException(
-               'You do not have permissons to access this resource.',
-            );
-         }
+      if (!isApproved && userRole !== 'Admin') {
+         throw new ForbiddenException(
+            'You do not have permissons to access this resource.',
+         );
       }
 
       const posts = await this.postsRepository.findAll(isApproved);
@@ -45,16 +41,16 @@ export class PostsService {
    }
 
    async findPinned(): Promise<PostCardDto[]> {
-      const posts = await this.postsRepository.findPinnedConvocatories('true');
+      const posts = await this.postsRepository.findPinnedConvocatories(true);
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
       return postsCardDto;
    }
 
    async findByCategoryId(
       categoryId: number,
-      isApproved?: string,
+      isApproved?: boolean,
    ): Promise<PostCardDto[]> {
-      if (typeof isApproved === 'undefined' || isApproved === 'false') {
+      if (!isApproved) {
          //We should validate token here because not all users can see all posts or not approved posts
       }
 

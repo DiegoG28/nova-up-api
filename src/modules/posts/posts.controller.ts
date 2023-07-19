@@ -9,7 +9,7 @@ import {
    NotFoundException,
    Put,
    Query,
-   Req,
+   Request,
    //UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
@@ -49,19 +49,13 @@ export class PostsController {
    @Public()
    @Get()
    async findAll(
-      @Req() request: RequestWithPayload,
+      @Request() req: RequestWithPayload,
       @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
-      const requestPayload = request.userPayload;
-      console.log(requestPayload);
-      if (!requestPayload) {
-         const posts = await this.postsService.findAll('', approved);
-         return posts;
-      }
-
-      const { user } = requestPayload;
-
-      const posts = await this.postsService.findAll(user.role.name, approved);
+      const userRole = req.userPayload?.user?.role?.name || '';
+      const isApproved =
+         approved !== undefined ? approved === 'true' : undefined;
+      const posts = await this.postsService.findAll(userRole, isApproved);
       return posts;
    }
 
@@ -103,9 +97,11 @@ export class PostsController {
       @Param('categoryId', ParseIntPipe) categoryId: number,
       @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
+      const isApproved = approved === 'true';
+
       const posts = await this.postsService.findByCategoryId(
          categoryId,
-         approved,
+         isApproved,
       );
       return posts;
    }

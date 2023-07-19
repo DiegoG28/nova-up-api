@@ -18,7 +18,9 @@ export class PostsRepository {
       private readonly dataSource: DataSource,
    ) {}
 
-   private getPostCardQueryOptions(isApproved?: string): FindManyOptions<Post> {
+   private getPostCardQueryOptions(
+      isApproved?: boolean,
+   ): FindManyOptions<Post> {
       const queryOptions: FindManyOptions<Post> = {
          select: [
             'id',
@@ -35,14 +37,14 @@ export class PostsRepository {
 
       if (typeof isApproved !== 'undefined') {
          queryOptions.where = {
-            isApproved: isApproved === 'true',
+            isApproved: isApproved,
          };
       }
 
       return queryOptions;
    }
 
-   async findAll(isApproved?: string): Promise<Post[]> {
+   async findAll(isApproved?: boolean): Promise<Post[]> {
       const queryOptions = this.getPostCardQueryOptions(isApproved);
 
       const posts = await this.postsRepository.find(queryOptions);
@@ -62,7 +64,7 @@ export class PostsRepository {
       return await this.postsRepository.find(queryOptions);
    }
 
-   async findPinnedConvocatories(isApproved?: string): Promise<Post[]> {
+   async findPinnedConvocatories(isApproved?: boolean): Promise<Post[]> {
       const queryOptions = this.getPostCardQueryOptions(isApproved);
       queryOptions.where = {
          isPinned: true,
@@ -77,7 +79,7 @@ export class PostsRepository {
 
    async findByCategoryId(
       categoryId: number,
-      isApproved?: string,
+      isApproved?: boolean,
    ): Promise<Post[]> {
       const queryOptions = this.getPostCardQueryOptions(isApproved);
 
@@ -177,6 +179,7 @@ export class PostsRepository {
          //Delete assets that not coming on the data request
          const assetsToDelete = existingAssets.filter(
             (asset) =>
+               !asset.isCoverImage &&
                !updatedAssets.some(
                   (updatedAsset) => updatedAsset.id === asset.id,
                ),
