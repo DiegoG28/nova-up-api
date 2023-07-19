@@ -6,7 +6,7 @@ import {
    Param,
    Post,
    Put,
-   Headers,
+   Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './users.entity';
@@ -29,8 +29,8 @@ export class UsersController {
    @ApiOperation({ summary: 'Obtener todos los usuarios' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [UsersDto] })
    @Get()
-   findAll(@Headers('authorization') token: string): Promise<User[]> {
-      return this.usersService.findAll(token);
+   findAll(@Req() request): Promise<User[]> {
+      return this.usersService.findAll(request.headers.authorization);
    }
 
    @ApiOperation({ summary: 'Obtener un usuario por email' })
