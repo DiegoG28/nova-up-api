@@ -205,7 +205,7 @@ export class PostsRepository {
 
          //We asign the rest of requestData except assets
          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-         const { assets, ...updateFields } = updatePostRequest;
+         const { assets, id, ...updateFields } = updatePostRequest;
          Object.assign(postToUpdate, updateFields);
 
          const updatedPost = await queryRunner.manager.save(postToUpdate);
