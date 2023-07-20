@@ -121,11 +121,7 @@ export class PostsController {
    async findById(
       @Param('postId', ParseIntPipe) postId: number,
    ): Promise<PostDto> {
-      try {
-         return await this.postsService.findById(postId);
-      } catch (err) {
-         throw err;
-      }
+      return await this.postsService.findById(postId);
    }
 
    @ApiOperation({ summary: 'Crear una nueva publicación' })
@@ -152,11 +148,7 @@ export class PostsController {
    })
    @Put()
    async update(@Body() updatePostRequest: UpdatePostDto) {
-      try {
-         return this.postsService.update(updatePostRequest);
-      } catch (err) {
-         throw err;
-      }
+      return this.postsService.update(updatePostRequest);
    }
 
    @ApiOperation({ summary: 'Elimina una publicación' })
@@ -167,12 +159,8 @@ export class PostsController {
    @ApiParam({ name: 'postId', description: 'ID de la publicación' })
    @Delete(':postId')
    async remove(@Param('postId', ParseIntPipe) postId: number) {
-      try {
-         const post = await this.postsService.findOne(postId);
-         if (!post) throw new NotFoundException('Post not found');
-         await this.postsService.remove(post);
-      } catch (error) {
-         throw error;
-      }
+      const post = await this.postsService.findOne(postId);
+      if (!post) throw new NotFoundException('Post not found');
+      await this.postsService.remove(post);
    }
 }
