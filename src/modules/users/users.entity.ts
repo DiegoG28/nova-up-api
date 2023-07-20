@@ -26,6 +26,6 @@ export class User {
    @OneToMany(() => Post, (post) => post.user)
    posts: Post[];
 
-   @Column({ name: 'correo', length: 255 })
+   @Column({ name: 'correo', length: 255, unique: true })
    email: string;
 }

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+   ConflictException,
+   ForbiddenException,
+   Injectable,
+   NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Not, Repository } from 'typeorm';
 import { Role } from '../catalogs/entities/roles.entity';
@@ -19,13 +24,10 @@ export class UsersService {
       private jwtService: JwtService,
    ) {}
 
-   async findAll(token: string): Promise<User[]> {
-      const splitToken = token.split(' ')[1];
-      const decodedToken: any = this.jwtService.decode(splitToken);
-
+   async findAll(loggedInUserId: number): Promise<User[]> {
       const users = this.usersRepository.find({
          where: {
-            id: Not(In([1, decodedToken.user.id])),
+            id: Not(In([1, loggedInUserId])),
          },
          relations: ['role', 'department'],
       });
@@ -59,13 +61,22 @@ export class UsersService {
 
       newUser.department = department;
 
+      const existingUser = await this.usersRepository.findOne({
+         where: { email: user.email },
+         relations: ['role', 'department'],
+      });
+      if (existingUser) throw new ConflictException('Email already exists');
+
       newUser.email = user.email;
 
       const savedUser = await this.usersRepository.save(newUser);
       return savedUser;
    }
 
-   async remove(id: number): Promise<User | null> {
+   async remove(id: number, loggedInUserId: number): Promise<User | null> {
+      if (id === loggedInUserId)
+         throw new ForbiddenException('You cannot delete your own account');
+
       const user = await this.usersRepository.findOne({
          where: { id },
          relations: ['role', 'department'],
@@ -76,7 +87,14 @@ export class UsersService {
       return user;
    }
 
-   async update(id: number, user: CreateUserDto): Promise<User | null> {
+   async update(
+      id: number,
+      user: CreateUserDto,
+      loggedInUserId: number,
+   ): Promise<User | null> {
+      if (id === loggedInUserId)
+         throw new ForbiddenException('You cannot update your own account');
+
       const newUser = new User();
       const role = await this.rolesRepository.findOneBy({
          id: user.roleId,
@@ -93,6 +111,13 @@ export class UsersService {
       if (!department) return null;
 
       newUser.department = department;
+
+      const existingUser = await this.usersRepository.findOne({
+         where: { email: user.email },
+         relations: ['role', 'department'],
+      });
+
+      if (existingUser) throw new ConflictException('Email already exists');
 
       newUser.email = user.email;
 
