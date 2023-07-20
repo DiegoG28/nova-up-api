@@ -19,6 +19,7 @@ import {
    ApiTags,
 } from '@nestjs/swagger';
 import { UsersDto } from './dtos/users.dto';
+import { Roles } from '../auth/auth.decorators';
 
 @ApiTags('Usuarios')
 @ApiBearerAuth()
@@ -28,6 +29,7 @@ export class UsersController {
 
    @ApiOperation({ summary: 'Obtener todos los usuarios' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [UsersDto] })
+   @Roles('Admin')
    @Get()
    findAll(@Req() request): Promise<User[]> {
       return this.usersService.findAll(request.headers.authorization);
