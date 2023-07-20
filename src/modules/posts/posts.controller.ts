@@ -146,6 +146,7 @@ export class PostsController {
       description: 'Publicación actualizada',
       type: UpdatePostDto,
    })
+   @Public()
    @Put()
    async update(@Body() updatePostRequest: UpdatePostDto) {
       return this.postsService.update(updatePostRequest);

@@ -1,5 +1,4 @@
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
-import { PostAssetDto } from './posts.dto';
 import {
    Allow,
    IsArray,
@@ -23,7 +22,7 @@ export class UpdatePostDto extends BasePostDto {
    @IsArray()
    @ValidateNested({ each: true })
    @Type(() => UpdateAssetPostDto)
-   assets: PostAssetDto[];
+   assets: UpdateAssetPostDto[];
 
    @IsBoolean()
    isPinned: boolean;
@@ -33,5 +32,5 @@ export class UpdateAssetPostDto extends BasePostAssetDto {
    @IsOptional()
    @IsInt()
    @IsPositive()
-   id: number;
+   id?: number;
 }
