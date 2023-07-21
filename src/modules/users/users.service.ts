@@ -10,7 +10,6 @@ import { Role } from '../catalogs/entities/roles.entity';
 import { User } from './users.entity';
 import { CreateUserDto } from './dtos/create-users.dto';
 import { Department } from '../catalogs/entities/departments.entity';
-import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
@@ -21,7 +20,6 @@ export class UsersService {
       private readonly rolesRepository: Repository<Role>,
       @InjectRepository(Department)
       private readonly departmentsRepository: Repository<Department>,
-      private jwtService: JwtService,
    ) {}
 
    async findAll(loggedInUserId: number): Promise<User[]> {

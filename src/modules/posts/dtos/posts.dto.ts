@@ -1,6 +1,6 @@
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
 import { BasePostDto } from './base-post.dto';
-import { BaseAssetDto } from 'src/modules/assets/base-asset.dto';
+import { BaseAssetDto } from 'src/modules/catalogs/dtos/base-asset.dto';
 
 export class PostDto extends BasePostDto {
    id: number;

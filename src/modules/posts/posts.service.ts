@@ -11,12 +11,14 @@ import { PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { Post, PostTypeEnum } from './entities/posts.entity';
 import { UpdatePostDto } from './dtos/update-post.dto';
+import { CatalogsService } from '../catalogs/catalogs.service';
 
 @Injectable()
 export class PostsService {
    constructor(
       private readonly postsRepository: PostsRepository,
       private readonly postsMapperService: PostsMapperService,
+      private readonly catalogsService: CatalogsService,
    ) {}
 
    async findAll(
@@ -87,6 +89,10 @@ export class PostsService {
 
       if (!postToUpdate) throw new NotFoundException('Post not found');
 
+      await this.catalogsService.findCategoryById(
+         updatePostRequest.category.id,
+      );
+
       const postRequestType = updatePostRequest.type;
 
       const pinnedPosts = await this.postsRepository.findPinned();
@@ -109,9 +115,25 @@ export class PostsService {
       ) {
          updatePostRequest.isPinned = false;
       }
+
+      const existingAssets = postToUpdate.assets;
+      const updatedAssets = updatePostRequest.assets;
+
+      const assetsToDelete = existingAssets.filter(
+         (asset) =>
+            !asset.isCoverImage &&
+            !updatedAssets.some((updatedAsset) => updatedAsset.id === asset.id),
+      );
+
+      const assetsToCreate = updatedAssets.filter(
+         (updatedAsset) => !updatedAsset.id,
+      );
+
       const updatedPost = await this.postsRepository.update(
          postToUpdate,
          updatePostRequest,
+         assetsToDelete,
+         assetsToCreate,
       );
       return updatedPost;
    }

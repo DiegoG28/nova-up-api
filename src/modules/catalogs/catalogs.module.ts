@@ -10,5 +10,6 @@ import { CatalogsService } from './catalogs.service';
    imports: [TypeOrmModule.forFeature([Category, Department, Role])],
    controllers: [CatalogsController],
    providers: [CatalogsService],
+   exports: [CatalogsService],
 })
 export class CatalogsModule {}

@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { BasePostDto } from './base-post.dto';
-import { BaseAssetDto } from 'src/modules/assets/base-asset.dto';
+import { BaseAssetDto } from 'src/modules/catalogs/dtos/base-asset.dto';
 
 export class UpdatePostDto extends BasePostDto {
    @IsInt()

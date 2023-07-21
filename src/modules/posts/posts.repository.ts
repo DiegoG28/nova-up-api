@@ -1,8 +1,14 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, FindManyOptions, In, Repository } from 'typeorm';
+import {
+   DataSource,
+   EntityManager,
+   FindManyOptions,
+   In,
+   Repository,
+} from 'typeorm';
 import { Post, PostTypeEnum } from './entities/posts.entity';
-import { Asset } from '../assets/assets.entity';
+import { Asset } from './entities/assets.entity';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { UpdatePostDto } from './dtos/update-post.dto';
 
@@ -167,13 +173,14 @@ export class PostsRepository {
 
    async updatePin(post: Post, pinStatus: boolean): Promise<void> {
       post.isPinned = pinStatus;
-      console.log('wwenas', post);
       await this.postsRepository.save(post);
    }
 
    async update(
       postToUpdate: Post,
       updatePostRequest: UpdatePostDto,
+      assetsToDelete: Asset[],
+      assetsToCreate: Partial<Asset>[],
    ): Promise<Post> {
       const queryRunner = this.dataSource.createQueryRunner();
 
@@ -181,25 +188,12 @@ export class PostsRepository {
       await queryRunner.startTransaction();
 
       try {
-         const existingAssets = postToUpdate.assets;
-         const updatedAssets = updatePostRequest.assets;
+         await this.removeAssets(assetsToDelete);
 
-         //Delete assets that not coming on the data request
-         const assetsToDelete = existingAssets.filter(
-            (asset) =>
-               !asset.isCoverImage &&
-               !updatedAssets.some(
-                  (updatedAsset) => updatedAsset.id === asset.id,
-               ),
+         const createdAssets = this.createAssets(
+            assetsToCreate,
+            queryRunner.manager,
          );
-         await this.assetsRepository.remove(assetsToDelete);
-
-         //Create assets that coming on the data request and doesn't exist
-         const assetsToCreate = updatedAssets.filter(
-            (updatedAsset) => !updatedAsset.id,
-         );
-         const createdAssets = this.assetsRepository.create(assetsToCreate);
-         await queryRunner.manager.save(createdAssets);
 
          postToUpdate.assets.push(...createdAssets);
 
@@ -221,5 +215,15 @@ export class PostsRepository {
       } finally {
          await queryRunner.release();
       }
+   }
+
+   async removeAssets(assets: Asset[]): Promise<void> {
+      await this.assetsRepository.remove(assets);
+   }
+
+   createAssets(assets: Partial<Asset>[], manager: EntityManager): Asset[] {
+      const createdAssets = this.assetsRepository.create(assets);
+      manager.save(createdAssets);
+      return createdAssets;
    }
 }

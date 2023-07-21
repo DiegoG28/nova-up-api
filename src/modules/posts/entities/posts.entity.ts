@@ -7,7 +7,7 @@ import {
    OneToMany,
 } from 'typeorm';
 import { Category } from '../../catalogs/entities/categories.entity';
-import { Asset } from '../../assets/assets.entity';
+import { Asset } from './assets.entity';
 import { EventRegistration } from '../../event-registrations/event-registrations.entity';
 import { User } from 'src/modules/users/users.entity';
 

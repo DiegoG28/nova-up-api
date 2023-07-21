@@ -1,5 +1,5 @@
 import { IsEnum, IsString, MaxLength } from 'class-validator';
-import { AssetTypeEnum } from './assets.entity';
+import { AssetTypeEnum } from '../../posts/entities/assets.entity';
 
 export class BaseAssetDto {
    @IsString()
