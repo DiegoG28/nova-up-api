@@ -10,8 +10,9 @@ import { PostBannerDto } from './dtos/posts-banner.dto';
 import { PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { Post, PostTypeEnum } from './entities/posts.entity';
-import { UpdatePostDto } from './dtos/update-post.dto';
+import { UpdateAssetPostDto, UpdatePostDto } from './dtos/update-post.dto';
 import { CatalogsService } from '../catalogs/catalogs.service';
+import { Asset } from './entities/assets.entity';
 
 @Injectable()
 export class PostsService {
@@ -84,43 +85,64 @@ export class PostsService {
       return createdPost;
    }
 
-   async update(updatePostRequest: UpdatePostDto): Promise<Post> {
-      const postToUpdate = await this.findOne(updatePostRequest.id);
+   async update(newPost: UpdatePostDto): Promise<Post> {
+      const currentPost = await this.findOne(newPost.id);
 
-      if (!postToUpdate) throw new NotFoundException('Post not found');
-
-      await this.catalogsService.findCategoryById(
-         updatePostRequest.category.id,
-      );
-
-      const postRequestType = updatePostRequest.type;
+      await this.catalogsService.findCategoryById(newPost.category.id);
 
       const pinnedPosts = await this.postsRepository.findPinned();
+
       //Override isPinned from existing convocatories posts
       if (pinnedPosts.length > 0) {
-         await Promise.all(
-            pinnedPosts.map(async (pinnedPost) => {
-               if (
-                  pinnedPost.type === postRequestType &&
-                  pinnedPost.id !== updatePostRequest.id
-               ) {
-                  await this.postsRepository.updatePin(pinnedPost, false);
-               }
-            }),
+         await this.overridePinnedPosts(
+            pinnedPosts,
+            newPost.type,
+            currentPost.id,
          );
       }
 
       //Avoid no convocatory post pinning
-      if (
-         updatePostRequest.type !== PostTypeEnum.ExternalConvocatory &&
-         updatePostRequest.type !== PostTypeEnum.InternalConvocatory
-      ) {
-         updatePostRequest.isPinned = false;
-      }
+      this.adjustPinningStatus(newPost);
 
-      const existingAssets = postToUpdate.assets;
-      const updatedAssets = updatePostRequest.assets;
+      const { assetsToDelete, assetsToCreate } = this.getAssetModifications(
+         currentPost.assets,
+         newPost.assets,
+      );
 
+      const updatedPost = await this.postsRepository.update(
+         currentPost,
+         newPost,
+         assetsToDelete,
+         assetsToCreate,
+      );
+      return updatedPost;
+   }
+
+   async remove(post: Post) {
+      await this.postsRepository.remove(post);
+   }
+
+   private async overridePinnedPosts(
+      pinnedPosts: Post[],
+      postRequestType: Post['type'],
+      currentPostId: number,
+   ) {
+      await Promise.all(
+         pinnedPosts.map(async (pinnedPost) => {
+            if (
+               pinnedPost.type === postRequestType &&
+               pinnedPost.id !== currentPostId
+            ) {
+               await this.postsRepository.updatePin(pinnedPost, false);
+            }
+         }),
+      );
+   }
+
+   private getAssetModifications(
+      existingAssets: Asset[],
+      updatedAssets: UpdateAssetPostDto[],
+   ) {
       const assetsToDelete = existingAssets.filter(
          (asset) =>
             !asset.isCoverImage &&
@@ -131,16 +153,15 @@ export class PostsService {
          (updatedAsset) => !updatedAsset.id,
       );
 
-      const updatedPost = await this.postsRepository.update(
-         postToUpdate,
-         updatePostRequest,
-         assetsToDelete,
-         assetsToCreate,
-      );
-      return updatedPost;
+      return { assetsToDelete, assetsToCreate };
    }
 
-   async remove(post: Post): Promise<void> {
-      await this.postsRepository.remove(post);
+   private adjustPinningStatus(post: UpdatePostDto) {
+      if (
+         post.type !== PostTypeEnum.ExternalConvocatory &&
+         post.type !== PostTypeEnum.InternalConvocatory
+      ) {
+         post.isPinned = false;
+      }
    }
 }
