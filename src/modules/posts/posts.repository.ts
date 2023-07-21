@@ -24,32 +24,6 @@ export class PostsRepository {
       private readonly dataSource: DataSource,
    ) {}
 
-   private getPostCardQueryOptions(
-      showApproved?: boolean,
-   ): FindManyOptions<Post> {
-      const queryOptions: FindManyOptions<Post> = {
-         select: [
-            'id',
-            'title',
-            'summary',
-            'type',
-            'category',
-            'assets',
-            'isApproved',
-            'tags',
-         ],
-         relations: ['category', 'assets'],
-      };
-
-      if (typeof showApproved !== 'undefined') {
-         queryOptions.where = {
-            isApproved: showApproved,
-         };
-      }
-
-      return queryOptions;
-   }
-
    async findAll(showApproved?: boolean): Promise<Post[]> {
       const queryOptions = this.getPostCardQueryOptions(showApproved);
 
@@ -123,7 +97,10 @@ export class PostsRepository {
       await queryRunner.startTransaction();
 
       try {
-         const createdAssets = this.createAssets(assets, queryRunner.manager);
+         const createdAssets = await this.createAssets(
+            assets,
+            queryRunner.manager,
+         );
 
          const createdPost = this.postsRepository.create({
             ...postData,
@@ -146,33 +123,6 @@ export class PostsRepository {
       }
    }
 
-   async remove(post: Post): Promise<void> {
-      const queryRunner = this.dataSource.createQueryRunner();
-
-      queryRunner.connect();
-      await queryRunner.startTransaction();
-
-      try {
-         if (post.assets.length > 0) {
-            post.assets.map(async (asset) => {
-               await this.assetsRepository.delete(asset.id);
-            });
-         }
-         await this.postsRepository.delete(post.id);
-
-         await queryRunner.commitTransaction();
-      } catch (err) {
-         await queryRunner.rollbackTransaction();
-      } finally {
-         await queryRunner.release();
-      }
-   }
-
-   async updatePin(post: Post, pinStatus: boolean): Promise<void> {
-      post.isPinned = pinStatus;
-      await this.postsRepository.save(post);
-   }
-
    async update(
       postToUpdate: Post,
       updatePostRequest: UpdatePostDto,
@@ -187,7 +137,7 @@ export class PostsRepository {
       try {
          await this.removeAssets(assetsToDelete);
 
-         const createdAssets = this.createAssets(
+         const createdAssets = await this.createAssets(
             assetsToCreate,
             queryRunner.manager,
          );
@@ -214,16 +164,69 @@ export class PostsRepository {
       }
    }
 
+   async updatePin(post: Post, pinStatus: boolean): Promise<void> {
+      post.isPinned = pinStatus;
+      await this.postsRepository.save(post);
+   }
+
+   async remove(post: Post): Promise<void> {
+      const queryRunner = this.dataSource.createQueryRunner();
+
+      queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      try {
+         if (post.assets.length > 0) {
+            post.assets.map(async (asset) => {
+               await this.assetsRepository.delete(asset.id);
+            });
+         }
+         await this.postsRepository.delete(post.id);
+
+         await queryRunner.commitTransaction();
+      } catch (err) {
+         await queryRunner.rollbackTransaction();
+      } finally {
+         await queryRunner.release();
+      }
+   }
+
    private async removeAssets(assets: Asset[]): Promise<void> {
       await this.assetsRepository.remove(assets);
    }
 
-   private createAssets(
+   private async createAssets(
       assets: Partial<Asset>[],
       manager: EntityManager,
-   ): Asset[] {
+   ): Promise<Asset[]> {
       const createdAssets = this.assetsRepository.create(assets);
       manager.save(createdAssets);
       return createdAssets;
+   }
+
+   private getPostCardQueryOptions(
+      showApproved?: boolean,
+   ): FindManyOptions<Post> {
+      const queryOptions: FindManyOptions<Post> = {
+         select: [
+            'id',
+            'title',
+            'summary',
+            'type',
+            'category',
+            'assets',
+            'isApproved',
+            'tags',
+         ],
+         relations: ['category', 'assets'],
+      };
+
+      if (typeof showApproved !== 'undefined') {
+         queryOptions.where = {
+            isApproved: showApproved,
+         };
+      }
+
+      return queryOptions;
    }
 }
