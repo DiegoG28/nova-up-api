@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, FindManyOptions, In, Repository } from 'typeorm';
 import { Post, PostTypeEnum } from './entities/posts.entity';
-import { Asset } from './entities/assets.entity';
+import { Asset } from '../assets/assets.entity';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { UpdatePostDto } from './dtos/update-post.dto';
 

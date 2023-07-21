@@ -5,7 +5,7 @@ import {
    PrimaryGeneratedColumn,
    JoinColumn,
 } from 'typeorm';
-import { Post } from './posts.entity';
+import { Post } from '../posts/entities/posts.entity';
 import { Exclude } from 'class-transformer';
 
 export enum AssetTypeEnum {

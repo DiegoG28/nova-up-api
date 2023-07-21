@@ -9,7 +9,8 @@ import {
    ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { BasePostAssetDto, BasePostDto } from './base.dto';
+import { BasePostDto } from './base-post.dto';
+import { BaseAssetDto } from 'src/modules/assets/base-asset.dto';
 
 export class UpdatePostDto extends BasePostDto {
    @IsInt()
@@ -28,7 +29,7 @@ export class UpdatePostDto extends BasePostDto {
    isPinned: boolean;
 }
 
-export class UpdateAssetPostDto extends BasePostAssetDto {
+export class UpdateAssetPostDto extends BaseAssetDto {
    @IsOptional()
    @IsInt()
    @IsPositive()

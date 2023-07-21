@@ -1,5 +1,6 @@
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
-import { BasePostAssetDto, BasePostDto } from './base.dto';
+import { BasePostDto } from './base-post.dto';
+import { BaseAssetDto } from 'src/modules/assets/base-asset.dto';
 
 export class PostDto extends BasePostDto {
    id: number;
@@ -9,6 +10,6 @@ export class PostDto extends BasePostDto {
    isPinned: boolean;
 }
 
-export class PostAssetDto extends BasePostAssetDto {
+export class PostAssetDto extends BaseAssetDto {
    id: number;
 }

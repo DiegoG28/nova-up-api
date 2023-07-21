@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Asset } from './entities/assets.entity';
+import { Asset } from '../assets/assets.entity';
 import { Post } from './entities/posts.entity';
 import { PostCardDto } from './dtos/posts-cards.dto';
 import { PostBannerDto } from './dtos/posts-banner.dto';
