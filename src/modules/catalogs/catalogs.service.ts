@@ -39,4 +39,24 @@ export class CatalogsService {
       }
       return category;
    }
+
+   async findRoleById(id: number): Promise<Role> {
+      const role = await this.rolesRepository.findOne({
+         where: { id },
+      });
+      if (!role) {
+         throw new NotFoundException('Role not found');
+      }
+      return role;
+   }
+
+   async findDepartmentById(id: number): Promise<Department> {
+      const department = await this.departmentsRepository.findOne({
+         where: { id },
+      });
+      if (!department) {
+         throw new NotFoundException('Department not found');
+      }
+      return department;
+   }
 }

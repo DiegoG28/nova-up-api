@@ -6,20 +6,16 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Not, Repository } from 'typeorm';
-import { Role } from '../catalogs/entities/roles.entity';
 import { User } from './users.entity';
 import { CreateUserDto } from './dtos/create-users.dto';
-import { Department } from '../catalogs/entities/departments.entity';
+import { CatalogsService } from '../catalogs/catalogs.service';
 
 @Injectable()
 export class UsersService {
    constructor(
       @InjectRepository(User)
       private readonly usersRepository: Repository<User>,
-      @InjectRepository(Role)
-      private readonly rolesRepository: Repository<Role>,
-      @InjectRepository(Department)
-      private readonly departmentsRepository: Repository<Department>,
+      private readonly catalogsService: CatalogsService,
    ) {}
 
    async findAll(loggedInUserId: number): Promise<User[]> {
@@ -46,16 +42,13 @@ export class UsersService {
    async create(user: CreateUserDto): Promise<User | null> {
       const newUser = new User();
 
-      const role = await this.rolesRepository.findOneBy({ id: user.roleId });
-      if (!role) return null;
+      const role = await this.catalogsService.findRoleById(user.roleId);
 
       newUser.role = role;
 
-      const department = await this.departmentsRepository.findOneBy({
-         id: user.departmentId,
-      });
-
-      if (!department) return null;
+      const department = await this.catalogsService.findDepartmentById(
+         user.departmentId,
+      );
 
       newUser.department = department;
 
@@ -94,17 +87,15 @@ export class UsersService {
          throw new ForbiddenException('You cannot update your own account');
 
       const newUser = new User();
-      const role = await this.rolesRepository.findOneBy({
-         id: user.roleId,
-      });
+      const role = await this.catalogsService.findRoleById(user.roleId);
 
       if (!role) return null;
 
       newUser.role = role;
 
-      const department = await this.departmentsRepository.findOneBy({
-         id: user.departmentId,
-      });
+      const department = await this.catalogsService.findDepartmentById(
+         user.departmentId,
+      );
 
       if (!department) return null;
 
