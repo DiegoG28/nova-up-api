@@ -123,10 +123,7 @@ export class PostsRepository {
       await queryRunner.startTransaction();
 
       try {
-         const createdAssets = await this.createAssets(
-            assets,
-            queryRunner.manager,
-         );
+         const createdAssets = this.createAssets(assets, queryRunner.manager);
 
          const createdPost = this.postsRepository.create({
             ...postData,
@@ -217,11 +214,14 @@ export class PostsRepository {
       }
    }
 
-   async removeAssets(assets: Asset[]): Promise<void> {
+   private async removeAssets(assets: Asset[]): Promise<void> {
       await this.assetsRepository.remove(assets);
    }
 
-   createAssets(assets: Partial<Asset>[], manager: EntityManager): Asset[] {
+   private createAssets(
+      assets: Partial<Asset>[],
+      manager: EntityManager,
+   ): Asset[] {
       const createdAssets = this.assetsRepository.create(assets);
       manager.save(createdAssets);
       return createdAssets;
