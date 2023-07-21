@@ -123,10 +123,10 @@ export class PostsRepository {
       await queryRunner.startTransaction();
 
       try {
-         const createdAssets = assets.map((asset) =>
-            this.assetsRepository.create(asset),
+         const createdAssets = await this.createAssets(
+            assets,
+            queryRunner.manager,
          );
-         await queryRunner.manager.save(createdAssets);
 
          const createdPost = this.postsRepository.create({
             ...postData,
