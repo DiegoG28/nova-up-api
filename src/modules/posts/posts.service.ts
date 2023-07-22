@@ -26,7 +26,7 @@ export class PostsService {
       userRole: string,
       showApproved?: boolean,
    ): Promise<PostCardDto[]> {
-      if (!showApproved && userRole === 'Editor') {
+      if (!showApproved && (!userRole || userRole === 'Editor')) {
          throw new ForbiddenException(
             'You do not have permissons to access this resource.',
          );
