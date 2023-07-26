@@ -9,8 +9,7 @@ import {
    NotFoundException,
    Put,
    Query,
-   Req,
-   //UseGuards,
+   Request,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import {
@@ -27,8 +26,8 @@ import { CreatePostDto, CreatePostResponseDto } from './dtos/create-post.dto';
 import { PostBannerDto } from './dtos/posts-banner.dto';
 import { UpdatePostDto } from './dtos/update-post.dto';
 import { RequestWithPayload } from 'src/libs/interfaces';
+import { Public } from '../auth/auth.decorators';
 // import { Roles } from '../auth/auth.decorators';
-// import { RolesGuard } from '../auth/roles.guard';
 
 @ApiTags('Publicaciones')
 @ApiBearerAuth()
@@ -45,16 +44,17 @@ export class PostsController {
       required: false,
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
+   @Public()
    @Get()
    async findAll(
-      @Req() request: RequestWithPayload,
+      @Request() req: RequestWithPayload,
       @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
-      //const { user } = request.userPayload;
-      //const userRole = user.role.name;
-
-      //We'll validate this later.
-      const posts = await this.postsService.findAll('Admin', approved);
+      //We need validate possible undefined because the route is public
+      const userRole = req.userPayload?.user?.role?.name || '';
+      const showApproved =
+         approved !== undefined ? approved === 'true' : undefined;
+      const posts = await this.postsService.findAll(userRole, showApproved);
       return posts;
    }
 
@@ -67,6 +67,7 @@ export class PostsController {
       schema: { default: 5 },
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostBannerDto] })
+   @Public()
    @Get('/latest')
    async findLatest(@Query('limit') limit: string): Promise<PostBannerDto[]> {
       const latestPosts = await this.postsService.findLatest(parseInt(limit));
@@ -75,10 +76,22 @@ export class PostsController {
 
    @ApiOperation({ summary: 'Obtener las publicaciones fijadas' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
+   @Public()
    @Get('/pinned')
    async findPinned(): Promise<PostCardDto[]> {
       const pinnedPosts = await this.postsService.findPinned();
       return pinnedPosts;
+   }
+
+   @ApiOperation({ summary: 'Obtener las publicaciones por usuario' })
+   @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
+   @Get('user')
+   async findByUser(
+      @Request() req: RequestWithPayload,
+   ): Promise<PostCardDto[]> {
+      const userId = req.userPayload.sub;
+      const posts = await this.postsService.findByUser(userId);
+      return posts;
    }
 
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
@@ -91,30 +104,24 @@ export class PostsController {
       required: false,
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
+   @Public()
    @Get('category/:categoryId')
    async findByCategoryId(
       @Param('categoryId', ParseIntPipe) categoryId: number,
-      @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
-      const posts = await this.postsService.findByCategoryId(
-         categoryId,
-         approved,
-      );
+      const posts = await this.postsService.findByCategory(categoryId);
       return posts;
    }
 
    @ApiOperation({ summary: 'Obtener una publicación' })
    @ApiParam({ name: 'postId', description: 'ID de la publicación' })
    @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
+   @Public()
    @Get('/:postId')
    async findById(
       @Param('postId', ParseIntPipe) postId: number,
    ): Promise<PostDto> {
-      try {
-         return await this.postsService.findById(postId);
-      } catch (err) {
-         throw err;
-      }
+      return await this.postsService.findById(postId);
    }
 
    @ApiOperation({ summary: 'Crear una nueva publicación' })
@@ -124,8 +131,12 @@ export class PostsController {
       type: CreatePostResponseDto,
    })
    @Post()
-   async create(@Body() createPostDto: CreatePostDto) {
-      const newPost = this.postsService.create(createPostDto);
+   async create(
+      @Request() req: RequestWithPayload,
+      @Body() createPostDto: CreatePostDto,
+   ) {
+      const userId = req.userPayload.sub;
+      const newPost = this.postsService.create(createPostDto, userId);
       return newPost;
    }
 
@@ -135,13 +146,10 @@ export class PostsController {
       description: 'Publicación actualizada',
       type: UpdatePostDto,
    })
+   @Public()
    @Put()
    async update(@Body() updatePostRequest: UpdatePostDto) {
-      try {
-         return this.postsService.update(updatePostRequest);
-      } catch (err) {
-         throw err;
-      }
+      return this.postsService.update(updatePostRequest);
    }
 
    @ApiOperation({ summary: 'Elimina una publicación' })
@@ -152,12 +160,8 @@ export class PostsController {
    @ApiParam({ name: 'postId', description: 'ID de la publicación' })
    @Delete(':postId')
    async remove(@Param('postId', ParseIntPipe) postId: number) {
-      try {
-         const post = await this.postsService.findOne(postId);
-         if (!post) throw new NotFoundException('Post not found');
-         await this.postsService.remove(post);
-      } catch (error) {
-         throw error;
-      }
+      const post = await this.postsService.findOne(postId);
+      if (!post) throw new NotFoundException('Post not found');
+      await this.postsService.remove(post);
    }
 }

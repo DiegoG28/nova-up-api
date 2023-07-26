@@ -1,7 +1,7 @@
 import {
+   ForbiddenException,
    Injectable,
    NotFoundException,
-   UnauthorizedException,
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
 import { PostCardDto } from './dtos/posts-cards.dto';
@@ -10,29 +10,29 @@ import { PostBannerDto } from './dtos/posts-banner.dto';
 import { PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { Post, PostTypeEnum } from './entities/posts.entity';
-import { UpdatePostDto } from './dtos/update-post.dto';
+import { UpdateAssetPostDto, UpdatePostDto } from './dtos/update-post.dto';
+import { CatalogsService } from '../catalogs/catalogs.service';
+import { Asset } from './entities/assets.entity';
 
 @Injectable()
 export class PostsService {
    constructor(
       private readonly postsRepository: PostsRepository,
       private readonly postsMapperService: PostsMapperService,
+      private readonly catalogsService: CatalogsService,
    ) {}
 
    async findAll(
       userRole: string,
-      isApproved?: string,
+      showApproved?: boolean,
    ): Promise<PostCardDto[]> {
-      if (typeof isApproved === 'undefined' || isApproved === 'false') {
-         //We should validate token here because not all users can see all posts or not approved posts
-         if (userRole !== 'Admin' && userRole !== 'Supervisor') {
-            throw new UnauthorizedException(
-               'You do not have permissons to access this resource.',
-            );
-         }
+      if (!showApproved && (!userRole || userRole === 'Editor')) {
+         throw new ForbiddenException(
+            'You do not have permissons to access this resource.',
+         );
       }
 
-      const posts = await this.postsRepository.findAll(isApproved);
+      const posts = await this.postsRepository.findAll(showApproved);
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
       return postsCardDto;
    }
@@ -44,23 +44,20 @@ export class PostsService {
    }
 
    async findPinned(): Promise<PostCardDto[]> {
-      const posts = await this.postsRepository.findPinnedConvocatories('true');
+      const posts = await this.postsRepository.findPinned(true);
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
       return postsCardDto;
    }
 
-   async findByCategoryId(
-      categoryId: number,
-      isApproved?: string,
-   ): Promise<PostCardDto[]> {
-      if (typeof isApproved === 'undefined' || isApproved === 'false') {
-         //We should validate token here because not all users can see all posts or not approved posts
-      }
+   async findByUser(userId: number): Promise<PostCardDto[]> {
+      const posts = await this.postsRepository.findByUser(userId);
+      const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
 
-      const posts = await this.postsRepository.findByCategoryId(
-         categoryId,
-         isApproved,
-      );
+      return postsCardDto;
+   }
+
+   async findByCategory(categoryId: number): Promise<PostCardDto[]> {
+      const posts = await this.postsRepository.findByCategory(categoryId);
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
 
       return postsCardDto;
@@ -80,46 +77,91 @@ export class PostsService {
       return post;
    }
 
-   async create(createPostDto: CreatePostDto): Promise<Post> {
-      const createdPost = await this.postsRepository.create(createPostDto);
+   async create(createPostDto: CreatePostDto, userId: number): Promise<Post> {
+      const createdPost = await this.postsRepository.create(
+         createPostDto,
+         userId,
+      );
       return createdPost;
    }
 
-   async update(updatePostRequest: UpdatePostDto): Promise<Post> {
-      const postToUpdate = await this.findOne(updatePostRequest.id);
+   async update(newPost: UpdatePostDto): Promise<Post> {
+      const currentPost = await this.findOne(newPost.id);
 
-      if (!postToUpdate) throw new NotFoundException('Post not found');
+      await this.catalogsService.findCategoryById(newPost.category.id);
 
-      const postRequestType = updatePostRequest.type;
+      const pinnedPosts = await this.postsRepository.findPinned();
 
-      const pinnedPosts = await this.postsRepository.findPinnedConvocatories();
       //Override isPinned from existing convocatories posts
       if (pinnedPosts.length > 0) {
-         pinnedPosts.forEach(async (pinnedPost) => {
-            if (
-               pinnedPost.type === postRequestType &&
-               pinnedPost.id !== updatePostRequest.id
-            ) {
-               await this.postsRepository.updatePin(pinnedPost, false);
-            }
-         });
+         await this.overridePinnedPosts(
+            pinnedPosts,
+            newPost.type,
+            currentPost.id,
+         );
       }
 
       //Avoid no convocatory post pinning
-      if (
-         updatePostRequest.type !== PostTypeEnum.ExternalConvocatory &&
-         updatePostRequest.type !== PostTypeEnum.InternalConvocatory
-      ) {
-         updatePostRequest.isPinned = false;
-      }
+      this.adjustPinningStatus(newPost);
+
+      const { assetsToDelete, assetsToCreate } = this.getAssetModifications(
+         currentPost.assets,
+         newPost.assets,
+      );
+
       const updatedPost = await this.postsRepository.update(
-         postToUpdate,
-         updatePostRequest,
+         currentPost,
+         newPost,
+         assetsToDelete,
+         assetsToCreate,
       );
       return updatedPost;
    }
 
-   async remove(post: Post): Promise<void> {
+   async remove(post: Post) {
       await this.postsRepository.remove(post);
+   }
+
+   private async overridePinnedPosts(
+      pinnedPosts: Post[],
+      postRequestType: Post['type'],
+      currentPostId: number,
+   ) {
+      await Promise.all(
+         pinnedPosts.map(async (pinnedPost) => {
+            if (
+               pinnedPost.type === postRequestType &&
+               pinnedPost.id !== currentPostId
+            ) {
+               await this.postsRepository.updatePin(pinnedPost, false);
+            }
+         }),
+      );
+   }
+
+   private getAssetModifications(
+      existingAssets: Asset[],
+      updatedAssets: UpdateAssetPostDto[],
+   ) {
+      const assetsToDelete = existingAssets.filter(
+         (asset) =>
+            !asset.isCoverImage &&
+            !updatedAssets.some((updatedAsset) => updatedAsset.id === asset.id),
+      );
+
+      const assetsToCreate = updatedAssets.filter(
+         (updatedAsset) => !updatedAsset.id,
+      );
+
+      return { assetsToDelete, assetsToCreate };
+   }
+
+   private adjustPinningStatus(post: UpdatePostDto) {
+      if (
+         post.type !== PostTypeEnum.ExternalConvocatory &&
+         post.type !== PostTypeEnum.InternalConvocatory
+      ) {
+         post.isPinned = false;
+      }
    }
 }

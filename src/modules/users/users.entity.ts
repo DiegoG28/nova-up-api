@@ -2,14 +2,11 @@ import {
    Column,
    Entity,
    JoinColumn,
-   JoinTable,
-   ManyToMany,
    ManyToOne,
    OneToMany,
    PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Role } from '../catalogs/entities/roles.entity';
-import { Career } from 'src/modules/careers/careers.entity';
 import { Department } from 'src/modules/catalogs/entities/departments.entity';
 import { Post } from '../posts/entities/posts.entity';
 
@@ -29,18 +26,6 @@ export class User {
    @OneToMany(() => Post, (post) => post.user)
    posts: Post[];
 
-   @ManyToMany(() => Career, (career) => career.users)
-   @JoinTable({
-      name: 'usuario-carrera',
-      joinColumn: {
-         name: 'id_usuario',
-      },
-      inverseJoinColumn: {
-         name: 'id_carrera',
-      },
-   })
-   careers: Career[];
-
-   @Column({ name: 'correo', length: 255 })
+   @Column({ name: 'correo', length: 255, unique: true })
    email: string;
 }

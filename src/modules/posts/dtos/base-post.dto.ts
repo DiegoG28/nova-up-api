@@ -5,17 +5,7 @@ import {
    IsISO8601,
    IsBoolean,
 } from 'class-validator';
-import { AssetTypeEnum } from '../entities/assets.entity';
 import { PostTypeEnum } from '../entities/posts.entity';
-
-export class BasePostAssetDto {
-   @IsString()
-   @MaxLength(120)
-   name: string;
-
-   @IsEnum(AssetTypeEnum)
-   type: AssetTypeEnum;
-}
 
 export class BasePostDto {
    @IsString()

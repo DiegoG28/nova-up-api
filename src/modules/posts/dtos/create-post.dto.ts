@@ -7,17 +7,14 @@ import {
 } from 'class-validator';
 import { PostDto } from './posts.dto';
 import { Type } from 'class-transformer';
-import { BasePostAssetDto, BasePostDto } from './base.dto';
+import { BasePostDto } from './base-post.dto';
 import { AssetTypeEnum } from '../entities/assets.entity';
+import { BaseAssetDto } from 'src/modules/catalogs/dtos/base-asset.dto';
 
 export class CreatePostDto extends BasePostDto {
    @IsInt()
    @IsPositive()
    categoryId: number;
-
-   @IsInt()
-   @IsPositive()
-   careerId: number;
 
    @IsArray()
    @ValidateNested({ each: true })
@@ -25,14 +22,13 @@ export class CreatePostDto extends BasePostDto {
    assets: CreatePostAssetDto[];
 }
 
-export class CreatePostAssetDto extends BasePostAssetDto {
+export class CreatePostAssetDto extends BaseAssetDto {
    @IsBoolean()
    isCoverImage: boolean;
 }
 
 export class CreatePostResponseDto {
    category: { id: number };
-   career: { id: number };
    assets: {
       id: number;
       type: AssetTypeEnum;

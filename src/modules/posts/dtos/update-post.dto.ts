@@ -1,6 +1,4 @@
-import { CareerDto } from 'src/modules/careers/dtos/careers.dto';
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
-import { PostAssetDto } from './posts.dto';
 import {
    Allow,
    IsArray,
@@ -11,7 +9,8 @@ import {
    ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { BasePostAssetDto, BasePostDto } from './base.dto';
+import { BasePostDto } from './base-post.dto';
+import { BaseAssetDto } from 'src/modules/catalogs/dtos/base-asset.dto';
 
 export class UpdatePostDto extends BasePostDto {
    @IsInt()
@@ -21,21 +20,18 @@ export class UpdatePostDto extends BasePostDto {
    @Allow()
    category: CategoryDto;
 
-   @Allow()
-   career: CareerDto;
-
    @IsArray()
    @ValidateNested({ each: true })
    @Type(() => UpdateAssetPostDto)
-   assets: PostAssetDto[];
+   assets: UpdateAssetPostDto[];
 
    @IsBoolean()
    isPinned: boolean;
 }
 
-export class UpdateAssetPostDto extends BasePostAssetDto {
+export class UpdateAssetPostDto extends BaseAssetDto {
    @IsOptional()
    @IsInt()
    @IsPositive()
-   id: number;
+   id?: number;
 }

@@ -6,6 +6,7 @@ import {
    JoinColumn,
 } from 'typeorm';
 import { Post } from './posts.entity';
+import { Exclude } from 'class-transformer';
 
 export enum AssetTypeEnum {
    PDF = 'Pdf',
@@ -19,6 +20,7 @@ export class Asset {
    id: number;
 
    @ManyToOne(() => Post, (post) => post.assets)
+   @Exclude()
    @JoinColumn({ name: 'id_publicacion' })
    post: Post;
 

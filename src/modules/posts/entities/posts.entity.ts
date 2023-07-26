@@ -7,7 +7,6 @@ import {
    OneToMany,
 } from 'typeorm';
 import { Category } from '../../catalogs/entities/categories.entity';
-import { Career } from 'src/modules/careers/careers.entity';
 import { Asset } from './assets.entity';
 import { EventRegistration } from '../../event-registrations/event-registrations.entity';
 import { User } from 'src/modules/users/users.entity';
@@ -28,10 +27,6 @@ export class Post {
    @ManyToOne(() => Category, (category) => category.posts)
    @JoinColumn({ name: 'id_categoria' })
    category: Category;
-
-   @ManyToOne(() => Career, (career) => career.posts)
-   @JoinColumn({ name: 'id_carrera' })
-   career: Career;
 
    @ManyToOne(() => User, (user) => user.posts)
    @JoinColumn({ name: 'id_usuario' })

@@ -6,9 +6,10 @@ import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { PostsRepository } from './posts.repository';
 import { PostsMapperService } from './posts-mapper.service';
+import { CatalogsModule } from '../catalogs/catalogs.module';
 
 @Module({
-   imports: [TypeOrmModule.forFeature([Asset, Post])],
+   imports: [TypeOrmModule.forFeature([Asset, Post]), CatalogsModule],
    controllers: [PostsController],
    providers: [PostsRepository, PostsService, PostsMapperService],
 })
