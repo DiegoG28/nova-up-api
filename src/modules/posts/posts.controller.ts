@@ -13,6 +13,7 @@ import {
    UploadedFiles,
    UseInterceptors,
    UsePipes,
+   UploadedFile,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import {
@@ -32,7 +33,11 @@ import { PostBannerDto } from './dtos/posts-banner.dto';
 import { RequestWithPayload } from 'src/libs/interfaces';
 import { Public } from '../auth/auth.decorators';
 import { UpdatePostDto, UpdatePostResponse } from './dtos/update-post.dto';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import {
+   AnyFilesInterceptor,
+   FileInterceptor,
+   FilesInterceptor,
+} from '@nestjs/platform-express';
 import { ParseCategoryPipe } from 'src/pipes/category-parse.pipe';
 // import { Roles } from '../auth/auth.decorators';
 
@@ -141,16 +146,29 @@ export class PostsController {
    })
    @Public()
    @Post()
-   @UseInterceptors(FilesInterceptor('files'))
+   @UseInterceptors(AnyFilesInterceptor())
    @UsePipes(new ParseCategoryPipe())
    async create(
       @Request() req: RequestWithPayload,
       @Body() createPostDto: CreatePostDto,
       @UploadedFiles() files?: Express.Multer.File[],
    ) {
-      // Note: 'files' parameter is populated by Multer, not from createPostDto
+      // Note: 'files' and 'coverImageFile' parameter are populated by Multer, not from createPostDto
+      console.log(files);
+      const coverImageFile = files?.find(
+         (file) => file.fieldname === 'coverImageFile',
+      );
+      const otherFiles = files?.filter(
+         (file) => file.fieldname !== 'coverImageFile',
+      );
+
       const userId = req.userPayload?.sub || 1;
-      const response = this.postsService.create(createPostDto, userId, files);
+      const response = this.postsService.create(
+         createPostDto,
+         userId,
+         otherFiles,
+         coverImageFile,
+      );
       return response;
    }
 

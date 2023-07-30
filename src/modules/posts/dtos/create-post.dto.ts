@@ -25,6 +25,15 @@ export class CreatePostDto extends BasePostDto {
    })
    @IsOptional()
    files?: Express.Multer.File[];
+
+   @ApiProperty({
+      description:
+         'Cover image of the post. Note: despite being part of the DTO, this field will be handled by Multer, not by the validation pipeline.',
+      type: 'string',
+      format: 'binary',
+   })
+   @IsOptional()
+   coverImageFile?: Express.Multer.File;
 }
 
 export class CreatePostResponse {

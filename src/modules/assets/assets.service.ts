@@ -17,13 +17,19 @@ export class AssetsService {
       postId: number,
       asset: Express.Multer.File | string,
       queryRunner?: QueryRunner,
+      isCoverImage?: boolean,
    ): Promise<Asset> {
       if (typeof asset === 'string') {
          return this.createAssetLink(asset, postId, queryRunner);
       }
 
       if (typeof asset === 'object' && 'mimetype' in asset) {
-         return this.createAssetFile(asset, postId, queryRunner);
+         if (isCoverImage && !asset.mimetype.startsWith('image/'))
+            throw new BadRequestException(
+               `Unsupported file type: ${asset.mimetype}. The post cover must be an image`,
+            );
+
+         return this.createAssetFile(asset, postId, queryRunner, isCoverImage);
       }
 
       throw new BadRequestException(
@@ -37,12 +43,7 @@ export class AssetsService {
       queryRunner: QueryRunner,
    ) {
       const assetCreationPromises = assets.map(async (asset) => {
-         const createdAsset = await this.createAsset(
-            postId,
-            asset,
-            queryRunner,
-         );
-         console.log(createdAsset);
+         await this.createAsset(postId, asset, queryRunner);
       });
 
       await Promise.all(assetCreationPromises);
@@ -77,6 +78,7 @@ export class AssetsService {
       file: Express.Multer.File,
       postId: number,
       queryRunner?: QueryRunner,
+      isCoverImage?: boolean,
    ): Promise<Asset> {
       const types = this.getAssetAndFolderType(file.mimetype);
       const assetPath = this.storageService.uploadFile(
@@ -88,6 +90,7 @@ export class AssetsService {
       const newAsset: DeepPartial<Asset> = {
          name: assetPath,
          type: types.assetType,
+         isCoverImage,
          post: { id: postId },
       };
 

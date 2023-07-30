@@ -111,6 +111,7 @@ export class PostsService {
       newPostData: CreatePostDto,
       userId: number,
       files?: Express.Multer.File[],
+      coverImageFile?: Express.Multer.File,
    ): Promise<{ status: string; message: string }> {
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
@@ -136,7 +137,6 @@ export class PostsService {
                arrayLinks,
                queryRunner,
             );
-            console.log('links created successfully');
          }
 
          if (files) {
@@ -145,7 +145,15 @@ export class PostsService {
                files,
                queryRunner,
             );
-            console.log('files created successfully');
+         }
+
+         if (coverImageFile) {
+            await this.assetsService.createAsset(
+               createdPostId,
+               coverImageFile,
+               queryRunner,
+               true,
+            );
          }
 
          console.log(newPostData);
