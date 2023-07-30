@@ -6,9 +6,9 @@ import {
    JoinColumn,
    OneToMany,
 } from 'typeorm';
-import { Category } from '../../catalogs/entities/categories.entity';
-import { Asset } from './assets.entity';
-import { EventRegistration } from '../../event-registrations/event-registrations.entity';
+import { Category } from '../catalogs/entities/categories.entity';
+import { Asset } from '../assets/assets.entity';
+import { EventRegistration } from '../entities/event-registrations.entity';
 import { User } from 'src/modules/users/users.entity';
 
 export enum PostTypeEnum {
@@ -56,10 +56,10 @@ export class Post {
    @Column({ name: 'fecha_evento', nullable: true })
    eventDate: Date;
 
-   @Column({ name: 'aprobado' })
+   @Column({ name: 'aprobado', default: false })
    isApproved: boolean;
 
-   @Column({ name: 'cancelado' })
+   @Column({ name: 'cancelado', default: false })
    isCanceled: boolean;
 
    @Column({

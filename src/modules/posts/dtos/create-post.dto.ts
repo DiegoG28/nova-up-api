@@ -1,49 +1,33 @@
-import {
-   IsArray,
-   IsBoolean,
-   IsInt,
-   IsPositive,
-   ValidateNested,
-} from 'class-validator';
-import { PostDto } from './posts.dto';
-import { Type } from 'class-transformer';
+import { IsNumberString, IsOptional, IsString } from 'class-validator';
 import { BasePostDto } from './base-post.dto';
-import { AssetTypeEnum } from '../entities/assets.entity';
-import { BaseAssetDto } from 'src/modules/catalogs/dtos/base-asset.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePostDto extends BasePostDto {
-   @IsInt()
-   @IsPositive()
+   @IsNumberString()
    categoryId: number;
 
-   @IsArray()
-   @ValidateNested({ each: true })
-   @Type(() => CreatePostAssetDto)
-   assets: CreatePostAssetDto[];
+   @ApiProperty({
+      description:
+         'Links should be provided as a single string, with each asset separated by a comma. ' +
+         'Example: "link1,link2,link3". ',
+      type: String,
+   })
+   @IsString()
+   @IsOptional()
+   links?: string;
+
+   @ApiProperty({
+      description:
+         'Array of files to upload. Note: despite being part of the DTO, this field will be handled by Multer, not by the validation pipeline.',
+      type: 'string',
+      format: 'binary',
+      isArray: true,
+   })
+   @IsOptional()
+   files?: Express.Multer.File[];
 }
 
-export class CreatePostAssetDto extends BaseAssetDto {
-   @IsBoolean()
-   isCoverImage: boolean;
-}
-
-export class CreatePostResponseDto {
-   category: { id: number };
-   assets: {
-      id: number;
-      type: AssetTypeEnum;
-      name: string;
-      isCoverImage: boolean;
-   };
-   title: PostDto['title'];
-   description: PostDto['description'];
-   summary: PostDto['summary'];
-   publishDate: PostDto['publishDate'];
-   eventDate: PostDto['eventDate'];
-   isApproved: PostDto['isApproved'];
-   isCanceled: PostDto['isCanceled'];
-   type: PostDto['type'];
-   isPinned: PostDto['isPinned'];
-   tags: PostDto['tags'];
-   comments: PostDto['comments'];
+export class CreatePostResponse {
+   status: string;
+   message: string;
 }

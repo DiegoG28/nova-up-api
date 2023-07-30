@@ -16,13 +16,14 @@ async function bootstrap() {
          'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.1.0/swagger-ui.min.css',
    });
 
-   app.use('/assets', express.static(path.join(__dirname, '../assets')));
    app.useGlobalPipes(
       new ValidationPipe({
          whitelist: true,
          forbidNonWhitelisted: true,
       }),
    );
+
+   app.use('/assets', express.static(path.join(__dirname, '../assets')));
 
    await app.listen(process.env.PORT ? parseInt(process.env.PORT, 10) : 3000);
 }

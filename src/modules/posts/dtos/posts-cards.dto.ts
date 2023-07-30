@@ -1,5 +1,5 @@
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
-import { PostTypeEnum } from '../entities/posts.entity';
+import { PostTypeEnum } from '../posts.entity';
 
 export class PostCardDto {
    id: number;

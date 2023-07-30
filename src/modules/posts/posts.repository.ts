@@ -1,25 +1,21 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
    DataSource,
-   EntityManager,
+   DeepPartial,
    FindManyOptions,
    In,
+   QueryRunner,
    Repository,
 } from 'typeorm';
-import { Post, PostTypeEnum } from './entities/posts.entity';
-import { Asset } from './entities/assets.entity';
-import { CreatePostDto } from './dtos/create-post.dto';
-import { UpdatePostDto } from './dtos/update-post.dto';
+import { Post, PostTypeEnum } from './posts.entity';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 @Injectable()
 export class PostsRepository {
    constructor(
       @InjectRepository(Post)
       private readonly postsRepository: Repository<Post>,
-
-      @InjectRepository(Asset)
-      private readonly assetsRepository: Repository<Asset>,
 
       private readonly dataSource: DataSource,
    ) {}
@@ -88,80 +84,22 @@ export class PostsRepository {
       return post;
    }
 
-   async create(createPostDto: CreatePostDto, userId: number): Promise<Post> {
-      const { assets, ...postData } = createPostDto;
+   async create(
+      newPostData: DeepPartial<Post>,
+      userId: number,
+      queryRunner: QueryRunner,
+   ): Promise<Post['id']> {
+      const createdPost = this.postsRepository.create({
+         ...newPostData,
+         user: { id: userId },
+      });
+      await queryRunner.manager.save(createdPost);
 
-      const queryRunner = this.dataSource.createQueryRunner();
-
-      queryRunner.connect();
-      await queryRunner.startTransaction();
-
-      try {
-         const createdAssets = await this.createAssets(
-            assets,
-            queryRunner.manager,
-         );
-
-         const createdPost = this.postsRepository.create({
-            ...postData,
-            category: { id: postData.categoryId },
-            user: { id: userId },
-         });
-         createdPost.assets = createdAssets;
-         await queryRunner.manager.save(createdPost);
-
-         await queryRunner.commitTransaction();
-         return createdPost;
-      } catch (err) {
-         await queryRunner.rollbackTransaction();
-         throw new InternalServerErrorException(
-            'Failed to create post',
-            err.message,
-         );
-      } finally {
-         await queryRunner.release();
-      }
+      return createdPost.id;
    }
 
-   async update(
-      postToUpdate: Post,
-      updatePostRequest: UpdatePostDto,
-      assetsToDelete: Asset[],
-      assetsToCreate: Partial<Asset>[],
-   ): Promise<Post> {
-      const queryRunner = this.dataSource.createQueryRunner();
-
-      queryRunner.connect();
-      await queryRunner.startTransaction();
-
-      try {
-         await this.removeAssets(assetsToDelete);
-
-         const createdAssets = await this.createAssets(
-            assetsToCreate,
-            queryRunner.manager,
-         );
-
-         postToUpdate.assets.push(...createdAssets);
-
-         //We asign the rest of requestData except assets
-         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-         const { assets, id, ...updateFields } = updatePostRequest;
-         Object.assign(postToUpdate, updateFields);
-
-         const updatedPost = await queryRunner.manager.save(postToUpdate);
-
-         await queryRunner.commitTransaction();
-         return updatedPost;
-      } catch (err) {
-         await queryRunner.rollbackTransaction();
-         throw new InternalServerErrorException(
-            'Failed to update post',
-            err.message,
-         );
-      } finally {
-         await queryRunner.release();
-      }
+   async update(newPost: QueryDeepPartialEntity<Post>, currentPostId: number) {
+      await this.postsRepository.update(currentPostId, newPost);
    }
 
    async updatePin(post: Post, pinStatus: boolean): Promise<void> {
@@ -169,17 +107,20 @@ export class PostsRepository {
       await this.postsRepository.save(post);
    }
 
-   async remove(post: Post): Promise<void> {
+   async updateApproved(post: Post, approvedStatus: boolean): Promise<void> {
+      post.isApproved = approvedStatus;
+      await this.postsRepository.save(post);
+   }
+
+   async remove(post: Post, assetsId?: number[]): Promise<void> {
       const queryRunner = this.dataSource.createQueryRunner();
 
       queryRunner.connect();
       await queryRunner.startTransaction();
 
       try {
-         if (post.assets.length > 0) {
-            post.assets.map(async (asset) => {
-               await this.assetsRepository.delete(asset.id);
-            });
+         if (assetsId) {
+            // await this.removeAssets(assetsId);
          }
          await this.postsRepository.delete(post.id);
 
@@ -189,19 +130,6 @@ export class PostsRepository {
       } finally {
          await queryRunner.release();
       }
-   }
-
-   private async removeAssets(assets: Asset[]): Promise<void> {
-      await this.assetsRepository.remove(assets);
-   }
-
-   private async createAssets(
-      assets: Partial<Asset>[],
-      manager: EntityManager,
-   ): Promise<Asset[]> {
-      const createdAssets = this.assetsRepository.create(assets);
-      manager.save(createdAssets);
-      return createdAssets;
    }
 
    private getPostCardQueryOptions(

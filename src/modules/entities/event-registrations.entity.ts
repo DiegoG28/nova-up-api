@@ -1,6 +1,6 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Student } from '../students/students.entity';
-import { Post } from '../posts/entities/posts.entity';
+import { Student } from './students.entity';
+import { Post } from '../posts/posts.entity';
 
 @Entity({ name: 'registro' })
 export class EventRegistration {

@@ -1,6 +1,7 @@
 import {
    ForbiddenException,
    Injectable,
+   InternalServerErrorException,
    NotFoundException,
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
@@ -9,10 +10,11 @@ import { PostsMapperService } from './posts-mapper.service';
 import { PostBannerDto } from './dtos/posts-banner.dto';
 import { PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
-import { Post, PostTypeEnum } from './entities/posts.entity';
-import { UpdateAssetPostDto, UpdatePostDto } from './dtos/update-post.dto';
+import { Post, PostTypeEnum } from './posts.entity';
 import { CatalogsService } from '../catalogs/catalogs.service';
-import { Asset } from './entities/assets.entity';
+import { AssetsService } from '../assets/assets.service';
+import { UpdatePostDto } from './dtos/update-post.dto';
+import { DataSource, DeepPartial } from 'typeorm';
 
 @Injectable()
 export class PostsService {
@@ -20,6 +22,8 @@ export class PostsService {
       private readonly postsRepository: PostsRepository,
       private readonly postsMapperService: PostsMapperService,
       private readonly catalogsService: CatalogsService,
+      private readonly assetsService: AssetsService,
+      private readonly dataSource: DataSource,
    ) {}
 
    async findAll(
@@ -77,91 +81,131 @@ export class PostsService {
       return post;
    }
 
-   async create(createPostDto: CreatePostDto, userId: number): Promise<Post> {
-      const createdPost = await this.postsRepository.create(
-         createPostDto,
-         userId,
-      );
-      return createdPost;
-   }
-
-   async update(newPost: UpdatePostDto): Promise<Post> {
-      const currentPost = await this.findOne(newPost.id);
-
-      await this.catalogsService.findCategoryById(newPost.category.id);
+   async updatePinStatus(postId: number) {
+      const currentPost = await this.findOne(postId);
+      if (
+         currentPost.type !== PostTypeEnum.InternalConvocatory &&
+         currentPost.type !== PostTypeEnum.ExternalConvocatory
+      )
+         throw new ForbiddenException('You cannot pin no convocatory post');
 
       const pinnedPosts = await this.postsRepository.findPinned();
 
       //Override isPinned from existing convocatories posts
-      if (pinnedPosts.length > 0) {
-         await this.overridePinnedPosts(
-            pinnedPosts,
-            newPost.type,
-            currentPost.id,
+      const isPinning = !currentPost.isPinned;
+      if (pinnedPosts.length > 0 && isPinning) {
+         await this.overridePinnedPosts(pinnedPosts, currentPost);
+      }
+      await this.postsRepository.updatePin(currentPost, !currentPost.isPinned);
+   }
+
+   async updateApprovedStatus(postId: number) {
+      const currentPost = await this.findOne(postId);
+      await this.postsRepository.updateApproved(
+         currentPost,
+         !currentPost.isApproved,
+      );
+   }
+
+   async create(
+      newPostData: CreatePostDto,
+      userId: number,
+      files?: Express.Multer.File[],
+   ): Promise<{ status: string; message: string }> {
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      try {
+         const { links, ...restFields } = newPostData;
+         const category = await this.catalogsService.findCategoryById(
+            newPostData.categoryId,
          );
+
+         const newPost: DeepPartial<Post> = { ...restFields, category };
+         const createdPostId = await this.postsRepository.create(
+            newPost,
+            userId,
+            queryRunner,
+         );
+
+         if (links) {
+            const arrayLinks = links.split(',');
+            await this.assetsService.createAssets(
+               createdPostId,
+               arrayLinks,
+               queryRunner,
+            );
+            console.log('links created successfully');
+         }
+
+         if (files) {
+            await this.assetsService.createAssets(
+               createdPostId,
+               files,
+               queryRunner,
+            );
+            console.log('files created successfully');
+         }
+
+         console.log(newPostData);
+
+         await queryRunner.commitTransaction();
+
+         return { status: 'Success', message: 'Post successfully created' };
+      } catch (err) {
+         await queryRunner.rollbackTransaction();
+         throw new InternalServerErrorException(
+            'Failed to create post',
+            err.message,
+         );
+      } finally {
+         await queryRunner.release();
+      }
+   }
+
+   async update(
+      postData: Partial<UpdatePostDto>,
+      currentPostId: number,
+   ): Promise<{ status: string; message: string }> {
+      await this.findOne(currentPostId);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { categoryId, ...restFields } = postData;
+      const newPost: Partial<Post> = restFields;
+
+      if (postData.categoryId) {
+         const category = await this.catalogsService.findCategoryById(
+            postData.categoryId,
+         );
+         newPost.category = category;
       }
 
-      //Avoid no convocatory post pinning
-      this.adjustPinningStatus(newPost);
-
-      const { assetsToDelete, assetsToCreate } = this.getAssetModifications(
-         currentPost.assets,
-         newPost.assets,
-      );
-
-      const updatedPost = await this.postsRepository.update(
-         currentPost,
-         newPost,
-         assetsToDelete,
-         assetsToCreate,
-      );
-      return updatedPost;
+      await this.postsRepository.update(newPost, currentPostId);
+      return { status: 'Success', message: 'Post successfully updated' };
    }
 
-   async remove(post: Post) {
-      await this.postsRepository.remove(post);
+   async remove(post: Post): Promise<{ status: string; message: string }> {
+      let assetsId: undefined | number[] = undefined;
+      if (post.assets.length > 0) {
+         assetsId = post.assets.map((asset) => asset.id);
+      }
+      await this.postsRepository.remove(post, assetsId);
+      return { status: 'Success', message: 'Publicación eliminada' };
    }
 
-   private async overridePinnedPosts(
-      pinnedPosts: Post[],
-      postRequestType: Post['type'],
-      currentPostId: number,
-   ) {
+   private async overridePinnedPosts(pinnedPosts: Post[], currentPost: Post) {
       await Promise.all(
          pinnedPosts.map(async (pinnedPost) => {
             if (
-               pinnedPost.type === postRequestType &&
-               pinnedPost.id !== currentPostId
+               pinnedPost.type === currentPost.type &&
+               pinnedPost.id !== currentPost.id
             ) {
-               await this.postsRepository.updatePin(pinnedPost, false);
+               await this.postsRepository.updatePin(
+                  pinnedPost,
+                  !pinnedPost.isPinned,
+               );
             }
          }),
       );
-   }
-
-   private getAssetModifications(
-      existingAssets: Asset[],
-      updatedAssets: UpdateAssetPostDto[],
-   ) {
-      const assetsToDelete = existingAssets.filter(
-         (asset) =>
-            !asset.isCoverImage &&
-            !updatedAssets.some((updatedAsset) => updatedAsset.id === asset.id),
-      );
-
-      const assetsToCreate = updatedAssets.filter(
-         (updatedAsset) => !updatedAsset.id,
-      );
-
-      return { assetsToDelete, assetsToCreate };
-   }
-
-   private adjustPinningStatus(post: UpdatePostDto) {
-      if (
-         post.type !== PostTypeEnum.ExternalConvocatory &&
-         post.type !== PostTypeEnum.InternalConvocatory
-      ) {
-         post.isPinned = false;
-      }
    }
 }
