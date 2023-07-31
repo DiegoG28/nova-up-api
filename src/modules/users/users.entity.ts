@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { Role } from '../catalogs/entities/roles.entity';
 import { Department } from 'src/modules/catalogs/entities/departments.entity';
-import { Post } from '../posts/entities/posts.entity';
+import { Post } from '../posts/posts.entity';
 
 @Entity({ name: 'usuario' })
 export class User {

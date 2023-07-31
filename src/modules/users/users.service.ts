@@ -106,7 +106,8 @@ export class UsersService {
          relations: ['role', 'department'],
       });
 
-      if (existingUser) throw new ConflictException('Email already exists');
+      if (existingUser && existingUser.id !== id)
+         throw new ConflictException('Email already exists');
 
       newUser.email = user.email;
 

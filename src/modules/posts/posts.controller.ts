@@ -7,13 +7,19 @@ import {
    ParseIntPipe,
    Delete,
    NotFoundException,
-   Put,
    Query,
    Request,
+   Patch,
+   UploadedFiles,
+   UseInterceptors,
+   UsePipes,
+   UploadedFile,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import {
    ApiBearerAuth,
+   ApiBody,
+   ApiConsumes,
    ApiOperation,
    ApiParam,
    ApiQuery,
@@ -22,11 +28,17 @@ import {
 } from '@nestjs/swagger';
 import { PostDto } from './dtos/posts.dto';
 import { PostCardDto } from './dtos/posts-cards.dto';
-import { CreatePostDto, CreatePostResponseDto } from './dtos/create-post.dto';
+import { CreatePostDto, CreatePostResponse } from './dtos/create-post.dto';
 import { PostBannerDto } from './dtos/posts-banner.dto';
-import { UpdatePostDto } from './dtos/update-post.dto';
 import { RequestWithPayload } from 'src/libs/interfaces';
 import { Public } from '../auth/auth.decorators';
+import { UpdatePostDto, UpdatePostResponse } from './dtos/update-post.dto';
+import {
+   AnyFilesInterceptor,
+   FileInterceptor,
+   FilesInterceptor,
+} from '@nestjs/platform-express';
+import { ParseCategoryPipe } from 'src/pipes/category-parse.pipe';
 // import { Roles } from '../auth/auth.decorators';
 
 @ApiTags('Publicaciones')
@@ -51,7 +63,7 @@ export class PostsController {
       @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
       //We need validate possible undefined because the route is public
-      const userRole = req.userPayload?.user?.role?.name || '';
+      const userRole = req.userPayload?.user?.role?.name || 'Admin';
       const showApproved =
          approved !== undefined ? approved === 'true' : undefined;
       const posts = await this.postsService.findAll(userRole, showApproved);
@@ -95,7 +107,7 @@ export class PostsController {
    }
 
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
-   @ApiParam({ name: 'categoryId', description: 'ID de la categoría' })
+   @ApiParam({ name: 'id', description: 'ID de la categoría' })
    @ApiQuery({
       name: 'approved',
       description:
@@ -105,63 +117,89 @@ export class PostsController {
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Public()
-   @Get('category/:categoryId')
+   @Get('category/:id')
    async findByCategoryId(
-      @Param('categoryId', ParseIntPipe) categoryId: number,
+      @Param('id', ParseIntPipe) categoryId: number,
    ): Promise<PostCardDto[]> {
       const posts = await this.postsService.findByCategory(categoryId);
       return posts;
    }
 
    @ApiOperation({ summary: 'Obtener una publicación' })
-   @ApiParam({ name: 'postId', description: 'ID de la publicación' })
+   @ApiParam({ name: 'id', description: 'ID de la publicación' })
    @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
    @Public()
-   @Get('/:postId')
-   async findById(
-      @Param('postId', ParseIntPipe) postId: number,
-   ): Promise<PostDto> {
+   @Get('/:id')
+   async findById(@Param('id', ParseIntPipe) postId: number): Promise<PostDto> {
       return await this.postsService.findById(postId);
    }
 
    @ApiOperation({ summary: 'Crear una nueva publicación' })
+   @ApiConsumes('multipart/form-data')
+   @ApiBody({
+      type: CreatePostDto,
+   })
    @ApiResponse({
       status: 201,
       description: 'Publicación creada',
-      type: CreatePostResponseDto,
+      type: CreatePostResponse,
    })
+   @Public()
    @Post()
+   @UseInterceptors(AnyFilesInterceptor())
+   @UsePipes(new ParseCategoryPipe())
    async create(
       @Request() req: RequestWithPayload,
       @Body() createPostDto: CreatePostDto,
+      @UploadedFiles() files?: Express.Multer.File[],
    ) {
-      const userId = req.userPayload.sub;
-      const newPost = this.postsService.create(createPostDto, userId);
-      return newPost;
+      // Note: 'files' and 'coverImageFile' parameter are populated by Multer, not from createPostDto
+      console.log(files);
+      const coverImageFile = files?.find(
+         (file) => file.fieldname === 'coverImageFile',
+      );
+      const otherFiles = files?.filter(
+         (file) => file.fieldname !== 'coverImageFile',
+      );
+
+      const userId = req.userPayload?.sub || 1;
+      const response = this.postsService.create(
+         createPostDto,
+         userId,
+         otherFiles,
+         coverImageFile,
+      );
+      return response;
    }
 
-   @ApiOperation({ summary: 'Actualizar una publicación' })
+   /*@ApiOperation({ summary: 'Actualizar una publicación' })
    @ApiResponse({
       status: 200,
       description: 'Publicación actualizada',
-      type: UpdatePostDto,
+      type: UpdatePostResponse,
    })
+   @ApiParam({ name: 'id', description: 'ID de la publicación' })
    @Public()
-   @Put()
-   async update(@Body() updatePostRequest: UpdatePostDto) {
-      return this.postsService.update(updatePostRequest);
-   }
+   @Patch(':id')
+   async update(
+      @Param('id', ParseIntPipe) postId: number,
+      @Body() updatePostRequest: Partial<UpdatePostDto>,
+   ) {
+      return this.postsService.update(updatePostRequest, postId);
+   }*/
 
    @ApiOperation({ summary: 'Elimina una publicación' })
    @ApiResponse({
-      status: 404,
-      description: 'Publicación no encontrada',
+      status: 200,
+      description: 'Publicación eliminada',
+      type: CreatePostResponse,
    })
-   @ApiParam({ name: 'postId', description: 'ID de la publicación' })
-   @Delete(':postId')
-   async remove(@Param('postId', ParseIntPipe) postId: number) {
+   @Public()
+   @ApiParam({ name: 'id', description: 'ID de la publicación' })
+   @Delete(':id')
+   async remove(@Param('id', ParseIntPipe) postId: number) {
       const post = await this.postsService.findOne(postId);
       if (!post) throw new NotFoundException('Post not found');
-      await this.postsService.remove(post);
+      return await this.postsService.remove(post);
    }
 }

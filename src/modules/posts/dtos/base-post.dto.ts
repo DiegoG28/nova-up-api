@@ -3,13 +3,13 @@ import {
    MaxLength,
    IsEnum,
    IsISO8601,
-   IsBoolean,
+   IsOptional,
 } from 'class-validator';
-import { PostTypeEnum } from '../entities/posts.entity';
+import { PostTypeEnum } from '../posts.entity';
 
 export class BasePostDto {
    @IsString()
-   @MaxLength(120)
+   @MaxLength(80)
    title: string;
 
    @IsString()
@@ -20,16 +20,8 @@ export class BasePostDto {
    summary: string;
 
    @IsISO8601()
-   publishDate: Date;
-
-   @IsISO8601()
-   eventDate: Date;
-
-   @IsBoolean()
-   isApproved: boolean;
-
-   @IsBoolean()
-   isCanceled: boolean;
+   @IsOptional()
+   eventDate?: Date;
 
    @IsEnum(PostTypeEnum)
    type: PostTypeEnum;
@@ -38,6 +30,7 @@ export class BasePostDto {
    tags: string;
 
    @IsString()
+   @IsOptional()
    @MaxLength(255)
-   comments: string;
+   comments?: string;
 }

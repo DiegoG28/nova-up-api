@@ -1,37 +1,17 @@
-import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
-import {
-   Allow,
-   IsArray,
-   IsBoolean,
-   IsInt,
-   IsOptional,
-   IsPositive,
-   ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsInt, IsOptional, IsPositive } from 'class-validator';
 import { BasePostDto } from './base-post.dto';
-import { BaseAssetDto } from 'src/modules/catalogs/dtos/base-asset.dto';
 
 export class UpdatePostDto extends BasePostDto {
    @IsInt()
    @IsPositive()
-   id: number;
+   @IsOptional()
+   categoryId?: number;
 
-   @Allow()
-   category: CategoryDto;
-
-   @IsArray()
-   @ValidateNested({ each: true })
-   @Type(() => UpdateAssetPostDto)
-   assets: UpdateAssetPostDto[];
-
-   @IsBoolean()
-   isPinned: boolean;
+   /*@ApiProperty({ type: 'string', format: 'binary', isArray: true })
+   files: Express.Multer.File[];*/
 }
 
-export class UpdateAssetPostDto extends BaseAssetDto {
-   @IsOptional()
-   @IsInt()
-   @IsPositive()
-   id?: number;
+export class UpdatePostResponse {
+   status: string;
+   message: string;
 }

@@ -1,15 +1,14 @@
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
 import { BasePostDto } from './base-post.dto';
-import { BaseAssetDto } from 'src/modules/catalogs/dtos/base-asset.dto';
+import { AssetDto } from 'src/modules/assets/dtos/assets.dto';
 
 export class PostDto extends BasePostDto {
    id: number;
    category: CategoryDto;
    coverImage: string;
-   assets: PostAssetDto[];
+   assets: AssetDto[];
    isPinned: boolean;
-}
-
-export class PostAssetDto extends BaseAssetDto {
-   id: number;
+   isApproved: boolean;
+   isCanceled: boolean;
+   publishDate: Date;
 }
