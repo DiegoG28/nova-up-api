@@ -10,4 +10,5 @@ export class PostDto extends BasePostDto {
    isPinned: boolean;
    isApproved: boolean;
    isCanceled: boolean;
+   publishDate: Date;
 }

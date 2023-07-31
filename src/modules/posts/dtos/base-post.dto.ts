@@ -20,9 +20,6 @@ export class BasePostDto {
    summary: string;
 
    @IsISO8601()
-   publishDate: Date;
-
-   @IsISO8601()
    @IsOptional()
    eventDate?: Date;
 

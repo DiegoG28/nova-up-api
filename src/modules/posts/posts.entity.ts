@@ -50,7 +50,7 @@ export class Post {
    @Column({ name: 'resumen', length: 110 })
    summary: string;
 
-   @Column({ name: 'fecha' })
+   @Column({ name: 'fecha', nullable: true })
    publishDate: Date;
 
    @Column({ name: 'fecha_evento', nullable: true })

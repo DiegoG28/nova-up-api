@@ -160,7 +160,10 @@ export class PostsService {
 
          await queryRunner.commitTransaction();
 
-         return { status: 'Success', message: 'Post successfully created' };
+         return {
+            status: 'Success',
+            message: `Post ${createdPostId} successfully created`,
+         };
       } catch (err) {
          await queryRunner.rollbackTransaction();
          throw new InternalServerErrorException(
