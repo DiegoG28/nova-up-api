@@ -48,7 +48,7 @@ export class PostsService {
    }
 
    async findPinned(): Promise<PostCardDto[]> {
-      const posts = await this.postsRepository.findPinned(true);
+      const posts = await this.postsRepository.findPinned();
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
       return postsCardDto;
    }
@@ -155,8 +155,6 @@ export class PostsService {
                true,
             );
          }
-
-         console.log(newPostData);
 
          await queryRunner.commitTransaction();
 

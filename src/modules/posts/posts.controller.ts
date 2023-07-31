@@ -31,7 +31,7 @@ import { PostCardDto } from './dtos/posts-cards.dto';
 import { CreatePostDto, CreatePostResponse } from './dtos/create-post.dto';
 import { PostBannerDto } from './dtos/posts-banner.dto';
 import { RequestWithPayload } from 'src/libs/interfaces';
-import { Public } from '../auth/auth.decorators';
+import { Public, Roles } from '../auth/auth.decorators';
 import { UpdatePostDto, UpdatePostResponse } from './dtos/update-post.dto';
 import {
    AnyFilesInterceptor,
@@ -63,7 +63,7 @@ export class PostsController {
       @Query('approved') approved?: string,
    ): Promise<PostCardDto[]> {
       //We need validate possible undefined because the route is public
-      const userRole = req.userPayload?.user?.role?.name || 'Admin';
+      const userRole = req.userPayload?.user?.role?.name || '';
       const showApproved =
          approved !== undefined ? approved === 'true' : undefined;
       const posts = await this.postsService.findAll(userRole, showApproved);
@@ -80,7 +80,7 @@ export class PostsController {
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostBannerDto] })
    @Public()
-   @Get('/latest')
+   @Get('latest')
    async findLatest(@Query('limit') limit: string): Promise<PostBannerDto[]> {
       const latestPosts = await this.postsService.findLatest(parseInt(limit));
       return latestPosts;
@@ -89,7 +89,7 @@ export class PostsController {
    @ApiOperation({ summary: 'Obtener las publicaciones fijadas' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Public()
-   @Get('/pinned')
+   @Get('pinned')
    async findPinned(): Promise<PostCardDto[]> {
       const pinnedPosts = await this.postsService.findPinned();
       return pinnedPosts;
@@ -129,7 +129,7 @@ export class PostsController {
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
    @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
    @Public()
-   @Get('/:id')
+   @Get(':id')
    async findById(@Param('id', ParseIntPipe) postId: number): Promise<PostDto> {
       return await this.postsService.findById(postId);
    }
@@ -144,7 +144,6 @@ export class PostsController {
       description: 'Publicación creada',
       type: CreatePostResponse,
    })
-   @Public()
    @Post()
    @UseInterceptors(AnyFilesInterceptor())
    @UsePipes(new ParseCategoryPipe())
@@ -154,7 +153,6 @@ export class PostsController {
       @UploadedFiles() files?: Express.Multer.File[],
    ) {
       // Note: 'files' and 'coverImageFile' parameter are populated by Multer, not from createPostDto
-      console.log(files);
       const coverImageFile = files?.find(
          (file) => file.fieldname === 'coverImageFile',
       );
@@ -162,7 +160,7 @@ export class PostsController {
          (file) => file.fieldname !== 'coverImageFile',
       );
 
-      const userId = req.userPayload?.sub || 1;
+      const userId = req.userPayload?.sub;
       const response = this.postsService.create(
          createPostDto,
          userId,
@@ -194,7 +192,7 @@ export class PostsController {
       description: 'Publicación eliminada',
       type: CreatePostResponse,
    })
-   @Public()
+   @Roles('Admin', 'Supervisor')
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
    @Delete(':id')
    async remove(@Param('id', ParseIntPipe) postId: number) {

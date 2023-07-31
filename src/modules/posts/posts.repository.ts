@@ -40,8 +40,8 @@ export class PostsRepository {
       return await this.postsRepository.find(queryOptions);
    }
 
-   async findPinned(showApproved?: boolean): Promise<Post[]> {
-      const queryOptions = this.getPostCardQueryOptions(showApproved);
+   async findPinned(): Promise<Post[]> {
+      const queryOptions = this.getPostCardQueryOptions(true);
       queryOptions.where = {
          isPinned: true,
          type: In([
