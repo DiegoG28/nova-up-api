@@ -9,6 +9,7 @@ import { In, Not, Repository } from 'typeorm';
 import { User } from './users.entity';
 import { CreateUserDto } from './dtos/create-users.dto';
 import { CatalogsService } from '../catalogs/catalogs.service';
+import { Errors } from 'src/libs/errorCodes';
 
 @Injectable()
 export class UsersService {
@@ -34,7 +35,7 @@ export class UsersService {
          relations: ['role', 'department'],
       });
 
-      if (!user) throw new NotFoundException('User not found');
+      if (!user) throw new NotFoundException(Errors.USER_NOT_FOUND);
 
       return user;
    }
@@ -56,7 +57,8 @@ export class UsersService {
          where: { email: user.email },
          relations: ['role', 'department'],
       });
-      if (existingUser) throw new ConflictException('Email already exists');
+      if (existingUser)
+         throw new ConflictException(Errors.EMAIL_ALREADY_EXISTS);
 
       newUser.email = user.email;
 
@@ -66,7 +68,7 @@ export class UsersService {
 
    async remove(id: number, loggedInUserId: number): Promise<User | null> {
       if (id === loggedInUserId)
-         throw new ForbiddenException('You cannot delete your own account');
+         throw new ForbiddenException(Errors.CANNOT_DELETE_OWN_ACCOUNT);
 
       const user = await this.usersRepository.findOne({
          where: { id },
@@ -84,7 +86,7 @@ export class UsersService {
       loggedInUserId: number,
    ): Promise<User | null> {
       if (id === loggedInUserId)
-         throw new ForbiddenException('You cannot update your own account');
+         throw new ForbiddenException(Errors.CANNOT_UPDATE_OWN_ACCOUNT);
 
       const newUser = new User();
       const role = await this.catalogsService.findRoleById(user.roleId);
@@ -107,7 +109,7 @@ export class UsersService {
       });
 
       if (existingUser && existingUser.id !== id)
-         throw new ConflictException('Email already exists');
+         throw new ConflictException(Errors.EMAIL_ALREADY_EXISTS);
 
       newUser.email = user.email;
 

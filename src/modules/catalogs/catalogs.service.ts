@@ -4,6 +4,7 @@ import { Category } from './entities/categories.entity';
 import { Repository } from 'typeorm';
 import { Department } from './entities/departments.entity';
 import { Role } from './entities/roles.entity';
+import { Errors } from 'src/libs/errorCodes';
 
 @Injectable()
 export class CatalogsService {
@@ -35,7 +36,7 @@ export class CatalogsService {
          where: { id },
       });
       if (!category) {
-         throw new NotFoundException('Category not found');
+         throw new NotFoundException(Errors.CATEGORY_NOT_FOUND);
       }
       return category;
    }
@@ -45,7 +46,7 @@ export class CatalogsService {
          where: { id },
       });
       if (!role) {
-         throw new NotFoundException('Role not found');
+         throw new NotFoundException(Errors.ROLE_NOT_FOUND);
       }
       return role;
    }
@@ -55,7 +56,7 @@ export class CatalogsService {
          where: { id },
       });
       if (!department) {
-         throw new NotFoundException('Department not found');
+         throw new NotFoundException(Errors.DEPARTMENT_NOT_FOUND);
       }
       return department;
    }

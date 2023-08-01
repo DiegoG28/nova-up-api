@@ -10,6 +10,7 @@ import { Request } from 'express';
 import { JwtPayload } from './dtos/sign-in.dto';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from './auth.decorators';
+import { Errors } from 'src/libs/errorCodes';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -31,9 +32,7 @@ export class AuthGuard implements CanActivate {
       const token = this.extractTokenFromHeader(request);
 
       if (!token && !isPublic) {
-         throw new UnauthorizedException(
-            'Token not provided. Please verify that the token is being provided in the Authorization header using the Bearer scheme.',
-         );
+         throw new UnauthorizedException(Errors.NO_TOKEN_PROVIDED);
       }
 
       try {

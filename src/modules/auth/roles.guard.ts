@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { User } from '../users/users.entity';
+import { Errors } from 'src/libs/errorCodes';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -22,7 +23,7 @@ export class RolesGuard implements CanActivate {
       const user: User = request.userPayload.user;
 
       if (!user) {
-         throw new UnauthorizedException('No user is logged in.');
+         throw new UnauthorizedException(Errors.NO_USER_LOGGED_IN);
       }
 
       const hasRole = roles.includes(user.role.name);
@@ -31,8 +32,6 @@ export class RolesGuard implements CanActivate {
          return true;
       }
 
-      throw new UnauthorizedException(
-         'You do not have permissons to access this resource.',
-      );
+      throw new UnauthorizedException(Errors.ACCESS_DENIED_TO_RESOURCE);
    }
 }

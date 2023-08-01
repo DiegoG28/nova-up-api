@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, QueryRunner, Repository } from 'typeorm';
 import { Asset, AssetTypeEnum } from './assets.entity';
 import { StorageService } from '../storage/storage.service';
+import { Errors } from 'src/libs/errorCodes';
 
 @Injectable()
 export class AssetsService {
@@ -25,16 +26,12 @@ export class AssetsService {
 
       if (typeof asset === 'object' && 'mimetype' in asset) {
          if (isCoverImage && !asset.mimetype.startsWith('image/'))
-            throw new BadRequestException(
-               `Unsupported file type: ${asset.mimetype}. The post cover must be an image`,
-            );
+            throw new BadRequestException(Errors.UNSUPPORTED_FILE_TYPE_COVER);
 
          return this.createAssetFile(asset, postId, queryRunner, isCoverImage);
       }
 
-      throw new BadRequestException(
-         'At least one of asset or file must be provided',
-      );
+      throw new BadRequestException(Errors.NO_ASSET_OR_FILE_PROVIDED);
    }
 
    async createAssets(
@@ -109,7 +106,7 @@ export class AssetsService {
       } else if (mimeType === 'application/pdf') {
          return { assetType: AssetTypeEnum.PDF, folderType: 'pdfs' };
       } else {
-         throw new BadRequestException(`Unsupported file type: ${mimeType}`);
+         throw new BadRequestException(Errors.NO_ASSET_OR_FILE_PROVIDED);
       }
    }
 }

@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import { UsersService } from '../users/users.service';
 import { JwtPayload, SignInResponseDto } from './dtos/sign-in.dto';
+import { Errors } from 'src/libs/errorCodes';
 
 @Injectable()
 export class AuthService {
@@ -25,12 +26,12 @@ export class AuthService {
       const googlePayload = ticket.getPayload();
 
       if (!googlePayload)
-         throw new UnauthorizedException('Invalid Google token.');
+         throw new UnauthorizedException(Errors.INVALID_GOOGLE_TOKEN);
 
       const { email } = googlePayload;
 
       if (!email)
-         throw new UnauthorizedException('Email not provided in Google token.');
+         throw new UnauthorizedException(Errors.NO_EMAIL_IN_GOOGLE_TOKEN);
 
       const user = await this.usersService.findOne(email);
 

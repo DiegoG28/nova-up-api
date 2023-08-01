@@ -15,6 +15,7 @@ import { CatalogsService } from '../catalogs/catalogs.service';
 import { AssetsService } from '../assets/assets.service';
 import { UpdatePostDto } from './dtos/update-post.dto';
 import { DataSource, DeepPartial } from 'typeorm';
+import { Errors } from 'src/libs/errorCodes';
 
 @Injectable()
 export class PostsService {
@@ -31,9 +32,7 @@ export class PostsService {
       showApproved?: boolean,
    ): Promise<PostCardDto[]> {
       if (!showApproved && (!userRole || userRole === 'Editor')) {
-         throw new ForbiddenException(
-            'You do not have permissons to access this resource.',
-         );
+         throw new ForbiddenException(Errors.ACCESS_DENIED_TO_RESOURCE);
       }
 
       const posts = await this.postsRepository.findAll(showApproved);
@@ -69,7 +68,7 @@ export class PostsService {
 
    async findById(postId: number): Promise<PostDto> {
       const post = await this.postsRepository.findById(postId);
-      if (!post) throw new NotFoundException('Post not found');
+      if (!post) throw new NotFoundException(Errors.UNSUPPORTED_FILE_TYPE);
       const postDto = this.postsMapperService.mapToPostDto(post);
       return postDto;
    }
@@ -77,7 +76,7 @@ export class PostsService {
    //We use this to get a Post entity instead the PostDto
    async findOne(postId: number): Promise<Post> {
       const post = await this.postsRepository.findById(postId);
-      if (!post) throw new NotFoundException('Post not found');
+      if (!post) throw new NotFoundException(Errors.POST_NOT_FOUND);
       return post;
    }
 
@@ -87,7 +86,7 @@ export class PostsService {
          currentPost.type !== PostTypeEnum.InternalConvocatory &&
          currentPost.type !== PostTypeEnum.ExternalConvocatory
       )
-         throw new ForbiddenException('You cannot pin no convocatory post');
+         throw new ForbiddenException(Errors.CANNOT_PIN_NO_CONVO_POST);
 
       const pinnedPosts = await this.postsRepository.findPinned();
 
@@ -165,7 +164,7 @@ export class PostsService {
       } catch (err) {
          await queryRunner.rollbackTransaction();
          throw new InternalServerErrorException(
-            'Failed to create post',
+            Errors.FAILED_TO_CREATE_POST,
             err.message,
          );
       } finally {

@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { Category } from '../catalogs/entities/categories.entity';
 import { Asset } from '../assets/assets.entity';
-import { EventRegistration } from '../entities/event-registrations.entity';
+import { EventRegistration } from '../../entities/event-registrations.entity';
 import { User } from 'src/modules/users/users.entity';
 
 export enum PostTypeEnum {

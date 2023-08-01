@@ -39,6 +39,7 @@ import {
    FilesInterceptor,
 } from '@nestjs/platform-express';
 import { ParseCategoryPipe } from 'src/pipes/category-parse.pipe';
+import { Errors } from 'src/libs/errorCodes';
 // import { Roles } from '../auth/auth.decorators';
 
 @ApiTags('Publicaciones')
@@ -197,7 +198,7 @@ export class PostsController {
    @Delete(':id')
    async remove(@Param('id', ParseIntPipe) postId: number) {
       const post = await this.postsService.findOne(postId);
-      if (!post) throw new NotFoundException('Post not found');
+      if (!post) throw new NotFoundException(Errors.POST_NOT_FOUND);
       return await this.postsService.remove(post);
    }
 }
