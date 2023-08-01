@@ -106,12 +106,8 @@ export class UsersService {
          relations: ['role', 'department'],
       });
 
-      if (existingUser && existingUser.id !== id) {
-         console.log(existingUser.id !== id);
-         console.log(existingUser.id + id);
-
+      if (existingUser && existingUser.id !== id)
          throw new ConflictException('Email already exists');
-      }
 
       newUser.email = user.email;
 
