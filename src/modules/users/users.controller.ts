@@ -4,6 +4,7 @@ import {
    Delete,
    Get,
    Param,
+   ParseIntPipe,
    Post,
    Put,
    Req,
@@ -86,7 +87,7 @@ export class UsersController {
    @Put(':id')
    update(
       @Req() req: RequestWithPayload,
-      @Param('id') id: number,
+      @Param('id', ParseIntPipe) id: number,
       @Body() user: CreateUserDto,
    ) {
       const loggedInUserId = req.userPayload.sub;

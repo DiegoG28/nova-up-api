@@ -49,10 +49,6 @@ export class AssetsService {
       await Promise.all(assetCreationPromises);
    }
 
-   async removeAsset(assetId: number) {
-      await this.assetsRepository.delete(assetId);
-   }
-
    private async createAssetLink(
       asset: string,
       postId: number,
