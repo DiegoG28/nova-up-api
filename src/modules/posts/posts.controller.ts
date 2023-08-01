@@ -39,7 +39,7 @@ import {
    FilesInterceptor,
 } from '@nestjs/platform-express';
 import { ParseCategoryPipe } from 'src/pipes/category-parse.pipe';
-import { Errors } from 'src/libs/errorCodes';
+import { Errors } from 'src/libs/errors';
 // import { Roles } from '../auth/auth.decorators';
 
 @ApiTags('Publicaciones')

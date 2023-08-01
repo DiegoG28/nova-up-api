@@ -15,7 +15,7 @@ import { CatalogsService } from '../catalogs/catalogs.service';
 import { AssetsService } from '../assets/assets.service';
 import { UpdatePostDto } from './dtos/update-post.dto';
 import { DataSource, DeepPartial } from 'typeorm';
-import { Errors } from 'src/libs/errorCodes';
+import { Errors } from 'src/libs/errors';
 
 @Injectable()
 export class PostsService {

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, QueryRunner, Repository } from 'typeorm';
 import { Asset, AssetTypeEnum } from './assets.entity';
 import { StorageService } from '../storage/storage.service';
-import { Errors } from 'src/libs/errorCodes';
+import { Errors } from 'src/libs/errors';
 
 @Injectable()
 export class AssetsService {

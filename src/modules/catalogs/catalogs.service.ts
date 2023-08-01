@@ -4,7 +4,7 @@ import { Category } from './entities/categories.entity';
 import { Repository } from 'typeorm';
 import { Department } from './entities/departments.entity';
 import { Role } from './entities/roles.entity';
-import { Errors } from 'src/libs/errorCodes';
+import { Errors } from 'src/libs/errors';
 
 @Injectable()
 export class CatalogsService {

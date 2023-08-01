@@ -9,7 +9,7 @@ import { In, Not, Repository } from 'typeorm';
 import { User } from './users.entity';
 import { CreateUserDto } from './dtos/create-users.dto';
 import { CatalogsService } from '../catalogs/catalogs.service';
-import { Errors } from 'src/libs/errorCodes';
+import { Errors } from 'src/libs/errors';
 
 @Injectable()
 export class UsersService {

@@ -4,7 +4,7 @@ import {
    PipeTransform,
    BadRequestException,
 } from '@nestjs/common';
-import { Errors } from 'src/libs/errorCodes';
+import { Errors } from 'src/libs/errors';
 
 @Injectable()
 export class ParseCategoryPipe implements PipeTransform {
