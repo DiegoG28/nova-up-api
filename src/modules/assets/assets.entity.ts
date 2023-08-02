@@ -24,7 +24,7 @@ export class Asset {
    @JoinColumn({ name: 'id_publicacion' })
    post: Post;
 
-   @Column({ name: 'nombre_recurso', length: 120 })
+   @Column({ name: 'nombre_recurso', length: 500 })
    name: string;
 
    @Column({ name: 'portada', default: false })

@@ -43,12 +43,14 @@ import {
 } from '@nestjs/platform-express';
 import { ParseCategoryPipe } from 'src/pipes/category-parse.pipe';
 import { Errors } from 'src/libs/errors';
+import { CreateAssetDto } from '../assets/dtos/create-asset.dto';
 // import { Roles } from '../auth/auth.decorators';
 
 @ApiTags('Publicaciones')
 @ApiBearerAuth()
 @Controller('posts')
 export class PostsController {
+   assetsService: any;
    constructor(private readonly postsService: PostsService) {}
 
    @ApiOperation({ summary: 'Obtener todas las publicaciones' })
@@ -174,6 +176,46 @@ export class PostsController {
       return response;
    }
 
+   @ApiOperation({ summary: 'Crear nuevos assets' })
+   @ApiConsumes('multipart/form-data')
+   @ApiBody({
+      type: CreateAssetDto,
+   })
+   @ApiResponse({
+      status: 201,
+      description: 'Assets creados',
+      type: StatusResponse,
+   })
+   @ApiParam({ name: 'id', description: 'ID de la publicación' })
+   @Post(':id/assets')
+   @UseInterceptors(AnyFilesInterceptor())
+   async createAssets(
+      @Body() createAssetDto: CreateAssetDto,
+      @Param('id', ParseIntPipe) postId: number,
+      @UploadedFiles() files?: Express.Multer.File[],
+   ) {
+      // Note: 'files' and 'coverImageFile' parameter are populated by Multer, not from createPostDto
+      const { links } = createAssetDto;
+
+      await this.postsService.findById(postId);
+
+      const coverImageFile = files?.find(
+         (file) => file.fieldname === 'coverImageFile',
+      );
+      const otherFiles = files?.filter(
+         (file) => file.fieldname !== 'coverImageFile',
+      );
+
+      await this.postsService.createPostAssets(
+         postId,
+         links,
+         otherFiles,
+         coverImageFile,
+      );
+
+      return { status: 'Success', message: 'Assets succesfully created' };
+   }
+
    /*@ApiOperation({ summary: 'Actualizar una publicación' })
    @ApiResponse({
       status: 200,
@@ -196,8 +238,7 @@ export class PostsController {
       description: 'Publicación actualizada',
       type: StatusResponse,
    })
-   // @Roles('Admin', 'Supervisor')
-   @Public()
+   @Roles('Admin', 'Supervisor')
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
    @Patch('pin/:id')
    async updatePinStatus(@Param('id', ParseIntPipe) postId: number) {
@@ -213,8 +254,7 @@ export class PostsController {
       description: 'Publicación actualizada',
       type: StatusResponse,
    })
-   // @Roles('Admin', 'Supervisor')
-   @Public()
+   @Roles('Admin', 'Supervisor')
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
    @Patch('approve/:id')
    async updateApprovedStatus(@Param('id', ParseIntPipe) postId: number) {

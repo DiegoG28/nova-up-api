@@ -13,7 +13,7 @@ import { Post, PostTypeEnum } from './posts.entity';
 import { CatalogsService } from '../catalogs/catalogs.service';
 import { AssetsService } from '../assets/assets.service';
 import { UpdatePostDto } from './dtos/update-post.dto';
-import { DataSource, DeepPartial } from 'typeorm';
+import { DataSource, DeepPartial, QueryRunner } from 'typeorm';
 import { Errors } from 'src/libs/errors';
 import { StatusResponse } from 'src/libs/status-response.dto';
 
@@ -68,7 +68,7 @@ export class PostsService {
 
    async findById(postId: number): Promise<PostDto> {
       const post = await this.postsRepository.findById(postId);
-      if (!post) throw new NotFoundException(Errors.UNSUPPORTED_FILE_TYPE);
+      if (!post) throw new NotFoundException(Errors.POST_NOT_FOUND);
       const postDto = this.postsMapperService.mapToPostDto(post);
       return postDto;
    }
@@ -124,6 +124,7 @@ export class PostsService {
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
+
       const createdFiles: string[] = [];
 
       try {
@@ -139,35 +140,16 @@ export class PostsService {
             queryRunner,
          );
 
-         if (links) {
-            const arrayLinks = links.split(',');
-            await this.assetsService.createAssets(
-               createdPostId,
-               arrayLinks,
-               queryRunner,
-            );
-         }
+         const createdAssets = await this.createPostAssets(
+            createdPostId,
+            links,
+            files,
+            coverImageFile,
+            queryRunner,
+         );
 
-         if (files) {
-            const createdAssets = await this.assetsService.createAssets(
-               createdPostId,
-               files,
-               queryRunner,
-            );
-            createdFiles.push(
-               ...createdAssets.map((createdAsset) => createdAsset.name),
-            );
-         }
+         createdFiles.push(...createdAssets);
 
-         if (coverImageFile) {
-            const createdAsset = await this.assetsService.createAsset(
-               createdPostId,
-               coverImageFile,
-               queryRunner,
-               true,
-            );
-            createdFiles.push(createdAsset.name);
-         }
          await queryRunner.commitTransaction();
 
          return {
@@ -183,6 +165,44 @@ export class PostsService {
       } finally {
          await queryRunner.release();
       }
+   }
+
+   async createPostAssets(
+      postId: number,
+      links?: string,
+      files?: Express.Multer.File[],
+      coverImageFile?: Express.Multer.File,
+      queryRunner?: QueryRunner,
+   ): Promise<string[]> {
+      const createdFiles: string[] = [];
+
+      if (links) {
+         const arrayLinks = links.split(',');
+         await this.assetsService.createAssets(postId, arrayLinks, queryRunner);
+      }
+
+      if (files) {
+         const createdAssets = await this.assetsService.createAssets(
+            postId,
+            files,
+            queryRunner,
+         );
+         createdFiles.push(
+            ...createdAssets.map((createdAsset) => createdAsset.name),
+         );
+      }
+
+      if (coverImageFile) {
+         const createdAsset = await this.assetsService.createAsset(
+            postId,
+            coverImageFile,
+            queryRunner,
+            true,
+         );
+         createdFiles.push(createdAsset.name);
+      }
+
+      return createdFiles;
    }
 
    async update(
@@ -206,11 +226,15 @@ export class PostsService {
    }
 
    async remove(post: Post): Promise<{ status: string; message: string }> {
-      let assetsId: undefined | number[] = undefined;
+      let assetNames: undefined | string[] = undefined;
       if (post.assets.length > 0) {
-         assetsId = post.assets.map((asset) => asset.id);
+         assetNames = post.assets.map((asset) => asset.name);
+         await Promise.all(
+            assetNames.map((name) => this.assetsService.deleteAsset(name)),
+         );
       }
-      await this.postsRepository.remove(post, assetsId);
+
+      await this.postsRepository.remove(post);
       return { status: 'Success', message: 'Publicación eliminada' };
    }
 

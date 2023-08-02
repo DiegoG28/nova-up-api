@@ -42,7 +42,7 @@ export class AssetsService {
    async createAssets(
       postId: number,
       assets: (Express.Multer.File | string)[],
-      queryRunner: QueryRunner,
+      queryRunner?: QueryRunner,
    ): Promise<Asset[]> {
       const files = assets.filter(
          (asset) => typeof asset === 'object' && 'mimetype' in asset,

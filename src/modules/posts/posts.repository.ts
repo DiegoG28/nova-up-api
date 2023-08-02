@@ -112,16 +112,13 @@ export class PostsRepository {
       await this.postsRepository.save(post);
    }
 
-   async remove(post: Post, assetsId?: number[]): Promise<void> {
+   async remove(post: Post): Promise<void> {
       const queryRunner = this.dataSource.createQueryRunner();
 
       queryRunner.connect();
       await queryRunner.startTransaction();
 
       try {
-         if (assetsId) {
-            // await this.removeAssets(assetsId);
-         }
          await this.postsRepository.delete(post.id);
 
          await queryRunner.commitTransaction();
