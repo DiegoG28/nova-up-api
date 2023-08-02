@@ -68,7 +68,6 @@ export class PostsController {
    ): Promise<PostCardDto[]> {
       //We need validate possible undefined because the route is public
       const userRole = req.userPayload?.user?.role?.name || '';
-      console.log(userRole);
       const showApproved =
          approved !== undefined ? approved === 'true' : undefined;
       const posts = await this.postsService.findAll(userRole, showApproved);

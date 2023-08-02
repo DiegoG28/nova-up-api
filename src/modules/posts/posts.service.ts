@@ -92,6 +92,7 @@ export class PostsService {
 
       //Override isPinned from existing convocatories posts
       const isPinning = !currentPost.isPinned;
+
       if (pinnedPosts.length > 0 && isPinning) {
          await this.overridePinnedPosts(pinnedPosts, currentPost);
       }
@@ -220,10 +221,7 @@ export class PostsService {
                pinnedPost.type === currentPost.type &&
                pinnedPost.id !== currentPost.id
             ) {
-               await this.postsRepository.updatePin(
-                  pinnedPost,
-                  !pinnedPost.isPinned,
-               );
+               await this.postsRepository.updatePin(pinnedPost, false);
             }
          }),
       );
