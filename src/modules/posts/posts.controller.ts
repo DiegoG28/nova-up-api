@@ -164,7 +164,7 @@ export class PostsController {
          (file) => file.fieldname !== 'coverImageFile',
       );
 
-      if (otherFiles && otherFiles.length > 10) {
+      if (otherFiles && otherFiles.length > 15) {
          throw new BadRequestException(Errors.LIMIT_NUMBER_FILES_EXCEEDED);
       }
 
