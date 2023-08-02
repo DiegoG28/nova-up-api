@@ -14,6 +14,11 @@ export class AssetsService {
       private readonly storageService: StorageService,
    ) {}
 
+   private readonly MAX_IMAGES = 10;
+   private readonly MAX_PDFS = 5;
+   private readonly MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+   private readonly MAX_PDF_SIZE = 3 * 1024 * 1024;
+
    async createAsset(
       postId: number,
       asset: Express.Multer.File | string,
@@ -39,9 +44,42 @@ export class AssetsService {
       assets: (Express.Multer.File | string)[],
       queryRunner: QueryRunner,
    ): Promise<Asset[]> {
-      const assetCreationPromises = assets.map(async (asset) => {
-         return await this.createAsset(postId, asset, queryRunner);
-      });
+      const files = assets.filter(
+         (asset) => typeof asset === 'object' && 'mimetype' in asset,
+      ) as Express.Multer.File[];
+
+      const images = files.filter((file) => file.mimetype.startsWith('image/'));
+      const pdfs = files.filter((file) => file.mimetype === 'application/pdf');
+
+      this.validateFileCount(
+         images,
+         this.MAX_IMAGES,
+         'Too many images provided. Maximum is ' + this.MAX_IMAGES,
+      );
+      this.validateFileCount(
+         pdfs,
+         this.MAX_PDFS,
+         'Too many PDFs provided. Maximum is ' + this.MAX_PDFS,
+      );
+
+      this.validateFileSize(
+         images,
+         this.MAX_IMAGE_SIZE,
+         'Image file size too large. Maximum size is ' +
+            this.MAX_IMAGE_SIZE / 1024 / 1024 +
+            'MB',
+      );
+      this.validateFileSize(
+         pdfs,
+         this.MAX_PDF_SIZE,
+         'PDF file size too large. Maximum size is ' +
+            this.MAX_PDF_SIZE / 1024 / 1024 +
+            'MB',
+      );
+
+      const assetCreationPromises = assets.map((asset) =>
+         this.createAsset(postId, asset, queryRunner),
+      );
 
       return await Promise.all(assetCreationPromises);
    }
@@ -100,6 +138,28 @@ export class AssetsService {
          await this.assetsRepository.save(createdAsset);
       }
       return createdAsset;
+   }
+
+   private validateFileSize(
+      files: Express.Multer.File[],
+      maxSize: number,
+      errorMsg: string,
+   ) {
+      for (const file of files) {
+         if (file.size > maxSize) {
+            throw new BadRequestException(errorMsg);
+         }
+      }
+   }
+
+   private validateFileCount(
+      files: Express.Multer.File[],
+      maxCount: number,
+      errorMsg: string,
+   ) {
+      if (files.length > maxCount) {
+         throw new BadRequestException(errorMsg);
+      }
    }
 
    private getAssetAndFolderType(mimeType: string): {

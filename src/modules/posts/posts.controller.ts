@@ -164,10 +164,6 @@ export class PostsController {
          (file) => file.fieldname !== 'coverImageFile',
       );
 
-      if (otherFiles && otherFiles.length > 15) {
-         throw new BadRequestException(Errors.LIMIT_NUMBER_FILES_EXCEEDED);
-      }
-
       const userId = req.userPayload?.sub;
       const response = this.postsService.create(
          createPostDto,
