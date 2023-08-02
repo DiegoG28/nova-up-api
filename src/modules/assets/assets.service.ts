@@ -111,7 +111,7 @@ export class AssetsService {
       } else if (mimeType === 'application/pdf') {
          return { assetType: AssetTypeEnum.PDF, folderType: 'pdfs' };
       } else {
-         throw new BadRequestException(Errors.UNSUPPORTED_FILE_TYPE);
+         throw new BadRequestException(`Unsupported file type: ${mimeType}`);
       }
    }
 }
