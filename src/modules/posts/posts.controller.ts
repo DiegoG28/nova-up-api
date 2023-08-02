@@ -14,6 +14,7 @@ import {
    UseInterceptors,
    UsePipes,
    UploadedFile,
+   BadRequestException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import {
@@ -35,6 +36,7 @@ import { Public, Roles } from '../auth/auth.decorators';
 import { UpdatePostDto, UpdatePostResponse } from './dtos/update-post.dto';
 import {
    AnyFilesInterceptor,
+   FileFieldsInterceptor,
    FileInterceptor,
    FilesInterceptor,
 } from '@nestjs/platform-express';
@@ -160,6 +162,10 @@ export class PostsController {
       const otherFiles = files?.filter(
          (file) => file.fieldname !== 'coverImageFile',
       );
+
+      if (otherFiles && otherFiles.length > 10) {
+         throw new BadRequestException(Errors.LIMIT_NUMBER_FILES_EXCEEDED);
+      }
 
       const userId = req.userPayload?.sub;
       const response = this.postsService.create(

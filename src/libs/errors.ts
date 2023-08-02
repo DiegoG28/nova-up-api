@@ -11,6 +11,10 @@ export const Errors = {
       error: 'UNSUPPORTED_FILE_TYPE',
       message: 'Unsupported file type',
    },
+   LIMIT_NUMBER_FILES_EXCEEDED: {
+      error: 'LIMIT_NUMBER_FILES_EXCEEDED',
+      message: 'Limit number of files has been exceeded. Limit: 10',
+   },
    NO_TOKEN_PROVIDED: {
       error: 'NO_TOKEN_PROVIDED',
       message:

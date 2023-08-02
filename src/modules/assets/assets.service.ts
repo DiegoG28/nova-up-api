@@ -38,12 +38,17 @@ export class AssetsService {
       postId: number,
       assets: (Express.Multer.File | string)[],
       queryRunner: QueryRunner,
-   ) {
+   ): Promise<Asset[]> {
       const assetCreationPromises = assets.map(async (asset) => {
-         await this.createAsset(postId, asset, queryRunner);
+         return await this.createAsset(postId, asset, queryRunner);
       });
 
-      await Promise.all(assetCreationPromises);
+      return await Promise.all(assetCreationPromises);
+   }
+
+   async deleteAsset(filePath: string) {
+      this.storageService.deleteFile(filePath);
+      await this.assetsRepository.delete({ name: filePath });
    }
 
    private async createAssetLink(
@@ -106,7 +111,7 @@ export class AssetsService {
       } else if (mimeType === 'application/pdf') {
          return { assetType: AssetTypeEnum.PDF, folderType: 'pdfs' };
       } else {
-         throw new BadRequestException(Errors.NO_ASSET_OR_FILE_PROVIDED);
+         throw new BadRequestException(Errors.UNSUPPORTED_FILE_TYPE);
       }
    }
 }

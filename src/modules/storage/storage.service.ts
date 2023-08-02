@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { join } from 'path';
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'fs';
 
 @Injectable()
 export class StorageService {
@@ -23,7 +23,9 @@ export class StorageService {
       return filePath;
    }
 
-   deleteFile() {
-      return;
+   deleteFile(filePath: string) {
+      if (existsSync(filePath)) {
+         unlinkSync(filePath);
+      }
    }
 }

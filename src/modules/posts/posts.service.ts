@@ -1,7 +1,6 @@
 import {
    ForbiddenException,
    Injectable,
-   InternalServerErrorException,
    NotFoundException,
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
@@ -115,6 +114,7 @@ export class PostsService {
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
+      const createdFiles: string[] = [];
 
       try {
          const { links, ...restFields } = newPostData;
@@ -139,22 +139,25 @@ export class PostsService {
          }
 
          if (files) {
-            await this.assetsService.createAssets(
+            const createdAssets = await this.assetsService.createAssets(
                createdPostId,
                files,
                queryRunner,
             );
+            createdFiles.push(
+               ...createdAssets.map((createdAsset) => createdAsset.name),
+            );
          }
 
          if (coverImageFile) {
-            await this.assetsService.createAsset(
+            const createdAsset = await this.assetsService.createAsset(
                createdPostId,
                coverImageFile,
                queryRunner,
                true,
             );
+            createdFiles.push(createdAsset.name);
          }
-
          await queryRunner.commitTransaction();
 
          return {
@@ -163,10 +166,10 @@ export class PostsService {
          };
       } catch (err) {
          await queryRunner.rollbackTransaction();
-         throw new InternalServerErrorException(
-            Errors.FAILED_TO_CREATE_POST,
-            err.message,
-         );
+         for (const filePath of createdFiles) {
+            this.assetsService.deleteAsset(filePath);
+         }
+         throw err;
       } finally {
          await queryRunner.release();
       }
