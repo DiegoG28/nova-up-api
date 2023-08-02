@@ -238,6 +238,11 @@ export class PostsService {
       return { status: 'Success', message: 'Publicación eliminada' };
    }
 
+   async removePostAsset(name: string): Promise<StatusResponse> {
+      await this.assetsService.deleteAsset(name);
+      return { status: 'Success', message: 'Asset deleted' };
+   }
+
    private async overridePinnedPosts(pinnedPosts: Post[], currentPost: Post) {
       await Promise.all(
          pinnedPosts.map(async (pinnedPost) => {

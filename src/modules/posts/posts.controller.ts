@@ -13,8 +13,6 @@ import {
    UploadedFiles,
    UseInterceptors,
    UsePipes,
-   UploadedFile,
-   BadRequestException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import {
@@ -35,12 +33,7 @@ import { RequestWithPayload } from 'src/libs/interfaces';
 import { Public, Roles } from '../auth/auth.decorators';
 import { UpdatePostDto } from './dtos/update-post.dto';
 import { StatusResponse } from 'src/libs/status-response.dto';
-import {
-   AnyFilesInterceptor,
-   FileFieldsInterceptor,
-   FileInterceptor,
-   FilesInterceptor,
-} from '@nestjs/platform-express';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ParseCategoryPipe } from 'src/pipes/category-parse.pipe';
 import { Errors } from 'src/libs/errors';
 import { CreateAssetDto } from '../assets/dtos/create-asset.dto';
@@ -179,7 +172,7 @@ export class PostsController {
    @ApiOperation({ summary: 'Crear nuevos assets' })
    @ApiConsumes('multipart/form-data')
    @ApiBody({
-      type: CreateAssetDto,
+      type: CreateAssetDto, //Delete this later
    })
    @ApiResponse({
       status: 201,
@@ -216,11 +209,14 @@ export class PostsController {
       return { status: 'Success', message: 'Assets succesfully created' };
    }
 
-   /*@ApiOperation({ summary: 'Actualizar una publicación' })
+   @ApiOperation({ summary: 'Actualizar una publicación' })
+   @ApiBody({
+      type: UpdatePostDto,
+   })
    @ApiResponse({
       status: 200,
       description: 'Publicación actualizada',
-      type: UpdatePostResponse,
+      type: StatusResponse,
    })
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
    @Public()
@@ -230,7 +226,7 @@ export class PostsController {
       @Body() updatePostRequest: Partial<UpdatePostDto>,
    ) {
       return this.postsService.update(updatePostRequest, postId);
-   }*/
+   }
 
    @ApiOperation({ summary: 'Actualizar el status fijado de una publicación' })
    @ApiResponse({

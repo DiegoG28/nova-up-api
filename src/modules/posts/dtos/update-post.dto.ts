@@ -6,7 +6,4 @@ export class UpdatePostDto extends BasePostDto {
    @IsPositive()
    @IsOptional()
    categoryId?: number;
-
-   /*@ApiProperty({ type: 'string', format: 'binary', isArray: true })
-   files: Express.Multer.File[];*/
 }
