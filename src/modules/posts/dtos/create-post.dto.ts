@@ -18,23 +18,13 @@ export class CreatePostDto extends BasePostDto {
 
    @ApiProperty({
       description:
-         'Array of images to upload. Note: despite being part of the DTO, this field will be handled by Multer, not by the validation pipeline.',
+         'Array of files to upload. Note: despite being part of the DTO, this field will be handled by Multer, not by the validation pipeline.',
       type: 'string',
       format: 'binary',
       isArray: true,
    })
    @IsOptional()
-   imageFiles?: Express.Multer.File[];
-
-   @ApiProperty({
-      description:
-         'Array of pdfs to upload. Note: despite being part of the DTO, this field will be handled by Multer, not by the validation pipeline.',
-      type: 'string',
-      format: 'binary',
-      isArray: true,
-   })
-   @IsOptional()
-   pdfFiles?: Express.Multer.File[];
+   files?: Express.Multer.File[];
 
    @ApiProperty({
       description:
