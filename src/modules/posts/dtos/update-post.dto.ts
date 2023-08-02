@@ -10,8 +10,3 @@ export class UpdatePostDto extends BasePostDto {
    /*@ApiProperty({ type: 'string', format: 'binary', isArray: true })
    files: Express.Multer.File[];*/
 }
-
-export class UpdatePostResponse {
-   status: string;
-   message: string;
-}

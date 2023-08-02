@@ -15,6 +15,7 @@ import { AssetsService } from '../assets/assets.service';
 import { UpdatePostDto } from './dtos/update-post.dto';
 import { DataSource, DeepPartial } from 'typeorm';
 import { Errors } from 'src/libs/errors';
+import { StatusResponse } from 'src/libs/status-response.dto';
 
 @Injectable()
 export class PostsService {
@@ -95,6 +96,10 @@ export class PostsService {
          await this.overridePinnedPosts(pinnedPosts, currentPost);
       }
       await this.postsRepository.updatePin(currentPost, !currentPost.isPinned);
+      return {
+         status: 'Success',
+         message: `Post ${postId} successfully pinned`,
+      };
    }
 
    async updateApprovedStatus(postId: number) {
@@ -103,6 +108,10 @@ export class PostsService {
          currentPost,
          !currentPost.isApproved,
       );
+      return {
+         status: 'Success',
+         message: `Post ${postId} successfully approved`,
+      };
    }
 
    async create(
@@ -110,7 +119,7 @@ export class PostsService {
       userId: number,
       files?: Express.Multer.File[],
       coverImageFile?: Express.Multer.File,
-   ): Promise<{ status: string; message: string }> {
+   ): Promise<StatusResponse> {
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();

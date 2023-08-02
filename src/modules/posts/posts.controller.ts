@@ -29,11 +29,12 @@ import {
 } from '@nestjs/swagger';
 import { PostDto } from './dtos/posts.dto';
 import { PostCardDto } from './dtos/posts-cards.dto';
-import { CreatePostDto, CreatePostResponse } from './dtos/create-post.dto';
+import { CreatePostDto } from './dtos/create-post.dto';
 import { PostBannerDto } from './dtos/posts-banner.dto';
 import { RequestWithPayload } from 'src/libs/interfaces';
 import { Public, Roles } from '../auth/auth.decorators';
-import { UpdatePostDto, UpdatePostResponse } from './dtos/update-post.dto';
+import { UpdatePostDto } from './dtos/update-post.dto';
+import { StatusResponse } from 'src/libs/status-response.dto';
 import {
    AnyFilesInterceptor,
    FileFieldsInterceptor,
@@ -67,6 +68,7 @@ export class PostsController {
    ): Promise<PostCardDto[]> {
       //We need validate possible undefined because the route is public
       const userRole = req.userPayload?.user?.role?.name || '';
+      console.log(userRole);
       const showApproved =
          approved !== undefined ? approved === 'true' : undefined;
       const posts = await this.postsService.findAll(userRole, showApproved);
@@ -145,7 +147,7 @@ export class PostsController {
    @ApiResponse({
       status: 201,
       description: 'Publicación creada',
-      type: CreatePostResponse,
+      type: StatusResponse,
    })
    @Post()
    @UseInterceptors(AnyFilesInterceptor())
@@ -193,11 +195,43 @@ export class PostsController {
       return this.postsService.update(updatePostRequest, postId);
    }*/
 
+   @ApiOperation({ summary: 'Actualizar el status fijado de una publicación' })
+   @ApiResponse({
+      status: 200,
+      description: 'Publicación actualizada',
+      type: StatusResponse,
+   })
+   // @Roles('Admin', 'Supervisor')
+   @Public()
+   @ApiParam({ name: 'id', description: 'ID de la publicación' })
+   @Patch('pin/:id')
+   async updatePinStatus(@Param('id', ParseIntPipe) postId: number) {
+      const response = await this.postsService.updatePinStatus(postId);
+      return response;
+   }
+
+   @ApiOperation({
+      summary: 'Actualizar el status aprobado de una publicación',
+   })
+   @ApiResponse({
+      status: 200,
+      description: 'Publicación actualizada',
+      type: StatusResponse,
+   })
+   // @Roles('Admin', 'Supervisor')
+   @Public()
+   @ApiParam({ name: 'id', description: 'ID de la publicación' })
+   @Patch('approve/:id')
+   async updateApprovedStatus(@Param('id', ParseIntPipe) postId: number) {
+      const response = await this.postsService.updateApprovedStatus(postId);
+      return response;
+   }
+
    @ApiOperation({ summary: 'Elimina una publicación' })
    @ApiResponse({
       status: 200,
       description: 'Publicación eliminada',
-      type: CreatePostResponse,
+      type: StatusResponse,
    })
    @Roles('Admin', 'Supervisor')
    @ApiParam({ name: 'id', description: 'ID de la publicación' })

@@ -35,8 +35,3 @@ export class CreatePostDto extends BasePostDto {
    @IsOptional()
    coverImageFile?: Express.Multer.File;
 }
-
-export class CreatePostResponse {
-   status: string;
-   message: string;
-}
