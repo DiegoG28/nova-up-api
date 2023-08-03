@@ -37,7 +37,11 @@ import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ParseCategoryPipe } from 'src/pipes/category-parse.pipe';
 import { Errors } from 'src/libs/errors';
 import { CreateAssetDto } from '../assets/dtos/create-asset.dto';
-// import { Roles } from '../auth/auth.decorators';
+import * as fs from 'fs';
+import * as path from 'path';
+import { Res } from '@nestjs/common';
+import { Response } from 'express';
+import * as mime from 'mime-types';
 
 @ApiTags('Publicaciones')
 @ApiBearerAuth()
@@ -271,5 +275,33 @@ export class PostsController {
       const post = await this.postsService.findOne(postId);
       if (!post) throw new NotFoundException(Errors.POST_NOT_FOUND);
       return await this.postsService.remove(post);
+   }
+
+   @Get('assets/:filepath')
+   @Public()
+   async getFile(
+      @Param('filepath') filepath: string,
+      @Res() response: Response,
+   ) {
+      const fullPath = path.resolve('assets', filepath);
+      const fileExists = fs.existsSync(fullPath);
+
+      if (!fileExists) {
+         throw new NotFoundException(`El archivo ${filepath} no existe.`);
+      }
+
+      const fileType = mime.lookup(filepath); // Buscar el tipo MIME basado en la extensión del archivo
+
+      if (!fileType) {
+         throw new Error(
+            `No se pudo determinar el tipo de contenido para el archivo ${filepath}.`,
+         );
+      }
+
+      const file = fs.readFileSync(fullPath);
+      console.log(fileType);
+
+      response.setHeader('Content-Type', fileType); // Establecer el tipo de contenido basado en el tipo MIME
+      response.send(file); // Enviar archivo como respuesta
    }
 }
