@@ -109,6 +109,9 @@ export class PostsRepository {
 
    async updateApproved(post: Post, approvedStatus: boolean): Promise<void> {
       post.isApproved = approvedStatus;
+      if (approvedStatus) {
+         post.publishDate = new Date();
+      }
       await this.postsRepository.save(post);
    }
 
