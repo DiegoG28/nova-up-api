@@ -8,7 +8,7 @@ export class StorageService {
    uploadFile(
       file: Express.Multer.File,
       assetType: string,
-      name: string,
+      name?: string,
    ): string {
       try {
          const { originalname, buffer } = file;
@@ -19,7 +19,8 @@ export class StorageService {
          if (!existsSync(directoryPath))
             mkdirSync(directoryPath, { recursive: true });
 
-         const filePath = join(directoryPath, `${name}${fileExtension}`);
+         const fileName = name ? `${name}${fileExtension}` : originalname;
+         const filePath = join(directoryPath, fileName);
 
          writeFileSync(filePath, buffer);
 
