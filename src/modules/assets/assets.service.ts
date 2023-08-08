@@ -157,15 +157,24 @@ export class AssetsService {
          }
          normalizedAssetPath = existingAsset.name;
       } else {
-         const truncatedHash = fileHash.substring(0, 20);
-         const timestamp = Date.now();
-         const fileName = `${truncatedHash}-${timestamp}`;
-         const assetPath = this.storageService.uploadFile(
-            file,
-            types.folderType,
-            fileName,
-         );
-         normalizedAssetPath = assetPath.replace(/\\/g, '/');
+         if (types.assetType === AssetTypeEnum.PDF) {
+            const assetPath = this.storageService.uploadFile(
+               file,
+               types.folderType,
+               file.originalname,
+            );
+            normalizedAssetPath = assetPath.replace(/\\/g, '/');
+         } else {
+            const truncatedHash = fileHash.substring(0, 20);
+            const timestamp = Date.now();
+            const fileName = `${truncatedHash}-${timestamp}`;
+            const assetPath = this.storageService.uploadFile(
+               file,
+               types.folderType,
+               fileName,
+            );
+            normalizedAssetPath = assetPath.replace(/\\/g, '/');
+         }
       }
 
       const newAsset: DeepPartial<Asset> = {
