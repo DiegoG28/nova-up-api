@@ -7,5 +7,6 @@ export const swaggerConfig = new DocumentBuilder()
    )
    .setVersion('1.0')
    .addBearerAuth()
-   .addServer(process.env.NODE_ENV === 'production' ? '/nova-up-api' : '/')
+   .addServer('http://localhost:3000/', 'Desarrollo Local')
+   .addServer('http://servicios.upqroo.edu.mx/nova-up-api', 'Producción')
    .build();
