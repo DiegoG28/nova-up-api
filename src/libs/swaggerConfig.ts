@@ -7,5 +7,5 @@ export const swaggerConfig = new DocumentBuilder()
    )
    .setVersion('1.0')
    .addBearerAuth()
-   .addServer(process.env.NODE_ENV === 'production' ? 'nova-up-api' : '')
+   .addServer(process.env.NODE_ENV === 'production' ? '/nova-up-api' : '/')
    .build();
