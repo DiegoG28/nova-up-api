@@ -103,11 +103,12 @@ export class PostsService {
       };
    }
 
-   async updateApprovedStatus(postId: number) {
+   async updateApprovedStatus(postId: number, comments?: string) {
       const currentPost = await this.findOne(postId);
       await this.postsRepository.updateApproved(
          currentPost,
          !currentPost.isApproved,
+         comments || '',
       );
       return {
          status: 'Success',

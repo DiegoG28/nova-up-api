@@ -107,8 +107,19 @@ export class PostsRepository {
       await this.postsRepository.save(post);
    }
 
-   async updateApproved(post: Post, approvedStatus: boolean): Promise<void> {
+   async updateApproved(
+      post: Post,
+      approvedStatus: boolean,
+      comments: string,
+   ): Promise<void> {
       post.isApproved = approvedStatus;
+      if (approvedStatus) {
+         post.publishDate = new Date();
+         post.comments = '';
+      } else {
+         post.publishDate = null as any;
+         post.comments = comments;
+      }
       await this.postsRepository.save(post);
    }
 

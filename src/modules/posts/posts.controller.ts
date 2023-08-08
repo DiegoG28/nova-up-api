@@ -31,7 +31,7 @@ import { CreatePostDto } from './dtos/create-post.dto';
 import { PostBannerDto } from './dtos/posts-banner.dto';
 import { RequestWithPayload } from 'src/libs/interfaces';
 import { Public, Roles } from '../auth/auth.decorators';
-import { UpdatePostDto } from './dtos/update-post.dto';
+import { UpdateApprovedDto, UpdatePostDto } from './dtos/update-post.dto';
 import { StatusResponse } from 'src/libs/status-response.dto';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ParseCategoryPipe } from 'src/pipes/category-parse.pipe';
@@ -247,6 +247,9 @@ export class PostsController {
    @ApiOperation({
       summary: 'Actualizar el status aprobado de una publicación',
    })
+   @ApiBody({
+      type: UpdateApprovedDto,
+   })
    @ApiResponse({
       status: 200,
       description: 'Publicación actualizada',
@@ -255,8 +258,15 @@ export class PostsController {
    @Roles('Admin', 'Supervisor')
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
    @Patch('approve/:id')
-   async updateApprovedStatus(@Param('id', ParseIntPipe) postId: number) {
-      const response = await this.postsService.updateApprovedStatus(postId);
+   async updateApprovedStatus(
+      @Param('id', ParseIntPipe) postId: number,
+      @Body() updateApprovedRequest: UpdateApprovedDto,
+   ) {
+      const { comments } = updateApprovedRequest;
+      const response = await this.postsService.updateApprovedStatus(
+         postId,
+         comments,
+      );
       return response;
    }
 
