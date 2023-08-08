@@ -9,9 +9,10 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
    const app = await NestFactory.create(AppModule, { cors: true });
+   app.setGlobalPrefix('nova-up-api');
 
    const document = SwaggerModule.createDocument(app, swaggerConfig);
-   SwaggerModule.setup('api', app, document, {
+   SwaggerModule.setup('api-docs', app, document, {
       customCssUrl:
          'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/5.1.0/swagger-ui.min.css',
    });
