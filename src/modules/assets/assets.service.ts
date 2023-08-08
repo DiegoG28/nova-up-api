@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+   BadRequestException,
+   Injectable,
+   NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, QueryRunner, Repository } from 'typeorm';
 import { Asset, AssetTypeEnum } from './assets.entity';
@@ -18,6 +22,15 @@ export class AssetsService {
    private readonly MAX_PDFS = 5;
    private readonly MAX_IMAGE_SIZE = 5 * 1024 * 1024;
    private readonly MAX_PDF_SIZE = 3 * 1024 * 1024;
+
+   async findAsset(filepath: string) {
+      const asset = await this.assetsRepository.findOne({
+         where: { name: filepath },
+      });
+      if (!asset) {
+         throw new NotFoundException('Asset not found');
+      }
+   }
 
    async createAsset(
       postId: number,

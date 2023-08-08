@@ -16,7 +16,6 @@ import { UpdatePostDto } from './dtos/update-post.dto';
 import { DataSource, DeepPartial, QueryRunner } from 'typeorm';
 import { Errors } from 'src/libs/errors';
 import { StatusResponse } from 'src/libs/status-response.dto';
-import path from 'path';
 
 @Injectable()
 export class PostsService {
@@ -240,6 +239,7 @@ export class PostsService {
    }
 
    async removePostAsset(name: string): Promise<StatusResponse> {
+      await this.assetsService.findAsset(name);
       await this.assetsService.deleteAsset(name);
       return { status: 'Success', message: 'Asset deleted' };
    }

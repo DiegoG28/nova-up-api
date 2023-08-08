@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { join } from 'path';
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'fs';
 
@@ -9,23 +9,35 @@ export class StorageService {
       postId: number,
       assetType: string,
    ): string {
-      const { originalname, buffer } = file;
+      try {
+         const { originalname, buffer } = file;
 
-      const directoryPath = join('assets', postId.toString(), assetType);
+         const directoryPath = join('assets', postId.toString(), assetType);
 
-      if (!existsSync(directoryPath))
-         mkdirSync(directoryPath, { recursive: true });
+         if (!existsSync(directoryPath))
+            mkdirSync(directoryPath, { recursive: true });
 
-      const filePath = join(directoryPath, originalname);
+         const filePath = join(directoryPath, originalname);
 
-      writeFileSync(filePath, buffer);
+         writeFileSync(filePath, buffer);
 
-      return filePath;
+         return filePath;
+      } catch (error) {
+         throw new InternalServerErrorException(
+            `Failed to save the file: ${error.message}`,
+         );
+      }
    }
 
    deleteFile(filePath: string) {
-      if (existsSync(filePath)) {
-         unlinkSync(filePath);
+      try {
+         if (existsSync(filePath)) {
+            unlinkSync(filePath);
+         }
+      } catch (error) {
+         throw new InternalServerErrorException(
+            `Failed to delete the file: ${error.message}`,
+         );
       }
    }
 }

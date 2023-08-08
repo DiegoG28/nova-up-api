@@ -139,9 +139,6 @@ export class PostsController {
 
    @ApiOperation({ summary: 'Crear una nueva publicación' })
    @ApiConsumes('multipart/form-data')
-   @ApiBody({
-      type: CreatePostDto,
-   })
    @ApiResponse({
       status: 201,
       description: 'Publicación creada',
@@ -175,9 +172,6 @@ export class PostsController {
 
    @ApiOperation({ summary: 'Crear nuevos assets' })
    @ApiConsumes('multipart/form-data')
-   @ApiBody({
-      type: CreateAssetDto, //Delete this later
-   })
    @ApiResponse({
       status: 201,
       description: 'Assets creados',
@@ -203,14 +197,18 @@ export class PostsController {
          (file) => file.fieldname !== 'coverImageFile',
       );
 
-      await this.postsService.createPostAssets(
+      const createdAssets = await this.postsService.createPostAssets(
          postId,
          links,
          otherFiles,
          coverImageFile,
       );
 
-      return { status: 'Success', message: 'Assets succesfully created' };
+      return {
+         status: 'Success',
+         message: 'Assets succesfully created',
+         data: createdAssets,
+      };
    }
 
    @ApiOperation({ summary: 'Actualizar una publicación' })
@@ -277,6 +275,23 @@ export class PostsController {
       return await this.postsService.remove(post);
    }
 
+   @ApiOperation({ summary: 'Elimina un asset' })
+   @ApiResponse({
+      status: 200,
+      description: 'Asset eliminado',
+      type: StatusResponse,
+   })
+   @ApiParam({
+      name: 'filepath',
+      description: 'Path o nombre del asset a eliminar',
+   })
+   @Delete('/assets/:filepath')
+   async deleteAsset(@Param('filepath') filepath: string) {
+      return await this.postsService.removePostAsset(filepath);
+   }
+
+   //FOR DEVS ONLY
+   @ApiOperation({ summary: 'FOR DEV PURPOSE' })
    @Get('assets/:filepath')
    @Public()
    async getFile(
