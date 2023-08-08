@@ -135,9 +135,10 @@ export class AssetsService {
          postId,
          types.folderType,
       );
+      const normalizedAssetPath = assetPath.replace(/\\/g, '/');
 
       const newAsset: DeepPartial<Asset> = {
-         name: assetPath,
+         name: normalizedAssetPath,
          type: types.assetType,
          isCoverImage,
          post: { id: postId },
