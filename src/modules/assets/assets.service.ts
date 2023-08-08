@@ -161,7 +161,6 @@ export class AssetsService {
             const assetPath = this.storageService.uploadFile(
                file,
                types.folderType,
-               file.originalname,
             );
             normalizedAssetPath = assetPath.replace(/\\/g, '/');
          } else {
