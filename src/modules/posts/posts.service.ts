@@ -175,35 +175,43 @@ export class PostsService {
       coverImageFile?: Express.Multer.File,
       queryRunner?: QueryRunner,
    ): Promise<string[]> {
-      const createdFiles: string[] = [];
+      const createdAssets: string[] = [];
 
       if (links) {
          const arrayLinks = links.split(',');
-         await this.assetsService.createAssets(postId, arrayLinks, queryRunner);
+
+         const createdLinks = await this.assetsService.createAssets(
+            postId,
+            arrayLinks,
+            queryRunner,
+         );
+         createdAssets.push(
+            ...createdLinks.map((createdLink) => createdLink.name),
+         );
       }
 
       if (files) {
-         const createdAssets = await this.assetsService.createAssets(
+         const createdFiles = await this.assetsService.createAssets(
             postId,
             files,
             queryRunner,
          );
-         createdFiles.push(
-            ...createdAssets.map((createdAsset) => createdAsset.name),
+         createdAssets.push(
+            ...createdFiles.map((createdFile) => createdFile.name),
          );
       }
 
       if (coverImageFile) {
-         const createdAsset = await this.assetsService.createAsset(
+         const createdFile = await this.assetsService.createAsset(
             postId,
             coverImageFile,
             queryRunner,
             true,
          );
-         createdFiles.push(createdAsset.name);
+         createdAssets.push(createdFile.name);
       }
 
-      return createdFiles;
+      return createdAssets;
    }
 
    async update(
@@ -231,7 +239,9 @@ export class PostsService {
       if (post.assets.length > 0) {
          assetNames = post.assets.map((asset) => asset.name);
          await Promise.all(
-            assetNames.map((name) => this.assetsService.deleteAsset(name)),
+            assetNames.map((name) =>
+               this.assetsService.deleteAsset(name, post.id),
+            ),
          );
       }
 
@@ -239,9 +249,18 @@ export class PostsService {
       return { status: 'Success', message: 'Publicación eliminada' };
    }
 
-   async removePostAsset(name: string): Promise<StatusResponse> {
-      await this.assetsService.findAsset(name);
-      await this.assetsService.deleteAsset(name);
+   async removePostAsset(
+      name: string,
+      postId: number,
+   ): Promise<StatusResponse> {
+      const existingAsset = await this.assetsService.findAssetByName(
+         name,
+         postId,
+      );
+      if (!existingAsset) {
+         throw new NotFoundException('Asset not found');
+      }
+      await this.assetsService.deleteAsset(name, postId);
       return { status: 'Success', message: 'Asset deleted' };
    }
 

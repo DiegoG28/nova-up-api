@@ -292,12 +292,17 @@ export class PostsController {
       type: StatusResponse,
    })
    @ApiParam({
-      name: 'filepath',
+      name: 'id',
+      description: 'ID de la publicación',
+   })
+   @ApiParam({
+      name: 'name',
       description: 'Path o nombre del asset a eliminar',
    })
-   @Delete('/assets/:filepath')
-   async deleteAsset(@Param('filepath') filepath: string) {
-      return await this.postsService.removePostAsset(filepath);
+   @Delete('/:id/assets/:name')
+   async deleteAsset(@Param('id') postId: number, @Param('name') name: string) {
+      await this.postsService.findById(postId);
+      return await this.postsService.removePostAsset(name, postId);
    }
 
    //FOR DEVS ONLY

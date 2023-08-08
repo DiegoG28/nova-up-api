@@ -1,8 +1,4 @@
-import {
-   BadRequestException,
-   Injectable,
-   NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeepPartial, QueryRunner, Repository } from 'typeorm';
 import { Asset, AssetTypeEnum } from './assets.entity';
@@ -23,13 +19,11 @@ export class AssetsService {
    private readonly MAX_IMAGE_SIZE = 5 * 1024 * 1024;
    private readonly MAX_PDF_SIZE = 3 * 1024 * 1024;
 
-   async findAsset(filepath: string) {
-      const asset = await this.assetsRepository.findOne({
-         where: { name: filepath },
+   async findAssetByName(name: string, postId: number): Promise<Asset | null> {
+      return await this.assetsRepository.findOne({
+         where: { name: name, post: { id: postId } },
+         relations: ['post'],
       });
-      if (!asset) {
-         throw new NotFoundException('Asset not found');
-      }
    }
 
    async createAsset(
@@ -97,9 +91,19 @@ export class AssetsService {
       return await Promise.all(assetCreationPromises);
    }
 
-   async deleteAsset(filePath: string) {
-      this.storageService.deleteFile(filePath);
-      await this.assetsRepository.delete({ name: filePath });
+   async deleteAsset(name: string, postId?: number) {
+      if (postId) {
+         await this.assetsRepository.delete({
+            name: name,
+            post: { id: postId },
+         });
+      }
+      const count = await this.assetsRepository.count({
+         where: { name: name },
+      });
+      if (count === 0) {
+         this.storageService.deleteFile(name);
+      }
    }
 
    private async createAssetLink(
@@ -107,6 +111,11 @@ export class AssetsService {
       postId: number,
       queryRunner?: QueryRunner,
    ): Promise<Asset> {
+      const existingAsset = await this.findAssetByName(asset, postId);
+      if (existingAsset) {
+         return existingAsset;
+      }
+
       const newAsset: DeepPartial<Asset> = {
          name: asset,
          type: AssetTypeEnum.Link,
@@ -138,6 +147,14 @@ export class AssetsService {
       let normalizedAssetPath = '';
 
       if (existingAsset) {
+         const existingAssetWithSamePost = await this.findAssetByName(
+            existingAsset.name,
+            postId,
+         );
+
+         if (existingAssetWithSamePost) {
+            return existingAssetWithSamePost;
+         }
          normalizedAssetPath = existingAsset.name;
       } else {
          const truncatedHash = fileHash.substring(0, 20);
@@ -171,7 +188,10 @@ export class AssetsService {
    }
 
    private async findAssetByHash(hash: string): Promise<Asset | null> {
-      return this.assetsRepository.findOne({ where: { hash: hash } });
+      return this.assetsRepository.findOne({
+         where: { hash: hash },
+         relations: ['post'],
+      });
    }
 
    private validateFileSize(
