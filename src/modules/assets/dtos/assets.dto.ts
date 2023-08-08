@@ -4,4 +4,5 @@ export class AssetDto {
    id: number;
    name: string;
    type: AssetTypeEnum;
+   hash?: string;
 }

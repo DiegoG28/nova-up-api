@@ -50,6 +50,7 @@ export class PostsMapperService {
                id: asset.id,
                name: asset.name,
                type: asset.type,
+               hash: asset.hash,
             };
          });
 

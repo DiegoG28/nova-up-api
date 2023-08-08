@@ -129,19 +129,34 @@ export class AssetsService {
       queryRunner?: QueryRunner,
       isCoverImage?: boolean,
    ): Promise<Asset> {
+      const fileHash = this.storageService.calculateFileHash(file.buffer);
+
+      const existingAsset = await this.findAssetByHash(fileHash);
+
       const types = this.getAssetAndFolderType(file.mimetype);
-      const assetPath = this.storageService.uploadFile(
-         file,
-         postId,
-         types.folderType,
-      );
-      const normalizedAssetPath = assetPath.replace(/\\/g, '/');
+
+      let normalizedAssetPath = '';
+
+      if (existingAsset) {
+         normalizedAssetPath = existingAsset.name;
+      } else {
+         const truncatedHash = fileHash.substring(0, 20);
+         const timestamp = Date.now();
+         const fileName = `${truncatedHash}-${timestamp}`;
+         const assetPath = this.storageService.uploadFile(
+            file,
+            types.folderType,
+            fileName,
+         );
+         normalizedAssetPath = assetPath.replace(/\\/g, '/');
+      }
 
       const newAsset: DeepPartial<Asset> = {
          name: normalizedAssetPath,
          type: types.assetType,
          isCoverImage,
          post: { id: postId },
+         hash: fileHash,
       };
 
       const createdAsset = this.assetsRepository.create(newAsset);
@@ -151,7 +166,12 @@ export class AssetsService {
       } else {
          await this.assetsRepository.save(createdAsset);
       }
+
       return createdAsset;
+   }
+
+   private async findAssetByHash(hash: string): Promise<Asset | null> {
+      return this.assetsRepository.findOne({ where: { hash: hash } });
    }
 
    private validateFileSize(
