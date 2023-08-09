@@ -1,4 +1,4 @@
-import { extname, join } from 'path';
+import { join } from 'path';
 import { existsSync, mkdirSync, unlinkSync, writeFileSync } from 'fs';
 import { createHash } from 'crypto';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -8,18 +8,16 @@ export class StorageService {
    uploadFile(
       file: Express.Multer.File,
       assetType: string,
-      name?: string,
+      fileName: string,
    ): string {
       try {
-         const { originalname, buffer } = file;
+         const { buffer } = file;
 
          const directoryPath = join('assets', assetType);
-         const fileExtension = extname(originalname);
 
          if (!existsSync(directoryPath))
             mkdirSync(directoryPath, { recursive: true });
 
-         const fileName = name ? `${name}${fileExtension}` : originalname;
          const filePath = join(directoryPath, fileName);
 
          writeFileSync(filePath, buffer);

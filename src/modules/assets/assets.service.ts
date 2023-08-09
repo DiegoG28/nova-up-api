@@ -4,45 +4,71 @@ import { DeepPartial, QueryRunner, Repository } from 'typeorm';
 import { Asset, AssetTypeEnum } from './assets.entity';
 import { StorageService } from '../storage/storage.service';
 import { Errors } from 'src/libs/errors';
+import { extname } from 'path';
 
+const AssetLimits = {
+   MAX_IMAGES: 10,
+   MAX_PDFS: 5,
+   MAX_IMAGE_SIZE: 5 * 1024 * 1024,
+   MAX_PDF_SIZE: 3 * 1024 * 1024,
+};
+
+enum FolderTypes {
+   IMAGES = 'images',
+   PDFS = 'pdfs',
+}
+
+/**
+ * Service responsible for handling assets (images, PDFs, etc.).
+ * @class
+ */
 @Injectable()
 export class AssetsService {
    constructor(
       @InjectRepository(Asset)
       private readonly assetsRepository: Repository<Asset>,
-
       private readonly storageService: StorageService,
    ) {}
 
-   private readonly MAX_IMAGES = 10;
-   private readonly MAX_PDFS = 5;
-   private readonly MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-   private readonly MAX_PDF_SIZE = 3 * 1024 * 1024;
+   // Primary API methods for the service
 
-   async findAssetByName(name: string, postId: number): Promise<Asset | null> {
+   /**
+    * Find an asset by its name and associated post ID.
+    * @param name - Name of the asset.
+    * @param postId - ID of the associated post.
+    * @returns Promise resolving to the found Asset or null if not found.
+    */
+   async findAssetByNameAndPostId(
+      name: string,
+      postId: number,
+   ): Promise<Asset | null> {
       return await this.assetsRepository.findOne({
          where: { name: name, post: { id: postId } },
          relations: ['post'],
       });
    }
 
+   /**
+    * Create a new asset for a given post. The asset can either be a file or a link.
+    * @param postId - ID of the associated post.
+    * @param asset - Asset to be created, can be a file or a link.
+    * @param queryRunner - Optional query runner if running within a transaction.
+    * @param isCoverImage - Optional flag to indicate if the asset is a cover image.
+    * @returns Promise resolving to the created Asset.
+    * @throws BadRequestException if neither a valid asset link nor file is provided.
+    */
    async createAsset(
       postId: number,
       asset: Express.Multer.File | string,
       queryRunner?: QueryRunner,
       isCoverImage?: boolean,
    ): Promise<Asset> {
-      if (typeof asset === 'string') {
+      if (typeof asset === 'string')
          return this.createAssetLink(asset, postId, queryRunner);
+
+      if (this.isFile(asset)) {
+         return this.handleFileAsset(asset, postId, queryRunner, isCoverImage);
       }
-
-      if (typeof asset === 'object' && 'mimetype' in asset) {
-         if (isCoverImage && !asset.mimetype.startsWith('image/'))
-            throw new BadRequestException(Errors.UNSUPPORTED_FILE_TYPE_COVER);
-
-         return this.createAssetFile(asset, postId, queryRunner, isCoverImage);
-      }
-
       throw new BadRequestException(Errors.NO_ASSET_OR_FILE_PROVIDED);
    }
 
@@ -51,38 +77,9 @@ export class AssetsService {
       assets: (Express.Multer.File | string)[],
       queryRunner?: QueryRunner,
    ): Promise<Asset[]> {
-      const files = assets.filter(
-         (asset) => typeof asset === 'object' && 'mimetype' in asset,
-      ) as Express.Multer.File[];
+      const files = assets.filter(this.isFile);
 
-      const images = files.filter((file) => file.mimetype.startsWith('image/'));
-      const pdfs = files.filter((file) => file.mimetype === 'application/pdf');
-
-      this.validateFileCount(
-         images,
-         this.MAX_IMAGES,
-         'Too many images provided. Maximum is ' + this.MAX_IMAGES,
-      );
-      this.validateFileCount(
-         pdfs,
-         this.MAX_PDFS,
-         'Too many PDFs provided. Maximum is ' + this.MAX_PDFS,
-      );
-
-      this.validateFileSize(
-         images,
-         this.MAX_IMAGE_SIZE,
-         'Image file size too large. Maximum size is ' +
-            this.MAX_IMAGE_SIZE / 1024 / 1024 +
-            'MB',
-      );
-      this.validateFileSize(
-         pdfs,
-         this.MAX_PDF_SIZE,
-         'PDF file size too large. Maximum size is ' +
-            this.MAX_PDF_SIZE / 1024 / 1024 +
-            'MB',
-      );
+      this.validateAssets(files);
 
       const assetCreationPromises = assets.map((asset) =>
          this.createAsset(postId, asset, queryRunner),
@@ -91,6 +88,13 @@ export class AssetsService {
       return await Promise.all(assetCreationPromises);
    }
 
+   /**
+    * Deletes an asset from the database based on its name. If the asset is not associated with any other posts,
+    * it will also be removed from the storage.
+    *
+    * @param name - Name of the asset to delete.
+    * @param postId - Optional ID of the associated post to narrow down the deletion.
+    */
    async deleteAsset(name: string, postId?: number) {
       if (postId) {
          await this.assetsRepository.delete({
@@ -106,32 +110,133 @@ export class AssetsService {
       }
    }
 
-   private async createAssetLink(
-      asset: string,
+   // Helper or related methods for primary ones
+
+   /**
+    * Handles the creation of an asset that is a file. Validates if it's a cover image and then proceeds to save it.
+    *
+    * @private
+    * @param file - The file to be processed.
+    * @param postId - ID of the associated post.
+    * @param queryRunner - Optional query runner if running within a transaction.
+    * @param isCoverImage - Optional flag to indicate if the asset is a cover image.
+    * @returns Promise resolving to the created Asset.
+    */
+   private handleFileAsset(
+      file: Express.Multer.File,
+      postId: number,
+      queryRunner?: QueryRunner,
+      isCoverImage?: boolean,
+   ): Promise<Asset> {
+      this.validateCoverImage(file, isCoverImage);
+
+      return this.createAssetFile(file, postId, queryRunner, isCoverImage);
+   }
+
+   /**
+    * Handles the scenario where an asset with the same hash already exists in the system.
+    * - If the asset with the same name is associated with the given postId, it directly returns that asset.
+    * - Otherwise, a new database entry is created for the existing asset for the given postId. This method doesn't save any files on local storage.
+    *
+    * @private
+    * @param existingAsset - Existing asset based on file hash.
+    * @param postId - ID of the associated post.
+    * @param queryRunner - Optional query runner if running within a transaction.
+    * @returns Promise resolving to either the existing Asset or the newly created asset entry.
+    */
+
+   private async handleExistingAsset(
+      existingAsset: Asset,
       postId: number,
       queryRunner?: QueryRunner,
    ): Promise<Asset> {
-      const existingAsset = await this.findAssetByName(asset, postId);
-      if (existingAsset) {
-         return existingAsset;
+      const duplicateAsset = await this.findAssetByNameAndPostId(
+         existingAsset.name,
+         postId,
+      );
+      if (duplicateAsset) {
+         return duplicateAsset;
       }
 
-      const newAsset: DeepPartial<Asset> = {
-         name: asset,
-         type: AssetTypeEnum.Link,
+      const newAssetEntry: DeepPartial<Asset> = {
+         name: existingAsset.name,
+         type: existingAsset.type,
+         isCoverImage: existingAsset.isCoverImage,
          post: { id: postId },
+         hash: existingAsset.hash,
       };
 
-      const createdAsset = this.assetsRepository.create(newAsset);
-
-      if (queryRunner) {
-         await queryRunner.manager.save(createdAsset);
-      } else {
-         await this.assetsRepository.save(createdAsset);
-      }
-      return createdAsset;
+      return this.saveAsset(newAssetEntry, queryRunner);
    }
 
+   /**
+    * Creates and stores a new asset when no existing asset with the same hash is found.
+    * - Determines the asset type and storage folder.
+    * - Generates a unique name for the asset.
+    * - Stores the asset both in the storage and in the database.
+    *
+    * @private
+    * @param file - The uploaded file to be processed.
+    * @param postId - Associated post ID.
+    * @param fileHash - Calculated hash for the file.
+    * @param queryRunner - Optional query runner if running within a transaction.
+    * @param isCoverImage - Optional flag to indicate if the asset is a cover image.
+    * @returns Promise resolving to the created Asset.
+    */
+   private storeNewAsset(
+      file: Express.Multer.File,
+      postId: number,
+      fileHash: string,
+      queryRunner?: QueryRunner,
+      isCoverImage?: boolean,
+   ): Promise<Asset> {
+      const { assetType, folderType } = this.getAssetAndFolderType(
+         file.mimetype,
+      );
+      const assetName = this.generateAssetName(file, folderType, fileHash);
+      const assetPath = this.storageService
+         .uploadFile(file, folderType, assetName)
+         .replace(/\\/g, '/');
+
+      const newAsset: DeepPartial<Asset> = {
+         name: assetPath,
+         type: assetType,
+         isCoverImage,
+         post: { id: postId },
+         hash: fileHash,
+      };
+
+      return this.saveAsset(newAsset, queryRunner);
+   }
+
+   /**
+    * Creates and stores an asset based on a given file. This method first calculates the hash of the provided file
+    * and looks for an existing asset with that hash in the database.
+    *
+    * If an existing asset with the same hash is found:
+    *  - The file is not saved to local storage.
+    *  - If there's also an asset with the same hash associated and postId, it simply returns that asset without any modification
+    *    in the database or storage.
+    *  - If no asset with the same hash is associated with the given postId, a new database entry is created for the asset, but the file is not
+    *    saved again to local storage.
+    *
+    * If no existing asset is found:
+    *  - The asset's type is determined, and the corresponding folder where it should be stored is decided upon.
+    *  - A name for the asset is generated.
+    *  - The asset is stored both in local storage and in the database.
+    *
+    * In summary, this method has three possible outcomes:
+    *  1. The asset is stored both in local storage and in the database.
+    *  2. The asset isn't stored in local storage but is in the database (new entry for an existing asset).
+    *  3. The asset isn't stored in either local storage or the database (in the case of a duplicate record for the same postId).
+    *
+    * @private
+    * @param file - The uploaded file to be processed.
+    * @param postId - Associated post ID.
+    * @param queryRunner - Optional query runner if running within a transaction.
+    * @param isCoverImage - Optional flag to indicate if the asset is a cover image.
+    * @returns Promise resolving to the created or existing Asset.
+    */
    private async createAssetFile(
       file: Express.Multer.File,
       postId: number,
@@ -141,58 +246,103 @@ export class AssetsService {
       const fileHash = this.storageService.calculateFileHash(file.buffer);
 
       const existingAsset = await this.findAssetByHash(fileHash);
-
-      const types = this.getAssetAndFolderType(file.mimetype);
-
-      let normalizedAssetPath = '';
-
       if (existingAsset) {
-         const existingAssetWithSamePost = await this.findAssetByName(
-            existingAsset.name,
-            postId,
-         );
-
-         if (existingAssetWithSamePost) {
-            return existingAssetWithSamePost;
-         }
-         normalizedAssetPath = existingAsset.name;
+         return this.handleExistingAsset(existingAsset, postId);
       } else {
-         if (types.assetType === AssetTypeEnum.PDF) {
-            const assetPath = this.storageService.uploadFile(
-               file,
-               types.folderType,
-            );
-            normalizedAssetPath = assetPath.replace(/\\/g, '/');
-         } else {
-            const truncatedHash = fileHash.substring(0, 20);
-            const timestamp = Date.now();
-            const fileName = `${truncatedHash}-${timestamp}`;
-            const assetPath = this.storageService.uploadFile(
-               file,
-               types.folderType,
-               fileName,
-            );
-            normalizedAssetPath = assetPath.replace(/\\/g, '/');
-         }
+         return this.storeNewAsset(
+            file,
+            postId,
+            fileHash,
+            queryRunner,
+            isCoverImage,
+         );
       }
+   }
+
+   /**
+    * Creates and saves a link-based asset to the database.
+    *
+    * @private
+    * @param asset - URL or link to the asset.
+    * @param postId - ID of the associated post.
+    * @param queryRunner - Optional query runner if running within a transaction.
+    * @returns Promise resolving to the created or existing Asset.
+    */
+   private async createAssetLink(
+      asset: string,
+      postId: number,
+      queryRunner?: QueryRunner,
+   ): Promise<Asset> {
+      const existingAsset = await this.findAssetByNameAndPostId(asset, postId);
+      if (existingAsset) return existingAsset;
 
       const newAsset: DeepPartial<Asset> = {
-         name: normalizedAssetPath,
-         type: types.assetType,
-         isCoverImage,
+         name: asset,
+         type: AssetTypeEnum.Link,
          post: { id: postId },
-         hash: fileHash,
       };
 
-      const createdAsset = this.assetsRepository.create(newAsset);
+      return await this.saveAsset(newAsset, queryRunner);
+   }
 
+   /**
+    * Saves the provided asset to the database, either within an existing transaction or outside.
+    *
+    * @private
+    * @param asset - Asset data to be saved.
+    * @param queryRunner - Optional query runner if running within a transaction.
+    * @returns Promise resolving to the saved Asset.
+    */
+   private async saveAsset(
+      asset: DeepPartial<Asset>,
+      queryRunner?: QueryRunner,
+   ): Promise<Asset> {
+      const createdAsset = this.assetsRepository.create(asset);
       if (queryRunner) {
          await queryRunner.manager.save(createdAsset);
       } else {
          await this.assetsRepository.save(createdAsset);
       }
-
       return createdAsset;
+   }
+
+   /**
+    * Determines the type (Image/PDF) and the storage folder based on the provided MIME type.
+    *
+    * @private
+    * @param mimeType - MIME type of the file to determine the type and folder.
+    * @returns An object containing the determined asset type and folder type.
+    * @throws BadRequestException if the MIME type is not supported.
+    */
+   private getAssetAndFolderType(mimeType: string): {
+      assetType: AssetTypeEnum;
+      folderType: FolderTypes;
+   } {
+      if (mimeType.startsWith('image/')) {
+         return {
+            assetType: AssetTypeEnum.Image,
+            folderType: FolderTypes.IMAGES,
+         };
+      } else if (mimeType === 'application/pdf') {
+         return { assetType: AssetTypeEnum.PDF, folderType: FolderTypes.PDFS };
+      } else {
+         throw new BadRequestException(`Unsupported file type: ${mimeType}`);
+      }
+   }
+
+   private generateAssetName(
+      file: Express.Multer.File,
+      folderType: FolderTypes,
+      fileHash: string,
+   ): string {
+      if (folderType === FolderTypes.PDFS) {
+         return file.originalname;
+      } else {
+         const truncatedHash = fileHash.substring(0, 20);
+         const timestamp = Date.now();
+         const fileExtension = extname(file.originalname);
+         return `${truncatedHash}-${timestamp}${fileExtension}`;
+      }
    }
 
    private async findAssetByHash(hash: string): Promise<Asset | null> {
@@ -202,38 +352,80 @@ export class AssetsService {
       });
    }
 
+   // Validation and other utility functions
+
+   /**
+    * Validates a collection of files based on predefined constraints.
+    * - Ensures that the number of image and PDF files are within acceptable limits.
+    * - Ensures that the size of individual image and PDF files do not exceed predefined size limits.
+    *
+    * @private
+    * @param files - Collection of files to be validated.
+    */
+   private validateAssets(files: Express.Multer.File[]) {
+      const images = files.filter((file) => this.isImage(file));
+      const pdfs = files.filter((file) => this.isPDF(file));
+
+      this.validateFileCount(
+         images,
+         AssetLimits.MAX_IMAGES,
+         Errors.TOO_MANY_FILES('images', AssetLimits.MAX_IMAGES),
+      );
+      this.validateFileCount(
+         pdfs,
+         AssetLimits.MAX_PDFS,
+         Errors.TOO_MANY_FILES('PDFs', AssetLimits.MAX_PDFS),
+      );
+      this.validateFileSize(
+         images,
+         AssetLimits.MAX_IMAGE_SIZE,
+         Errors.FILE_SIZE_TOO_LARGE('image', AssetLimits.MAX_IMAGE_SIZE),
+      );
+      this.validateFileSize(
+         pdfs,
+         AssetLimits.MAX_PDF_SIZE,
+         Errors.FILE_SIZE_TOO_LARGE('PDF', AssetLimits.MAX_PDF_SIZE),
+      );
+   }
+
    private validateFileSize(
       files: Express.Multer.File[],
       maxSize: number,
-      errorMsg: string,
+      errorObject: { error: string; message: string },
    ) {
-      for (const file of files) {
-         if (file.size > maxSize) {
-            throw new BadRequestException(errorMsg);
-         }
+      if (files.some((file) => file.size > maxSize)) {
+         throw new BadRequestException(errorObject);
       }
    }
 
    private validateFileCount(
       files: Express.Multer.File[],
       maxCount: number,
-      errorMsg: string,
+      errorObject: { error: string; message: string },
    ) {
       if (files.length > maxCount) {
-         throw new BadRequestException(errorMsg);
+         throw new BadRequestException(errorObject);
       }
    }
 
-   private getAssetAndFolderType(mimeType: string): {
-      assetType: AssetTypeEnum;
-      folderType: 'images' | 'pdfs';
-   } {
-      if (mimeType.startsWith('image/')) {
-         return { assetType: AssetTypeEnum.Image, folderType: 'images' };
-      } else if (mimeType === 'application/pdf') {
-         return { assetType: AssetTypeEnum.PDF, folderType: 'pdfs' };
-      } else {
-         throw new BadRequestException(`Unsupported file type: ${mimeType}`);
+   private validateCoverImage(
+      file: Express.Multer.File,
+      isCoverImage?: boolean,
+   ): void {
+      if (isCoverImage && !this.isImage(file)) {
+         throw new BadRequestException(Errors.COVER_IMAGE_NOT_AN_IMAGE);
       }
+   }
+
+   private isFile(asset: any): asset is Express.Multer.File {
+      return typeof asset === 'object' && 'mimetype' in asset;
+   }
+
+   private isImage(file: Express.Multer.File): boolean {
+      return file.mimetype.startsWith('image/');
+   }
+
+   private isPDF(file: Express.Multer.File): boolean {
+      return file.mimetype === 'application/pdf';
    }
 }

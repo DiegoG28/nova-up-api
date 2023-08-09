@@ -13,6 +13,7 @@ import {
    UploadedFiles,
    UseInterceptors,
    UsePipes,
+   BadRequestException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import {
@@ -295,12 +296,19 @@ export class PostsController {
       name: 'id',
       description: 'ID de la publicación',
    })
-   @ApiParam({
+   @ApiQuery({
       name: 'name',
       description: 'Path o nombre del asset a eliminar',
+      required: true,
    })
-   @Delete('/:id/assets/:name')
-   async deleteAsset(@Param('id') postId: number, @Param('name') name: string) {
+   @Delete('/:id/assets')
+   async deleteAsset(
+      @Param('id') postId: number,
+      @Query('name') name?: string,
+   ) {
+      if (!name) {
+         throw new BadRequestException('El parámetro "name" es obligatorio.');
+      }
       await this.postsService.findById(postId);
       return await this.postsService.removePostAsset(name, postId);
    }

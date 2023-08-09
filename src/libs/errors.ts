@@ -1,20 +1,27 @@
 export const Errors = {
-   UNSUPPORTED_FILE_TYPE_COVER: {
-      error: 'UNSUPPORTED_FILE_TYPE_COVER',
-      message: 'Unsupported file type. The post cover must be an image',
+   COVER_IMAGE_NOT_AN_IMAGE: {
+      error: 'COVER_IMAGE_NOT_AN_IMAGE',
+      message: 'Unsupported file type. The post cover must be an image.',
    },
    NO_ASSET_OR_FILE_PROVIDED: {
       error: 'NO_ASSET_OR_FILE_PROVIDED',
-      message: 'At least one of asset or file must be provided',
+      message: 'At least one of asset or file must be provided.',
    },
    UNSUPPORTED_FILE_TYPE: {
       error: 'UNSUPPORTED_FILE_TYPE',
-      message: 'Unsupported file type',
+      message: 'Unsupported file type.',
    },
-   LIMIT_NUMBER_FILES_EXCEEDED: {
-      error: 'LIMIT_NUMBER_FILES_EXCEEDED',
-      message: 'Limit number of files has been exceeded. Limit: 10',
-   },
+   TOO_MANY_FILES: (type: string, max: number) => ({
+      error: `TOO_MANY_${type.toUpperCase()}`,
+      message: `Too many ${type} provided. Maximum is ${max}.`,
+   }),
+
+   FILE_SIZE_TOO_LARGE: (type: string, maxSize: number) => ({
+      error: `FILE_SIZE_TOO_LARGE_${type.toUpperCase()}`,
+      message: `${
+         type.charAt(0).toUpperCase() + type.slice(1)
+      } file size too large. Maximum size is ${maxSize / 1024 / 1024}MB.`,
+   }),
    NO_TOKEN_PROVIDED: {
       error: 'NO_TOKEN_PROVIDED',
       message:

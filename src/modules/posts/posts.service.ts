@@ -253,7 +253,7 @@ export class PostsService {
       name: string,
       postId: number,
    ): Promise<StatusResponse> {
-      const existingAsset = await this.assetsService.findAssetByName(
+      const existingAsset = await this.assetsService.findAssetByNameAndPostId(
          name,
          postId,
       );
