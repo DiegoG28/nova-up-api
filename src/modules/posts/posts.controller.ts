@@ -42,16 +42,12 @@ import * as path from 'path';
 import { Res } from '@nestjs/common';
 import { Response } from 'express';
 import * as mime from 'mime-types';
-import { AssetsService } from '../assets/assets.service';
 
 @ApiTags('Publicaciones')
 @ApiBearerAuth()
 @Controller('posts')
 export class PostsController {
-   constructor(
-      private readonly postsService: PostsService,
-      private readonly assetsService: AssetsService,
-   ) {}
+   constructor(private readonly postsService: PostsService) {}
 
    @ApiOperation({ summary: 'Obtener todas las publicaciones' })
    @ApiQuery({
@@ -300,7 +296,6 @@ export class PostsController {
    })
    @Delete('/assets/:id')
    async deleteAsset(@Param('id') id: number) {
-      await this.assetsService.findById(id);
       return await this.postsService.removePostAsset(id);
    }
 
