@@ -28,18 +28,40 @@ export class AssetsService {
    // ------------------- Primary API methods for the service -------------------
 
    /**
-    * Find an asset by its name and associated post ID.
-    * @param name - Name of the asset.
-    * @param postId - ID of the associated post.
+    * Find an asset by its ID.
+    * @param id - ID of asset.
     * @returns Promise resolving to the found Asset or null if not found.
     */
-   async findAssetByNameAndPostId(
+   async findById(id: number): Promise<Asset | null> {
+      return await this.assetsRepository.findOne({
+         where: {
+            id: id,
+         },
+         relations: ['post'],
+      });
+   }
+
+   /**
+    * Finds a duplicate asset in the database based on its name, associated post ID, and whether it's a cover image.
+    * This function is useful for ensuring uniqueness or checking for existing assets before adding new ones.
+    *
+    * @param name - Name of the asset to search for.
+    * @param postId - ID of the associated post.
+    * @param isCoverImage - Boolean indicating whether the asset is a cover image.
+    *
+    * @returns - Returns the matching Asset if found, or null otherwise.
+    */
+   async findDuplicateAsset(
       name: string,
       postId: number,
+      isCoverImage: boolean,
    ): Promise<Asset | null> {
       return await this.assetsRepository.findOne({
-         where: { name: name, post: { id: postId } },
-         relations: ['post'],
+         where: {
+            name: name,
+            post: { id: postId },
+            isCoverImage,
+         },
       });
    }
 
@@ -84,19 +106,17 @@ export class AssetsService {
    }
 
    /**
-    * Deletes an asset from the database based on its name and associated post ID. If the asset is not associated with any other posts,
-    * it will also be removed from the storage.
+    * Deletes an asset from the database based on its ID. If the asset, identified by its name,
+    * is not associated with any other posts, it will be removed from the storage.
     *
-    * @param name - Name of the asset to delete.
-    * @param postId - Optional ID of the associated post to narrow down the deletion.
+    * @param id - ID of the asset to delete.
+    * @param name - Name of the asset, used to check associations and to delete from storage if necessary.
     */
-   async deleteAsset(name: string, postId?: number) {
-      if (postId) {
-         await this.assetsRepository.delete({
-            name: name,
-            post: { id: postId },
-         });
-      }
+   async deleteAsset(id: number, name: string) {
+      await this.assetsRepository.delete({
+         id: id,
+      });
+
       const count = await this.assetsRepository.count({
          where: { name: name },
       });
@@ -129,9 +149,11 @@ export class AssetsService {
       if (isCoverImage) {
          this.assetValidationService.validateCoverImage(file);
          const existingCoverImage = await this.findCoverImageByPostId(postId);
-
          if (existingCoverImage) {
-            await this.deleteAsset(existingCoverImage.name, postId);
+            await this.deleteAsset(
+               existingCoverImage.id,
+               existingCoverImage.name,
+            );
          }
       }
 
@@ -140,23 +162,27 @@ export class AssetsService {
 
    /**
     * Handles the scenario where an asset with the same hash already exists in the system.
-    * - If the asset with the same name is associated with the given postId, it directly returns that asset.
-    * - Otherwise, a new database entry is created for the existing asset for the given postId. This method doesn't save any files on local storage.
+    * - If the asset with the same name is associated with the given postId and matches the cover image status, it directly returns that asset.
+    * - Otherwise, a new database entry is created for the existing asset for the given postId and cover image status. This method doesn't save any files on local storage.
     *
     * @private
     * @param existingAsset - Existing asset based on file hash.
     * @param postId - ID of the associated post.
     * @param queryRunner - Optional query runner if running within a transaction.
+    * @param isCoverImage - Optional Boolean indicating whether the asset is a cover image.
+    *
     * @returns Promise resolving to either the existing Asset or the newly created asset entry.
     */
    private async handleExistingAsset(
       existingAsset: Asset,
       postId: number,
       queryRunner?: QueryRunner,
+      isCoverImage?: boolean,
    ): Promise<Asset> {
-      const duplicateAsset = await this.findAssetByNameAndPostId(
+      const duplicateAsset = await this.findDuplicateAsset(
          existingAsset.name,
          postId,
+         isCoverImage ? true : false,
       );
       if (duplicateAsset) {
          return duplicateAsset;
@@ -165,7 +191,7 @@ export class AssetsService {
       const newAssetEntry: DeepPartial<Asset> = {
          name: existingAsset.name,
          type: existingAsset.type,
-         isCoverImage: existingAsset.isCoverImage,
+         isCoverImage,
          post: { id: postId },
          hash: existingAsset.hash,
       };
@@ -219,9 +245,9 @@ export class AssetsService {
     *
     * If an existing asset with the same hash is found:
     *  - The file is not saved to local storage.
-    *  - If there's also an asset with the same hash associated and postId, it simply returns that asset without any modification
+    *  - If there's also an asset with the same hash associated, postId and isCoverImage status, it simply returns that asset without any modification
     *    in the database or storage.
-    *  - If no asset with the same hash is associated with the given postId, a new database entry is created for the asset, but the file is not
+    *  - If no asset with the same hash is associated with the given postId or isCoverImage status, a new database entry is created for the asset, but the file is not
     *    saved again to local storage.
     *
     * If no existing asset is found:
@@ -251,7 +277,12 @@ export class AssetsService {
 
       const existingAsset = await this.findAssetByHash(fileHash);
       if (existingAsset) {
-         return this.handleExistingAsset(existingAsset, postId);
+         return this.handleExistingAsset(
+            existingAsset,
+            postId,
+            queryRunner,
+            isCoverImage,
+         );
       } else {
          return this.storeNewAsset(
             file,
@@ -277,8 +308,12 @@ export class AssetsService {
       postId: number,
       queryRunner?: QueryRunner,
    ): Promise<Asset> {
-      const existingAsset = await this.findAssetByNameAndPostId(asset, postId);
-      if (existingAsset) return existingAsset;
+      const duplicateAsset = await this.findDuplicateAsset(
+         asset,
+         postId,
+         false,
+      );
+      if (duplicateAsset) return duplicateAsset;
 
       const newAsset: DeepPartial<Asset> = {
          name: asset,

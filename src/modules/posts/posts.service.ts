@@ -159,9 +159,6 @@ export class PostsService {
          };
       } catch (err) {
          await queryRunner.rollbackTransaction();
-         for (const filePath of createdFiles) {
-            this.assetsService.deleteAsset(filePath);
-         }
          throw err;
       } finally {
          await queryRunner.release();
@@ -235,12 +232,10 @@ export class PostsService {
    }
 
    async remove(post: Post): Promise<{ status: string; message: string }> {
-      let assetNames: undefined | string[] = undefined;
       if (post.assets.length > 0) {
-         assetNames = post.assets.map((asset) => asset.name);
          await Promise.all(
-            assetNames.map((name) =>
-               this.assetsService.deleteAsset(name, post.id),
+            post.assets.map((asset) =>
+               this.assetsService.deleteAsset(asset.id, asset.name),
             ),
          );
       }
@@ -249,18 +244,15 @@ export class PostsService {
       return { status: 'Success', message: 'Publicación eliminada' };
    }
 
-   async removePostAsset(
-      name: string,
-      postId: number,
-   ): Promise<StatusResponse> {
-      const existingAsset = await this.assetsService.findAssetByNameAndPostId(
-         name,
-         postId,
-      );
+   async removePostAsset(id: number): Promise<StatusResponse> {
+      const existingAsset = await this.assetsService.findById(id);
       if (!existingAsset) {
          throw new NotFoundException('Asset not found');
       }
-      await this.assetsService.deleteAsset(name, postId);
+      await this.assetsService.deleteAsset(
+         existingAsset.id,
+         existingAsset.name,
+      );
       return { status: 'Success', message: 'Asset deleted' };
    }
 

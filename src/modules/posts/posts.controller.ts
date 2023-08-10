@@ -13,7 +13,6 @@ import {
    UploadedFiles,
    UseInterceptors,
    UsePipes,
-   BadRequestException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import {
@@ -43,13 +42,16 @@ import * as path from 'path';
 import { Res } from '@nestjs/common';
 import { Response } from 'express';
 import * as mime from 'mime-types';
+import { AssetsService } from '../assets/assets.service';
 
 @ApiTags('Publicaciones')
 @ApiBearerAuth()
 @Controller('posts')
 export class PostsController {
-   assetsService: any;
-   constructor(private readonly postsService: PostsService) {}
+   constructor(
+      private readonly postsService: PostsService,
+      private readonly assetsService: AssetsService,
+   ) {}
 
    @ApiOperation({ summary: 'Obtener todas las publicaciones' })
    @ApiQuery({
@@ -294,23 +296,12 @@ export class PostsController {
    })
    @ApiParam({
       name: 'id',
-      description: 'ID de la publicación',
+      description: 'ID del asset',
    })
-   @ApiQuery({
-      name: 'name',
-      description: 'Path o nombre del asset a eliminar',
-      required: true,
-   })
-   @Delete('/:id/assets')
-   async deleteAsset(
-      @Param('id') postId: number,
-      @Query('name') name?: string,
-   ) {
-      if (!name) {
-         throw new BadRequestException('El parámetro "name" es obligatorio.');
-      }
-      await this.postsService.findById(postId);
-      return await this.postsService.removePostAsset(name, postId);
+   @Delete('/assets/:id')
+   async deleteAsset(@Param('id') id: number) {
+      await this.assetsService.findById(id);
+      return await this.postsService.removePostAsset(id);
    }
 
    //FOR DEVS ONLY
