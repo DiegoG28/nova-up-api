@@ -5,13 +5,7 @@ import { Asset, AssetTypeEnum } from './assets.entity';
 import { StorageService } from '../storage/storage.service';
 import { Errors } from 'src/libs/errors';
 import { extname } from 'path';
-
-const AssetLimits = {
-   MAX_IMAGES: 10,
-   MAX_PDFS: 5,
-   MAX_IMAGE_SIZE: 5 * 1024 * 1024,
-   MAX_PDF_SIZE: 3 * 1024 * 1024,
-};
+import { AssetValidationService } from './asset-validation.service';
 
 enum FolderTypes {
    IMAGES = 'images',
@@ -28,9 +22,10 @@ export class AssetsService {
       @InjectRepository(Asset)
       private readonly assetsRepository: Repository<Asset>,
       private readonly storageService: StorageService,
+      private readonly assetValidationService: AssetValidationService,
    ) {}
 
-   // Primary API methods for the service
+   // ------------------- Primary API methods for the service -------------------
 
    /**
     * Find an asset by its name and associated post ID.
@@ -66,7 +61,7 @@ export class AssetsService {
       if (typeof asset === 'string')
          return this.createAssetLink(asset, postId, queryRunner);
 
-      if (this.isFile(asset)) {
+      if (this.assetValidationService.isFile(asset)) {
          return this.handleFileAsset(asset, postId, queryRunner, isCoverImage);
       }
       throw new BadRequestException(Errors.NO_ASSET_OR_FILE_PROVIDED);
@@ -77,9 +72,9 @@ export class AssetsService {
       assets: (Express.Multer.File | string)[],
       queryRunner?: QueryRunner,
    ): Promise<Asset[]> {
-      const files = assets.filter(this.isFile);
+      const files = assets.filter(this.assetValidationService.isFile);
 
-      this.validateAssets(files);
+      this.assetValidationService.validateAssets(files);
 
       const assetCreationPromises = assets.map((asset) =>
          this.createAsset(postId, asset, queryRunner),
@@ -89,7 +84,7 @@ export class AssetsService {
    }
 
    /**
-    * Deletes an asset from the database based on its name. If the asset is not associated with any other posts,
+    * Deletes an asset from the database based on its name and associated post ID. If the asset is not associated with any other posts,
     * it will also be removed from the storage.
     *
     * @param name - Name of the asset to delete.
@@ -110,25 +105,35 @@ export class AssetsService {
       }
    }
 
-   // Helper or related methods for primary ones
+   // ------------------- Helper or related methods for primary ones -------------------
 
    /**
-    * Handles the creation of an asset that is a file. Validates if it's a cover image and then proceeds to save it.
+    * Handles the creation of an asset that is a file. If the asset is a cover image,
+    * it validates the image format and checks for the existence of a previous cover image.
+    * If an existing cover image is found, it deletes it before saving the new one.
     *
     * @private
-    * @param file - The file to be processed.
-    * @param postId - ID of the associated post.
+    * @param file - The file to be processed and potentially stored.
+    * @param postId - ID of the post with which the asset is associated.
     * @param queryRunner - Optional query runner if running within a transaction.
     * @param isCoverImage - Optional flag to indicate if the asset is a cover image.
-    * @returns Promise resolving to the created Asset.
+    * @returns A Promise resolving to the created Asset.
+    * @throws {BadRequestException} - If the provided cover image is not in a valid image format.
     */
-   private handleFileAsset(
+   private async handleFileAsset(
       file: Express.Multer.File,
       postId: number,
       queryRunner?: QueryRunner,
       isCoverImage?: boolean,
    ): Promise<Asset> {
-      this.validateCoverImage(file, isCoverImage);
+      if (isCoverImage) {
+         this.assetValidationService.validateCoverImage(file);
+         const existingCoverImage = await this.findCoverImageByPostId(postId);
+
+         if (existingCoverImage) {
+            await this.deleteAsset(existingCoverImage.name, postId);
+         }
+      }
 
       return this.createAssetFile(file, postId, queryRunner, isCoverImage);
    }
@@ -144,7 +149,6 @@ export class AssetsService {
     * @param queryRunner - Optional query runner if running within a transaction.
     * @returns Promise resolving to either the existing Asset or the newly created asset entry.
     */
-
    private async handleExistingAsset(
       existingAsset: Asset,
       postId: number,
@@ -306,6 +310,12 @@ export class AssetsService {
       return createdAsset;
    }
 
+   private async findCoverImageByPostId(postId: number): Promise<Asset | null> {
+      return await this.assetsRepository.findOne({
+         where: { post: { id: postId }, isCoverImage: true },
+      });
+   }
+
    /**
     * Determines the type (Image/PDF) and the storage folder based on the provided MIME type.
     *
@@ -350,82 +360,5 @@ export class AssetsService {
          where: { hash: hash },
          relations: ['post'],
       });
-   }
-
-   // Validation and other utility functions
-
-   /**
-    * Validates a collection of files based on predefined constraints.
-    * - Ensures that the number of image and PDF files are within acceptable limits.
-    * - Ensures that the size of individual image and PDF files do not exceed predefined size limits.
-    *
-    * @private
-    * @param files - Collection of files to be validated.
-    */
-   private validateAssets(files: Express.Multer.File[]) {
-      const images = files.filter((file) => this.isImage(file));
-      const pdfs = files.filter((file) => this.isPDF(file));
-
-      this.validateFileCount(
-         images,
-         AssetLimits.MAX_IMAGES,
-         Errors.TOO_MANY_FILES('images', AssetLimits.MAX_IMAGES),
-      );
-      this.validateFileCount(
-         pdfs,
-         AssetLimits.MAX_PDFS,
-         Errors.TOO_MANY_FILES('PDFs', AssetLimits.MAX_PDFS),
-      );
-      this.validateFileSize(
-         images,
-         AssetLimits.MAX_IMAGE_SIZE,
-         Errors.FILE_SIZE_TOO_LARGE('image', AssetLimits.MAX_IMAGE_SIZE),
-      );
-      this.validateFileSize(
-         pdfs,
-         AssetLimits.MAX_PDF_SIZE,
-         Errors.FILE_SIZE_TOO_LARGE('PDF', AssetLimits.MAX_PDF_SIZE),
-      );
-   }
-
-   private validateFileSize(
-      files: Express.Multer.File[],
-      maxSize: number,
-      errorObject: { error: string; message: string },
-   ) {
-      if (files.some((file) => file.size > maxSize)) {
-         throw new BadRequestException(errorObject);
-      }
-   }
-
-   private validateFileCount(
-      files: Express.Multer.File[],
-      maxCount: number,
-      errorObject: { error: string; message: string },
-   ) {
-      if (files.length > maxCount) {
-         throw new BadRequestException(errorObject);
-      }
-   }
-
-   private validateCoverImage(
-      file: Express.Multer.File,
-      isCoverImage?: boolean,
-   ): void {
-      if (isCoverImage && !this.isImage(file)) {
-         throw new BadRequestException(Errors.COVER_IMAGE_NOT_AN_IMAGE);
-      }
-   }
-
-   private isFile(asset: any): asset is Express.Multer.File {
-      return typeof asset === 'object' && 'mimetype' in asset;
-   }
-
-   private isImage(file: Express.Multer.File): boolean {
-      return file.mimetype.startsWith('image/');
-   }
-
-   private isPDF(file: Express.Multer.File): boolean {
-      return file.mimetype === 'application/pdf';
    }
 }
