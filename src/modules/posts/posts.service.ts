@@ -107,7 +107,8 @@ export class PostsService {
       const currentPost = await this.findOne(postId);
       await this.postsRepository.updateApproved(
          currentPost,
-         !currentPost.isApproved,
+         //If user sends comments, we should always set approved to true because means that an admin or supervisor is adding comments to a no approved post.
+         comments ? false : !currentPost.isApproved,
          comments || '',
       );
       return {
