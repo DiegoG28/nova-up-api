@@ -35,7 +35,6 @@ import { UpdateApprovedDto, UpdatePostDto } from './dtos/update-post.dto';
 import { StatusResponse } from 'src/libs/status-response.dto';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ParseCategoryPipe } from 'src/pipes/category-parse.pipe';
-import { Errors } from 'src/libs/errors';
 import { CreateAssetDto } from '../assets/dtos/create-asset.dto';
 import * as fs from 'fs';
 import * as path from 'path';

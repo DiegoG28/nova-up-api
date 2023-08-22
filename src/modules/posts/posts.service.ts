@@ -145,71 +145,6 @@ export class PostsService {
    }
 
    /**
-    * Updates the pin status of a given post. The business rules dictate that there can only
-    * be one 'InternalConvocatory' and one 'ExternalConvocatory' post pinned at any given time.
-    * Thus, if a post of one of these types is being pinned, any previously pinned post of the
-    * same type will be automatically unpinned to ensure compliance with this rule.
-    *
-    * The function eases the user's task by automating the unpinning of the conflicting post,
-    * rather than requiring the user to do it manually.
-    *
-    * @param postId - The ID of the post whose pin status needs to be updated.
-    * @returns An object indicating the success status and a success message.
-    * @throws NotFoundException if the post with the given ID is not found.
-    * @throws ForbiddenException if trying to pin a post that isn't of type 'InternalConvocatory' or 'ExternalConvocatory'.
-    */
-   async updatePinStatus(postId: number) {
-      const currentPost = await this.findOne(postId);
-      if (
-         currentPost.type !== PostTypeEnum.InternalConvocatory &&
-         currentPost.type !== PostTypeEnum.ExternalConvocatory
-      )
-         throw new ForbiddenException(Errors.CANNOT_PIN_NO_CONVO_POST);
-
-      const pinnedPosts = await this.postsRepository.findPinned();
-
-      //Override isPinned from existing convocatories posts
-      const isPinning = !currentPost.isPinned;
-
-      if (pinnedPosts.length > 0 && isPinning) {
-         await this.overridePinnedPosts(pinnedPosts, currentPost);
-      }
-      await this.postsRepository.updatePin(currentPost, !currentPost.isPinned);
-      return {
-         status: 'Success',
-         message: `Post ${postId} successfully pinned`,
-      };
-   }
-
-   /**
-    * Updates the approval status of a given post. If comments are provided in the request,
-    * it implies that an admin or supervisor is adding comments to a non-approved post, and
-    * thus, the post's approval status should be set to 'false' (not approved). In the
-    * absence of comments, the approval status is simply toggled.
-    *
-    * This mechanism aids in making the approval process more transparent, where admins or
-    * supervisors can provide reasons or feedback when they choose not to approve a post.
-    *
-    * @param postId - The ID of the post whose approval status needs to be updated.
-    * @param comments - Optional comments added by an admin or supervisor explaining the reason for the approval status.
-    * @returns An object indicating the success status and a success message.
-    * @throws NotFoundException if the post with the given ID is not found.
-    */
-   async updateApprovedStatus(postId: number, comments?: string) {
-      const currentPost = await this.findOne(postId);
-      await this.postsRepository.updateApproved(
-         currentPost,
-         //If user sends comments, we should always set approved to true because means that an admin or supervisor is adding comments to a no approved post.
-         comments ? false : !currentPost.isApproved,
-         comments || '',
-      );
-      return {
-         status: 'Success',
-         message: `Post ${postId} successfully approved`,
-      };
-   }
-
-   /**
     * Creates a new post, handling both links and attached files.
     * The function uses a transaction to ensure that all steps in the creation process
     * are successful; if any step fails, the transaction is rolled back to maintain data integrity.
@@ -378,13 +313,81 @@ export class PostsService {
    }
 
    /**
-    * Deletes a given post and its associated assets.
+    * Updates the pin status of a given post. The business rules dictate that there can only
+    * be one 'InternalConvocatory' and one 'ExternalConvocatory' post pinned at any given time.
+    * Thus, if a post of one of these types is being pinned, any previously pinned post of the
+    * same type will be automatically unpinned to ensure compliance with this rule.
     *
-    * This function first removes all the assets associated with the post and then deletes
-    * the post itself. After successful deletion, a success message is returned in Spanish.
+    * The function eases the user's task by automating the unpinning of the conflicting post,
+    * rather than requiring the user to do it manually.
     *
-    * @param post - The post entity to be deleted.
+    * @param postId - The ID of the post whose pin status needs to be updated.
+    * @returns An object indicating the success status and a success message.
+    * @throws NotFoundException if the post with the given ID is not found.
+    * @throws ForbiddenException if trying to pin a post that isn't of type 'InternalConvocatory' or 'ExternalConvocatory'.
+    */
+   async updatePinStatus(postId: number) {
+      const currentPost = await this.findOne(postId);
+      if (
+         currentPost.type !== PostTypeEnum.InternalConvocatory &&
+         currentPost.type !== PostTypeEnum.ExternalConvocatory
+      )
+         throw new ForbiddenException(Errors.CANNOT_PIN_NO_CONVO_POST);
+
+      const pinnedPosts = await this.postsRepository.findPinned();
+
+      //Override isPinned from existing convocatories posts
+      const isPinning = !currentPost.isPinned;
+
+      if (pinnedPosts.length > 0 && isPinning) {
+         await this.overridePinnedPosts(pinnedPosts, currentPost);
+      }
+      await this.postsRepository.updatePin(currentPost, !currentPost.isPinned);
+      return {
+         status: 'Success',
+         message: `Post ${postId} successfully pinned`,
+      };
+   }
+
+   /**
+    * Updates the approval status of a given post. If comments are provided in the request,
+    * it implies that an admin or supervisor is adding comments to a non-approved post, and
+    * thus, the post's approval status should be set to 'false' (not approved). In the
+    * absence of comments, the approval status is simply toggled.
+    *
+    * This mechanism aids in making the approval process more transparent, where admins or
+    * supervisors can provide reasons or feedback when they choose not to approve a post.
+    *
+    * @param postId - The ID of the post whose approval status needs to be updated.
+    * @param comments - Optional comments added by an admin or supervisor explaining the reason for the approval status.
+    * @returns An object indicating the success status and a success message.
+    * @throws NotFoundException if the post with the given ID is not found.
+    */
+   async updateApprovedStatus(postId: number, comments?: string) {
+      const currentPost = await this.findOne(postId);
+      await this.postsRepository.updateApproved(
+         currentPost,
+         //If user sends comments, we should always set approved to true because means that an admin or supervisor is adding comments to a no approved post.
+         comments ? false : !currentPost.isApproved,
+         comments || '',
+      );
+      return {
+         status: 'Success',
+         message: `Post ${postId} successfully approved`,
+      };
+   }
+
+   /**
+    * Deletes a post based on its ID and also removes its associated assets.
+    *
+    * This function retrieves the post by its ID and checks for its existence. If the post
+    * exists and has associated assets, the assets are removed first. Then, the post itself
+    * is deleted.
+    * After successful deletion, a success message is returned in Spanish.
+    *
+    * @param postId - The ID of the post to be deleted.
     * @returns An object containing the status and a message indicating the post was deleted.
+    * @throws {NotFoundException} If the post with the provided ID is not found.
     */
    async remove(postId: number): Promise<{ status: string; message: string }> {
       const post = await this.findOne(postId);
@@ -398,10 +401,20 @@ export class PostsService {
          );
       }
 
-      await this.postsRepository.remove(post);
+      await this.postsRepository.remove(postId);
       return { status: 'Success', message: 'Publicación eliminada' };
    }
 
+   /**
+    * Deletes a specific asset based on its ID.
+    *
+    * The function retrieves the asset based on the provided ID, then deletes it. After
+    * successful deletion, a success message is returned.
+    *
+    * @param id - ID of the asset to be deleted.
+    * @returns An object containing the status and a message indicating the asset was deleted.
+    * @throws NotFoundException If the asset with the provided ID is not found.
+    */
    async removePostAsset(id: number): Promise<StatusResponse> {
       const existingAsset = await this.assetsService.findById(id);
       if (!existingAsset) {
@@ -414,9 +427,23 @@ export class PostsService {
       return { status: 'Success', message: 'Asset deleted' };
    }
 
+   /**
+    * Overrides the pinned status of existing pinned posts based on post type.
+    *
+    * Only one post of each type (either InternalConvocatory or ExternalConvocatory)
+    * can be pinned.
+    * If a new post is being pinned, this function will unpin any existing post of the same
+    * type, ensuring that no more than one post of each type is pinned at a time.
+    *
+    * @param pinnedPosts - An array of currently pinned posts.
+    * @param currentPost - The post that is being considered for pinning.
+    * @private
+    */
    private async overridePinnedPosts(pinnedPosts: Post[], currentPost: Post) {
       await Promise.all(
          pinnedPosts.map(async (pinnedPost) => {
+            // Cheking post id ensures that we are not inadvertently unpinning the post we are currently working with.
+            // This safeguards against the unlikely scenario where the `currentPost` might already be pinned.
             if (
                pinnedPost.type === currentPost.type &&
                pinnedPost.id !== currentPost.id
