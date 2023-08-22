@@ -128,6 +128,112 @@ export class AssetsService {
    // ------------------- Helper or related methods for primary ones -------------------
 
    /**
+    * Creates and stores an asset based on a given file. This method first calculates the hash * of the provided file and looks for an existing asset with that hash in the database.
+    *
+    * If an existing asset with the same hash is found:
+    *  - The file is not saved to local storage.
+    *  - If there's also an asset with the same hash associated, postId and isCoverImage
+    *    status, it simply returns that asset without any modification in the database or      *    storage.
+    *  - If no asset with the same hash is associated with the given postId or isCoverImage
+    *    status, a new database entry is created for the asset, but the file is not
+    *    saved again to local storage.
+    *
+    * If no existing asset is found:
+    *  - The asset's type is determined, and the corresponding folder where it should be stored *    is decided upon.
+    *  - A name for the asset is generated.
+    *  - The asset is stored both in local storage and in the database.
+    *
+    * In summary, this method has three possible outcomes:
+    *  1. The asset is stored both in local storage and in the database.
+    *  2. The asset isn't stored in local storage but is in the database (new entry for an existing asset).
+    *  3. The asset isn't stored in either local storage or the database (in the case of a duplicate record for the same postId and isCoverImage status).
+    *
+    * @private
+    * @param file - The uploaded file to be processed.
+    * @param postId - Associated post ID.
+    * @param queryRunner - Optional query runner if running within a transaction.
+    * @param isCoverImage - Optional flag to indicate if the asset is a cover image.
+    * @returns Promise resolving to the created or existing Asset.
+    */
+   private async createAssetFile(
+      file: Express.Multer.File,
+      postId: number,
+      queryRunner?: QueryRunner,
+      isCoverImage?: boolean,
+   ): Promise<Asset> {
+      const fileHash = this.storageService.calculateFileHash(file.buffer);
+
+      const existingAsset = await this.findAssetByHash(fileHash);
+      if (existingAsset) {
+         return this.handleExistingAsset(
+            existingAsset,
+            postId,
+            queryRunner,
+            isCoverImage,
+         );
+      } else {
+         return this.storeNewAsset(
+            file,
+            postId,
+            fileHash,
+            queryRunner,
+            isCoverImage,
+         );
+      }
+   }
+
+   /**
+    * Creates and saves a link-based asset to the database.
+    *
+    * @private
+    * @param asset - URL or link to the asset.
+    * @param postId - ID of the associated post.
+    * @param queryRunner - Optional query runner if running within a transaction.
+    * @returns Promise resolving to the created or existing Asset.
+    */
+   private async createAssetLink(
+      asset: string,
+      postId: number,
+      queryRunner?: QueryRunner,
+   ): Promise<Asset> {
+      const duplicateAsset = await this.findDuplicateAsset(
+         asset,
+         postId,
+         false,
+      );
+      if (duplicateAsset) return duplicateAsset;
+
+      const newAsset: DeepPartial<Asset> = {
+         name: asset,
+         type: AssetTypeEnum.Link,
+         post: { id: postId },
+      };
+
+      return await this.saveAsset(newAsset, queryRunner);
+   }
+
+   /**
+    * Saves the provided asset to the database, either within an existing transaction or outside.
+    *
+    * @private
+    * @param asset - Asset data to be saved.
+    * @param queryRunner - Optional query runner if running within a transaction.
+    * @returns Promise resolving to the saved Asset.
+    */
+   private async saveAsset(
+      asset: DeepPartial<Asset>,
+      queryRunner?: QueryRunner,
+   ): Promise<Asset> {
+      const createdAsset = this.assetsRepository.create(asset);
+      if (queryRunner) {
+         await queryRunner.manager.save(createdAsset);
+      } else {
+         await this.assetsRepository.save(createdAsset);
+      }
+      return createdAsset;
+   }
+
+   /**
     * Handles the creation of an asset that is a file. If the asset is a cover image,
     * it validates the image format and checks for the existence of a previous cover image.
     * If an existing cover image is found, it deletes it before saving the new one.
@@ -240,118 +346,6 @@ export class AssetsService {
    }
 
    /**
-    * Creates and stores an asset based on a given file. This method first calculates the hash of the provided file
-    * and looks for an existing asset with that hash in the database.
-    *
-    * If an existing asset with the same hash is found:
-    *  - The file is not saved to local storage.
-    *  - If there's also an asset with the same hash associated, postId and isCoverImage status, it simply returns that asset without any modification
-    *    in the database or storage.
-    *  - If no asset with the same hash is associated with the given postId or isCoverImage status, a new database entry is created for the asset, but the file is not
-    *    saved again to local storage.
-    *
-    * If no existing asset is found:
-    *  - The asset's type is determined, and the corresponding folder where it should be stored is decided upon.
-    *  - A name for the asset is generated.
-    *  - The asset is stored both in local storage and in the database.
-    *
-    * In summary, this method has three possible outcomes:
-    *  1. The asset is stored both in local storage and in the database.
-    *  2. The asset isn't stored in local storage but is in the database (new entry for an existing asset).
-    *  3. The asset isn't stored in either local storage or the database (in the case of a duplicate record for the same postId).
-    *
-    * @private
-    * @param file - The uploaded file to be processed.
-    * @param postId - Associated post ID.
-    * @param queryRunner - Optional query runner if running within a transaction.
-    * @param isCoverImage - Optional flag to indicate if the asset is a cover image.
-    * @returns Promise resolving to the created or existing Asset.
-    */
-   private async createAssetFile(
-      file: Express.Multer.File,
-      postId: number,
-      queryRunner?: QueryRunner,
-      isCoverImage?: boolean,
-   ): Promise<Asset> {
-      const fileHash = this.storageService.calculateFileHash(file.buffer);
-
-      const existingAsset = await this.findAssetByHash(fileHash);
-      if (existingAsset) {
-         return this.handleExistingAsset(
-            existingAsset,
-            postId,
-            queryRunner,
-            isCoverImage,
-         );
-      } else {
-         return this.storeNewAsset(
-            file,
-            postId,
-            fileHash,
-            queryRunner,
-            isCoverImage,
-         );
-      }
-   }
-
-   /**
-    * Creates and saves a link-based asset to the database.
-    *
-    * @private
-    * @param asset - URL or link to the asset.
-    * @param postId - ID of the associated post.
-    * @param queryRunner - Optional query runner if running within a transaction.
-    * @returns Promise resolving to the created or existing Asset.
-    */
-   private async createAssetLink(
-      asset: string,
-      postId: number,
-      queryRunner?: QueryRunner,
-   ): Promise<Asset> {
-      const duplicateAsset = await this.findDuplicateAsset(
-         asset,
-         postId,
-         false,
-      );
-      if (duplicateAsset) return duplicateAsset;
-
-      const newAsset: DeepPartial<Asset> = {
-         name: asset,
-         type: AssetTypeEnum.Link,
-         post: { id: postId },
-      };
-
-      return await this.saveAsset(newAsset, queryRunner);
-   }
-
-   /**
-    * Saves the provided asset to the database, either within an existing transaction or outside.
-    *
-    * @private
-    * @param asset - Asset data to be saved.
-    * @param queryRunner - Optional query runner if running within a transaction.
-    * @returns Promise resolving to the saved Asset.
-    */
-   private async saveAsset(
-      asset: DeepPartial<Asset>,
-      queryRunner?: QueryRunner,
-   ): Promise<Asset> {
-      const createdAsset = this.assetsRepository.create(asset);
-      if (queryRunner) {
-         await queryRunner.manager.save(createdAsset);
-      } else {
-         await this.assetsRepository.save(createdAsset);
-      }
-      return createdAsset;
-   }
-
-   private async findCoverImageByPostId(postId: number): Promise<Asset | null> {
-      return await this.assetsRepository.findOne({
-         where: { post: { id: postId }, isCoverImage: true },
-      });
-   }
-
-   /**
     * Determines the type (Image/PDF) and the storage folder based on the provided MIME type.
     *
     * @private
@@ -388,6 +382,12 @@ export class AssetsService {
          const fileExtension = extname(file.originalname);
          return `${truncatedHash}-${timestamp}${fileExtension}`;
       }
+   }
+
+   private async findCoverImageByPostId(postId: number): Promise<Asset | null> {
+      return await this.assetsRepository.findOne({
+         where: { post: { id: postId }, isCoverImage: true },
+      });
    }
 
    private async findAssetByHash(hash: string): Promise<Asset | null> {
