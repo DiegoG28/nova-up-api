@@ -89,6 +89,14 @@ export class AssetsService {
       throw new BadRequestException(Errors.NO_ASSET_OR_FILE_PROVIDED);
    }
 
+   /**
+    * Creates assets for a given post. These assets could be files or links.
+    * @param postId - The ID of the post to which these assets should be associated.
+    * @param assets - An array of assets which can be files or links.
+    * @param queryRunner - Optional TypeORM query runner, useful when handling transactions.
+    * @returns An array of the created Asset entities.
+    * @throws ValidationError If any of the assets do not meet the validation criteria.
+    */
    async createAssets(
       postId: number,
       assets: (Express.Multer.File | string)[],

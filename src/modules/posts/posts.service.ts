@@ -17,8 +17,23 @@ import { DataSource, DeepPartial, QueryRunner } from 'typeorm';
 import { Errors } from 'src/libs/errors';
 import { StatusResponse } from 'src/libs/status-response.dto';
 
+/**
+ * Service responsible for handling posts operations.
+ *
+ * @class
+ */
 @Injectable()
 export class PostsService {
+   /**
+    * Creates an instance of the PostsService.
+    *
+    * @param postsRepository - Repository for CRUD operations on Posts.
+    * @param postsMapperService - Service responsible for mapping between Post entities and
+    * DTOs.
+    * @param catalogsService - Service to retrieve Catalog related data.
+    * @param assetsService - Service to manage assets.
+    * @param dataSource - TypeORM data source, used only to create transactions.
+    */
    constructor(
       private readonly postsRepository: PostsRepository,
       private readonly postsMapperService: PostsMapperService,
@@ -27,6 +42,16 @@ export class PostsService {
       private readonly dataSource: DataSource,
    ) {}
 
+   /**
+    * Retrieves all the posts based on approval status.
+    * Editors and users can only access approved posts.
+    *
+    * @param userRole - The role of the user making the request.
+    * @param showApproved - Optional parameter to indicate if only approved posts should be
+    * shown.
+    * @returns An array of posts in DTO format.
+    * @throws ForbiddenException If an unauthorized user tries to access unapproved posts.
+    */
    async findAll(
       userRole: string,
       showApproved?: boolean,
@@ -40,18 +65,36 @@ export class PostsService {
       return postsCardDto;
    }
 
+   /**
+    * Retrieves the latest posts based on the given limit. Only returns approved posts.
+    *
+    * @param limit - Optional parameter specifying the maximum number of posts to retrieve.
+    * Default is 5.
+    * @returns An array of the latest posts in DTO format.
+    */
    async findLatest(limit = 5): Promise<PostBannerDto[]> {
       const posts = await this.postsRepository.findLatest(limit);
       const postsBannerDto = this.postsMapperService.mapToPostBannerDto(posts);
       return postsBannerDto;
    }
 
+   /**
+    * Retrieves all the posts that are marked as "pinned". Only returns approved posts.
+    *
+    * @returns An array of pinned posts in DTO format.
+    */
    async findPinned(): Promise<PostCardDto[]> {
       const posts = await this.postsRepository.findPinned();
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
       return postsCardDto;
    }
 
+   /**
+    * Retrieves all the posts authored by the specified user.
+    *
+    * @param userId - The ID of the user whose posts are to be retrieved.
+    * @returns An array of posts authored by the user in DTO format.
+    */
    async findByUser(userId: number): Promise<PostCardDto[]> {
       const posts = await this.postsRepository.findByUser(userId);
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
@@ -59,6 +102,13 @@ export class PostsService {
       return postsCardDto;
    }
 
+   /**
+    * Retrieves all the posts associated with the specified category. Only returns approved
+    * posts.
+    *
+    * @param categoryId - The ID of the category to retrieve posts from.
+    * @returns An array of posts associated with the category in DTO format.
+    */
    async findByCategory(categoryId: number): Promise<PostCardDto[]> {
       const posts = await this.postsRepository.findByCategory(categoryId);
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
@@ -66,6 +116,13 @@ export class PostsService {
       return postsCardDto;
    }
 
+   /**
+    * Retrieves the detailed information of a specific post by its ID.
+    *
+    * @param postId - The ID of the post to retrieve.
+    * @returns The detailed post data in DTO format.
+    * @throws NotFoundException if the post with the given ID is not found.
+    */
    async findById(postId: number): Promise<PostDto> {
       const post = await this.postsRepository.findById(postId);
       if (!post) throw new NotFoundException(Errors.POST_NOT_FOUND);
@@ -73,13 +130,34 @@ export class PostsService {
       return postDto;
    }
 
-   //We use this to get a Post entity instead the PostDto
+   /**
+    * Fetches the Post entity for the specified post ID.
+    * Primarily used when needing the actual entity rather than the DTO representation.
+    *
+    * @param postId - The ID of the post entity to retrieve.
+    * @returns The Post entity corresponding to the given ID.
+    * @throws NotFoundException if the post with the given ID is not found.
+    */
    async findOne(postId: number): Promise<Post> {
       const post = await this.postsRepository.findById(postId);
       if (!post) throw new NotFoundException(Errors.POST_NOT_FOUND);
       return post;
    }
 
+   /**
+    * Updates the pin status of a given post. The business rules dictate that there can only
+    * be one 'InternalConvocatory' and one 'ExternalConvocatory' post pinned at any given time.
+    * Thus, if a post of one of these types is being pinned, any previously pinned post of the
+    * same type will be automatically unpinned to ensure compliance with this rule.
+    *
+    * The function eases the user's task by automating the unpinning of the conflicting post,
+    * rather than requiring the user to do it manually.
+    *
+    * @param postId - The ID of the post whose pin status needs to be updated.
+    * @returns An object indicating the success status and a success message.
+    * @throws NotFoundException if the post with the given ID is not found.
+    * @throws ForbiddenException if trying to pin a post that isn't of type 'InternalConvocatory' or 'ExternalConvocatory'.
+    */
    async updatePinStatus(postId: number) {
       const currentPost = await this.findOne(postId);
       if (
@@ -103,6 +181,20 @@ export class PostsService {
       };
    }
 
+   /**
+    * Updates the approval status of a given post. If comments are provided in the request,
+    * it implies that an admin or supervisor is adding comments to a non-approved post, and
+    * thus, the post's approval status should be set to 'false' (not approved). In the
+    * absence of comments, the approval status is simply toggled.
+    *
+    * This mechanism aids in making the approval process more transparent, where admins or
+    * supervisors can provide reasons or feedback when they choose not to approve a post.
+    *
+    * @param postId - The ID of the post whose approval status needs to be updated.
+    * @param comments - Optional comments added by an admin or supervisor explaining the reason for the approval status.
+    * @returns An object indicating the success status and a success message.
+    * @throws NotFoundException if the post with the given ID is not found.
+    */
    async updateApprovedStatus(postId: number, comments?: string) {
       const currentPost = await this.findOne(postId);
       await this.postsRepository.updateApproved(
@@ -117,6 +209,27 @@ export class PostsService {
       };
    }
 
+   /**
+    * Creates a new post, handling both links and attached files.
+    * The function uses a transaction to ensure that all steps in the creation process
+    * are successful; if any step fails, the transaction is rolled back to maintain data integrity.
+    *
+    * 1. Separates the provided links from the rest of the post data.
+    * 2. Finds and associates the appropriate category to the post.
+    * 3. Creates the post in the repository.
+    * 4. Processes and creates assets (links, files, cover image) for the post.
+    *
+    * If the entire process completes successfully, the function commits the transaction,
+    * ensuring that all changes are saved. If any step fails, the transaction is rolled back,
+    * ensuring that the database remains in a consistent state.
+    *
+    * @param newPostData - Data for the new post, including links.
+    * @param userId - ID of the user creating the post.
+    * @param files - Optional array of attached files.
+    * @param coverImageFile - Optional cover image file.
+    * @returns An object indicating the success status and a success message.
+    * @throws Error if any step in the creation process fails.
+    */
    async create(
       newPostData: CreatePostDto,
       userId: number,
@@ -166,6 +279,23 @@ export class PostsService {
       }
    }
 
+   /**
+    * Creates and associates assets (links, files, cover images) with a given post.
+    *
+    * This function handles the creation of different types of assets for a post, namely:
+    * 1. Links: If provided, are split by comma and each link is created as an individual asset.
+    * 2. Files: Each file in the provided array is created as an asset.
+    * 3. Cover Image: If provided, is created as an asset with the isCoverImage status set to true.
+    *
+    * Each created asset is accumulated into a list of asset names which is then returned.
+    *
+    * @param postId - ID of the post with which the assets will be associated.
+    * @param links - Optional string containing comma-separated links to be added as assets.
+    * @param files - Optional array of files to be added as assets.
+    * @param coverImageFile - Optional file to be set as the post's cover image.
+    * @param queryRunner - Optional query runner for transactional operations.
+    * @returns An array of names of all the created assets.
+    */
    async createPostAssets(
       postId: number,
       links?: string,
@@ -212,6 +342,21 @@ export class PostsService {
       return createdAssets;
    }
 
+   /**
+    * Updates an existing post with the provided data.
+    *
+    * This function updates a post's fields with the values provided in the `postData` parameter.
+    * Special handling is done for the `categoryId` field; instead of directly updating the
+    * post's `categoryId`, the function retrieves the associated category entity and then
+    * updates the post's `category` relation.
+    *
+    * After updating the post, a success message is returned.
+    *
+    * @param postData - Data to update the post with. It can contain a subset of the post's fields.
+    * @param currentPostId - ID of the post to be updated.
+    * @returns An object containing the status and a message indicating the post was updated.
+    * @throws NotFoundException If the post with the provided ID is not found.
+    */
    async update(
       postData: Partial<UpdatePostDto>,
       currentPostId: number,
@@ -232,7 +377,19 @@ export class PostsService {
       return { status: 'Success', message: 'Post successfully updated' };
    }
 
-   async remove(post: Post): Promise<{ status: string; message: string }> {
+   /**
+    * Deletes a given post and its associated assets.
+    *
+    * This function first removes all the assets associated with the post and then deletes
+    * the post itself. After successful deletion, a success message is returned in Spanish.
+    *
+    * @param post - The post entity to be deleted.
+    * @returns An object containing the status and a message indicating the post was deleted.
+    */
+   async remove(postId: number): Promise<{ status: string; message: string }> {
+      const post = await this.findOne(postId);
+      if (!post) throw new NotFoundException(Errors.POST_NOT_FOUND);
+
       if (post.assets.length > 0) {
          await Promise.all(
             post.assets.map((asset) =>

@@ -279,9 +279,7 @@ export class PostsController {
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
    @Delete(':id')
    async remove(@Param('id', ParseIntPipe) postId: number) {
-      const post = await this.postsService.findOne(postId);
-      if (!post) throw new NotFoundException(Errors.POST_NOT_FOUND);
-      return await this.postsService.remove(post);
+      return await this.postsService.remove(postId);
    }
 
    @ApiOperation({ summary: 'Elimina un asset' })
