@@ -17,5 +17,13 @@
       "strictBindCallApply": false,
       "forceConsistentCasingInFileNames": false,
       "noFallthroughCasesInSwitch": false
-   }
+   },
+   "typedocOptions": {
+      "entryPoints": [
+         "src/modules/assets/assets.service.ts",
+         "src/modules/posts/posts.service.ts"
+      ],
+      "out": "docs"
+   },
+   "exclude": ["node_modules", "dist", "src/**/*.spec.ts"]
 }

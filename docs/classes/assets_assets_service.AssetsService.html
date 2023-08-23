@@ -1,0 +1,602 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>AssetsService | nova-up-api</title><meta name="description" content="Documentation for nova-up-api"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/search.js" id="tsd-search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base="..">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">nova-up-api</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb">
+<li><a href="../index.html">nova-up-api</a></li>
+<li><a href="../modules/assets_assets_service.html">assets/assets.service</a></li>
+<li><a href="assets_assets_service.AssetsService.html">AssetsService</a></li></ul>
+<h1>Class AssetsService</h1></div>
+<section class="tsd-panel tsd-comment">
+<div class="tsd-comment tsd-typography"><p>Service responsible for handling assets (images, PDFs, etc.).</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></section>
+<section class="tsd-panel tsd-hierarchy">
+<h4>Hierarchy</h4>
+<ul class="tsd-hierarchy">
+<li><span class="target">AssetsService</span></li></ul></section><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L20">assets/assets.service.ts:20</a></li></ul></aside>
+<section class="tsd-panel-group tsd-index-group">
+<section class="tsd-panel tsd-index-panel">
+<details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
+<h5 class="tsd-index-heading uppercase" role="button" aria-expanded="false" tabIndex=0><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M1.5 5.50969L8 11.6609L14.5 5.50969L12.5466 3.66086L8 7.96494L3.45341 3.66086L1.5 5.50969Z" fill="var(--color-text)"></path></svg> Index</h5></summary>
+<div class="tsd-accordion-details">
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading">Constructors</h3>
+<div class="tsd-index-list"><a href="assets_assets_service.AssetsService.html#constructor" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-512"><rect fill="var(--color-icon-background)" stroke="#4D7FFF" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g></svg><span>constructor</span></a>
+</div></section>
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading">Properties</h3>
+<div class="tsd-index-list"><a href="assets_assets_service.AssetsService.html#assetValidationService" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-1024"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)"></path></g></svg><span>asset<wbr/>Validation<wbr/>Service</span></a>
+<a href="assets_assets_service.AssetsService.html#assetsRepository" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>assets<wbr/>Repository</span></a>
+<a href="assets_assets_service.AssetsService.html#storageService" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>storage<wbr/>Service</span></a>
+</div></section>
+<section class="tsd-index-section">
+<h3 class="tsd-index-heading">Methods</h3>
+<div class="tsd-index-list"><a href="assets_assets_service.AssetsService.html#createAsset" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-2048"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)"></path></g></svg><span>create<wbr/>Asset</span></a>
+<a href="assets_assets_service.AssetsService.html#createAssetFile" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>create<wbr/>Asset<wbr/>File</span></a>
+<a href="assets_assets_service.AssetsService.html#createAssetLink" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>create<wbr/>Asset<wbr/>Link</span></a>
+<a href="assets_assets_service.AssetsService.html#createAssets" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>create<wbr/>Assets</span></a>
+<a href="assets_assets_service.AssetsService.html#deleteAsset" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>delete<wbr/>Asset</span></a>
+<a href="assets_assets_service.AssetsService.html#findAssetByHash" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>find<wbr/>Asset<wbr/>By<wbr/>Hash</span></a>
+<a href="assets_assets_service.AssetsService.html#findById" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>find<wbr/>By<wbr/>Id</span></a>
+<a href="assets_assets_service.AssetsService.html#findCoverImageByPostId" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>find<wbr/>Cover<wbr/>Image<wbr/>By<wbr/>Post<wbr/>Id</span></a>
+<a href="assets_assets_service.AssetsService.html#findDuplicateAsset" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>find<wbr/>Duplicate<wbr/>Asset</span></a>
+<a href="assets_assets_service.AssetsService.html#generateAssetName" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>generate<wbr/>Asset<wbr/>Name</span></a>
+<a href="assets_assets_service.AssetsService.html#getAssetAndFolderType" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>get<wbr/>Asset<wbr/>And<wbr/>Folder<wbr/>Type</span></a>
+<a href="assets_assets_service.AssetsService.html#handleExistingAsset" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>Existing<wbr/>Asset</span></a>
+<a href="assets_assets_service.AssetsService.html#handleFileAsset" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>File<wbr/>Asset</span></a>
+<a href="assets_assets_service.AssetsService.html#saveAsset" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>save<wbr/>Asset</span></a>
+<a href="assets_assets_service.AssetsService.html#storeNewAsset" class="tsd-index-link tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>store<wbr/>New<wbr/>Asset</span></a>
+</div></section></div></details></section></section>
+<section class="tsd-panel-group tsd-member-group">
+<h2>Constructors</h2>
+<section class="tsd-panel tsd-member"><a id="constructor" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" id="icon-anchor"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="constructor.new_AssetsService"><span class="tsd-kind-constructor-signature">new <wbr/>Assets<wbr/>Service</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">assetsRepository</span>, <span class="tsd-kind-parameter">storageService</span>, <span class="tsd-kind-parameter">assetValidationService</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="assets_assets_service.AssetsService.html" class="tsd-signature-type tsd-kind-class">AssetsService</a><a href="#constructor.new_AssetsService" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">assetsRepository</span>: <span class="tsd-signature-type ">Repository</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">storageService</span>: <span class="tsd-signature-type ">StorageService</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">assetValidationService</span>: <span class="tsd-signature-type ">AssetValidationService</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="assets_assets_service.AssetsService.html" class="tsd-signature-type tsd-kind-class">AssetsService</a></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L21">assets/assets.service.ts:21</a></li></ul></aside></li></ul></section></section>
+<section class="tsd-panel-group tsd-member-group">
+<h2>Properties</h2>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="assetValidationService" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>asset<wbr/>Validation<wbr/>Service</span><a href="#assetValidationService" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">asset<wbr/>Validation<wbr/>Service</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">AssetValidationService</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L25">assets/assets.service.ts:25</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="assetsRepository" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>assets<wbr/>Repository</span><a href="#assetsRepository" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">assets<wbr/>Repository</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">Repository</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L23">assets/assets.service.ts:23</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="storageService" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <code class="tsd-tag ts-flagReadonly">Readonly</code> <span>storage<wbr/>Service</span><a href="#storageService" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">storage<wbr/>Service</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type ">StorageService</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L24">assets/assets.service.ts:24</a></li></ul></aside></section></section>
+<section class="tsd-panel-group tsd-member-group">
+<h2>Methods</h2>
+<section class="tsd-panel tsd-member"><a id="createAsset" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>create<wbr/>Asset</span><a href="#createAsset" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="createAsset.createAsset-1"><span class="tsd-kind-call-signature">create<wbr/>Asset</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">postId</span>, <span class="tsd-kind-parameter">asset</span>, <span class="tsd-kind-parameter">queryRunner</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">isCoverImage</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span><a href="#createAsset.createAsset-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Create a new asset for a given post. The asset can either be a file or a link.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">postId</span>: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>ID of the associated post.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">asset</span>: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">File</span></h5>
+<div class="tsd-comment tsd-typography"><p>Asset to be created, can be a file or a link.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">queryRunner</span>: <span class="tsd-signature-type ">QueryRunner</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional query runner if running within a transaction.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">isCoverImage</span>: <span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional flag to indicate if the asset is a cover image.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h4><p>Promise resolving to the created Asset.</p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Throws</h4><p>BadRequestException if neither a valid asset link nor file is provided.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L77">assets/assets.service.ts:77</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="createAssetFile" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>create<wbr/>Asset<wbr/>File</span><a href="#createAssetFile" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-private">
+<li class="tsd-signature tsd-anchor-link" id="createAssetFile.createAssetFile-1"><span class="tsd-kind-call-signature">create<wbr/>Asset<wbr/>File</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">file</span>, <span class="tsd-kind-parameter">postId</span>, <span class="tsd-kind-parameter">queryRunner</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">isCoverImage</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span><a href="#createAssetFile.createAssetFile-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description"><code class="tsd-tag ts-flagPrivate">Private</code> 
+<div class="tsd-comment tsd-typography"><p>Creates and stores an asset based on a given file. This method first calculates the hash * of the provided file and looks for an existing asset with that hash in the database.</p>
+<p>If an existing asset with the same hash is found:</p>
+<ul>
+<li>The file is not saved to local storage.</li>
+<li>If there&#39;s also an asset with the same hash associated, postId and isCoverImage
+status, it simply returns that asset without any modification in the database or      *    storage.</li>
+<li>If no asset with the same hash is associated with the given postId or isCoverImage
+status, a new database entry is created for the asset, but the file is not
+saved again to local storage.</li>
+</ul>
+<p>If no existing asset is found:</p>
+<ul>
+<li>The asset&#39;s type is determined, and the corresponding folder where it should be stored *    is decided upon.</li>
+<li>A name for the asset is generated.</li>
+<li>The asset is stored both in local storage and in the database.</li>
+</ul>
+<p>In summary, this method has three possible outcomes:</p>
+<ol>
+<li>The asset is stored both in local storage and in the database.</li>
+<li>The asset isn&#39;t stored in local storage but is in the database (new entry for an existing asset).</li>
+<li>The asset isn&#39;t stored in either local storage or the database (in the case of a duplicate record for the same postId and isCoverImage status).</li>
+</ol>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">file</span>: <span class="tsd-signature-type ">File</span></h5>
+<div class="tsd-comment tsd-typography"><p>The uploaded file to be processed.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">postId</span>: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>Associated post ID.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">queryRunner</span>: <span class="tsd-signature-type ">QueryRunner</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional query runner if running within a transaction.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">isCoverImage</span>: <span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional flag to indicate if the asset is a cover image.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h4><p>Promise resolving to the created or existing Asset.</p>
+
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L166">assets/assets.service.ts:166</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="createAssetLink" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>create<wbr/>Asset<wbr/>Link</span><a href="#createAssetLink" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-private">
+<li class="tsd-signature tsd-anchor-link" id="createAssetLink.createAssetLink-1"><span class="tsd-kind-call-signature">create<wbr/>Asset<wbr/>Link</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">asset</span>, <span class="tsd-kind-parameter">postId</span>, <span class="tsd-kind-parameter">queryRunner</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span><a href="#createAssetLink.createAssetLink-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description"><code class="tsd-tag ts-flagPrivate">Private</code> 
+<div class="tsd-comment tsd-typography"><p>Creates and saves a link-based asset to the database.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">asset</span>: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>URL or link to the asset.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">postId</span>: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>ID of the associated post.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">queryRunner</span>: <span class="tsd-signature-type ">QueryRunner</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional query runner if running within a transaction.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h4><p>Promise resolving to the created or existing Asset.</p>
+
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L202">assets/assets.service.ts:202</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="createAssets" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>create<wbr/>Assets</span><a href="#createAssets" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="createAssets.createAssets-1"><span class="tsd-kind-call-signature">create<wbr/>Assets</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">postId</span>, <span class="tsd-kind-parameter">assets</span>, <span class="tsd-kind-parameter">queryRunner</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#createAssets.createAssets-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Creates assets for a given post. These assets could be files or links.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">postId</span>: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>The ID of the post to which these assets should be associated.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">assets</span>: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">File</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
+<div class="tsd-comment tsd-typography"><p>An array of assets which can be files or links.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">queryRunner</span>: <span class="tsd-signature-type ">QueryRunner</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional TypeORM query runner, useful when handling transactions.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><p>An array of the created Asset entities.</p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Throws</h4><p>ValidationError If any of the assets do not meet the validation criteria.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L100">assets/assets.service.ts:100</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="deleteAsset" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>delete<wbr/>Asset</span><a href="#deleteAsset" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="deleteAsset.deleteAsset-1"><span class="tsd-kind-call-signature">delete<wbr/>Asset</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">id</span>, <span class="tsd-kind-parameter">name</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#deleteAsset.deleteAsset-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Deletes an asset from the database based on its ID. If the asset, identified by its name,
+is not associated with any other posts, it will be removed from the storage.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">id</span>: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>ID of the asset to delete.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>Name of the asset, used to check associations and to delete from storage if necessary.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L123">assets/assets.service.ts:123</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="findAssetByHash" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>find<wbr/>Asset<wbr/>By<wbr/>Hash</span><a href="#findAssetByHash" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-private">
+<li class="tsd-signature tsd-anchor-link" id="findAssetByHash.findAssetByHash-1"><span class="tsd-kind-call-signature">find<wbr/>Asset<wbr/>By<wbr/>Hash</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">hash</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span><a href="#findAssetByHash.findAssetByHash-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">hash</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L401">assets/assets.service.ts:401</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="findById" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>find<wbr/>By<wbr/>Id</span><a href="#findById" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="findById.findById-1"><span class="tsd-kind-call-signature">find<wbr/>By<wbr/>Id</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">id</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span><a href="#findById.findById-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Find an asset by its ID.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">id</span>: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>ID of asset.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h4><p>Promise resolving to the found Asset or null if not found.</p>
+
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L35">assets/assets.service.ts:35</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="findCoverImageByPostId" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>find<wbr/>Cover<wbr/>Image<wbr/>By<wbr/>Post<wbr/>Id</span><a href="#findCoverImageByPostId" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-private">
+<li class="tsd-signature tsd-anchor-link" id="findCoverImageByPostId.findCoverImageByPostId-1"><span class="tsd-kind-call-signature">find<wbr/>Cover<wbr/>Image<wbr/>By<wbr/>Post<wbr/>Id</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">postId</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span><a href="#findCoverImageByPostId.findCoverImageByPostId-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">postId</span>: <span class="tsd-signature-type">number</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L395">assets/assets.service.ts:395</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="findDuplicateAsset" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>find<wbr/>Duplicate<wbr/>Asset</span><a href="#findDuplicateAsset" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="findDuplicateAsset.findDuplicateAsset-1"><span class="tsd-kind-call-signature">find<wbr/>Duplicate<wbr/>Asset</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">name</span>, <span class="tsd-kind-parameter">postId</span>, <span class="tsd-kind-parameter">isCoverImage</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span><a href="#findDuplicateAsset.findDuplicateAsset-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Finds a duplicate asset in the database based on its name, associated post ID, and whether it&#39;s a cover image.
+This function is useful for ensuring uniqueness or checking for existing assets before adding new ones.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">name</span>: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>Name of the asset to search for.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">postId</span>: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>ID of the associated post.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">isCoverImage</span>: <span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>Boolean indicating whether the asset is a cover image.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h4><ul>
+<li>Returns the matching Asset if found, or null otherwise.</li>
+</ul>
+
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L54">assets/assets.service.ts:54</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="generateAssetName" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>generate<wbr/>Asset<wbr/>Name</span><a href="#generateAssetName" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-private">
+<li class="tsd-signature tsd-anchor-link" id="generateAssetName.generateAssetName-1"><span class="tsd-kind-call-signature">generate<wbr/>Asset<wbr/>Name</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">file</span>, <span class="tsd-kind-parameter">folderType</span>, <span class="tsd-kind-parameter">fileHash</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><a href="#generateAssetName.generateAssetName-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">file</span>: <span class="tsd-signature-type ">File</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">folderType</span>: <span class="tsd-signature-type ">FolderTypes</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">fileHash</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L380">assets/assets.service.ts:380</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="getAssetAndFolderType" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>get<wbr/>Asset<wbr/>And<wbr/>Folder<wbr/>Type</span><a href="#getAssetAndFolderType" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-private">
+<li class="tsd-signature tsd-anchor-link" id="getAssetAndFolderType.getAssetAndFolderType-1"><span class="tsd-kind-call-signature">get<wbr/>Asset<wbr/>And<wbr/>Folder<wbr/>Type</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">mimeType</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">assetType</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">AssetTypeEnum</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">folderType</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">FolderTypes</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span><a href="#getAssetAndFolderType.getAssetAndFolderType-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description"><code class="tsd-tag ts-flagPrivate">Private</code> 
+<div class="tsd-comment tsd-typography"><p>Determines the type (Image/PDF) and the storage folder based on the provided MIME type.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">mimeType</span>: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>MIME type of the file to determine the type and folder.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">{ </span><br/><span>    </span><span class="tsd-kind-property">assetType</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">AssetTypeEnum</span><span class="tsd-signature-symbol">; </span><br/><span>    </span><span class="tsd-kind-property">folderType</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">FolderTypes</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></h4><p>An object containing the determined asset type and folder type.</p>
+
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">asset<wbr/>Type</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">AssetTypeEnum</span></h5></li>
+<li class="tsd-parameter">
+<h5><span class="tsd-kind-property">folder<wbr/>Type</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">FolderTypes</span></h5></li></ul>
+<div class="tsd-comment tsd-typography">
+<h4>Throws</h4><p>BadRequestException if the MIME type is not supported.</p>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L364">assets/assets.service.ts:364</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="handleExistingAsset" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>handle<wbr/>Existing<wbr/>Asset</span><a href="#handleExistingAsset" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-private">
+<li class="tsd-signature tsd-anchor-link" id="handleExistingAsset.handleExistingAsset-1"><span class="tsd-kind-call-signature">handle<wbr/>Existing<wbr/>Asset</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">existingAsset</span>, <span class="tsd-kind-parameter">postId</span>, <span class="tsd-kind-parameter">queryRunner</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">isCoverImage</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span><a href="#handleExistingAsset.handleExistingAsset-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description"><code class="tsd-tag ts-flagPrivate">Private</code> 
+<div class="tsd-comment tsd-typography"><p>Handles the scenario where an asset with the same hash already exists in the system.</p>
+<ul>
+<li>If the asset with the same name is associated with the given postId and matches the cover image status, it directly returns that asset.</li>
+<li>Otherwise, a new database entry is created for the existing asset for the given postId and cover image status. This method doesn&#39;t save any files on local storage.</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">existingAsset</span>: <span class="tsd-signature-type ">Asset</span></h5>
+<div class="tsd-comment tsd-typography"><p>Existing asset based on file hash.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">postId</span>: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>ID of the associated post.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">queryRunner</span>: <span class="tsd-signature-type ">QueryRunner</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional query runner if running within a transaction.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">isCoverImage</span>: <span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional Boolean indicating whether the asset is a cover image.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h4><p>Promise resolving to either the existing Asset or the newly created asset entry.</p>
+
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L290">assets/assets.service.ts:290</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="handleFileAsset" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>handle<wbr/>File<wbr/>Asset</span><a href="#handleFileAsset" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-private">
+<li class="tsd-signature tsd-anchor-link" id="handleFileAsset.handleFileAsset-1"><span class="tsd-kind-call-signature">handle<wbr/>File<wbr/>Asset</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">file</span>, <span class="tsd-kind-parameter">postId</span>, <span class="tsd-kind-parameter">queryRunner</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">isCoverImage</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span><a href="#handleFileAsset.handleFileAsset-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description"><code class="tsd-tag ts-flagPrivate">Private</code> 
+<div class="tsd-comment tsd-typography"><p>Handles the creation of an asset that is a file. If the asset is a cover image,
+it validates the image format and checks for the existence of a previous cover image.
+If an existing cover image is found, it deletes it before saving the new one.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">file</span>: <span class="tsd-signature-type ">File</span></h5>
+<div class="tsd-comment tsd-typography"><p>The file to be processed and potentially stored.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">postId</span>: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>ID of the post with which the asset is associated.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">queryRunner</span>: <span class="tsd-signature-type ">QueryRunner</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional query runner if running within a transaction.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">isCoverImage</span>: <span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional flag to indicate if the asset is a cover image.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h4><p>A Promise resolving to the created Asset.</p>
+
+<div class="tsd-comment tsd-typography">
+<h4>Throws</h4><ul>
+<li>If the provided cover image is not in a valid image format.</li>
+</ul>
+</div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L257">assets/assets.service.ts:257</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="saveAsset" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>save<wbr/>Asset</span><a href="#saveAsset" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-private">
+<li class="tsd-signature tsd-anchor-link" id="saveAsset.saveAsset-1"><span class="tsd-kind-call-signature">save<wbr/>Asset</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">asset</span>, <span class="tsd-kind-parameter">queryRunner</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span><a href="#saveAsset.saveAsset-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description"><code class="tsd-tag ts-flagPrivate">Private</code> 
+<div class="tsd-comment tsd-typography"><p>Saves the provided asset to the database, either within an existing transaction or outside.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">asset</span>: <span class="tsd-signature-type ">DeepPartial</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h5>
+<div class="tsd-comment tsd-typography"><p>Asset data to be saved.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">queryRunner</span>: <span class="tsd-signature-type ">QueryRunner</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional query runner if running within a transaction.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h4><p>Promise resolving to the saved Asset.</p>
+
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L231">assets/assets.service.ts:231</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-private"><a id="storeNewAsset" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagPrivate">Private</code> <span>store<wbr/>New<wbr/>Asset</span><a href="#storeNewAsset" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-private">
+<li class="tsd-signature tsd-anchor-link" id="storeNewAsset.storeNewAsset-1"><span class="tsd-kind-call-signature">store<wbr/>New<wbr/>Asset</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">file</span>, <span class="tsd-kind-parameter">postId</span>, <span class="tsd-kind-parameter">fileHash</span>, <span class="tsd-kind-parameter">queryRunner</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">isCoverImage</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span><a href="#storeNewAsset.storeNewAsset-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description"><code class="tsd-tag ts-flagPrivate">Private</code> 
+<div class="tsd-comment tsd-typography"><p>Creates and stores a new asset when no existing asset with the same hash is found.</p>
+<ul>
+<li>Determines the asset type and storage folder.</li>
+<li>Generates a unique name for the asset.</li>
+<li>Stores the asset both in the storage and in the database.</li>
+</ul>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">file</span>: <span class="tsd-signature-type ">File</span></h5>
+<div class="tsd-comment tsd-typography"><p>The uploaded file to be processed.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">postId</span>: <span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>Associated post ID.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><span class="tsd-kind-parameter">fileHash</span>: <span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>Calculated hash for the file.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">queryRunner</span>: <span class="tsd-signature-type ">QueryRunner</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional query runner if running within a transaction.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li>
+<li>
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">isCoverImage</span>: <span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>Optional flag to indicate if the asset is a cover image.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">Asset</span><span class="tsd-signature-symbol">&gt;</span></h4><p>Promise resolving to the created Asset.</p>
+
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/DiegoG28/nova-up-api/blob/ee79e94/src/modules/assets/assets.service.ts#L330">assets/assets.service.ts:330</a></li></ul></aside></li></ul></section></section></div>
+<div class="col-sidebar">
+<div class="page-menu">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)" id="icon-chevronDown"></path></svg>Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-filter-visibility">
+<h4 class="uppercase">Member Visibility</h4><form>
+<ul id="tsd-filter-options">
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-private" name="private"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Private</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li>
+<li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></form></div>
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<details open class="tsd-index-accordion tsd-page-navigation"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg>On This Page</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li><a href="#constructor" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-512"></use></svg><span>constructor</span></a></li>
+<li><a href="#assetValidationService" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>asset<wbr/>Validation<wbr/>Service</span></a></li>
+<li><a href="#assetsRepository" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>assets<wbr/>Repository</span></a></li>
+<li><a href="#storageService" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>storage<wbr/>Service</span></a></li>
+<li><a href="#createAsset" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>create<wbr/>Asset</span></a></li>
+<li><a href="#createAssetFile" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>create<wbr/>Asset<wbr/>File</span></a></li>
+<li><a href="#createAssetLink" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>create<wbr/>Asset<wbr/>Link</span></a></li>
+<li><a href="#createAssets" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>create<wbr/>Assets</span></a></li>
+<li><a href="#deleteAsset" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>delete<wbr/>Asset</span></a></li>
+<li><a href="#findAssetByHash" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>find<wbr/>Asset<wbr/>By<wbr/>Hash</span></a></li>
+<li><a href="#findById" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>find<wbr/>By<wbr/>Id</span></a></li>
+<li><a href="#findCoverImageByPostId" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>find<wbr/>Cover<wbr/>Image<wbr/>By<wbr/>Post<wbr/>Id</span></a></li>
+<li><a href="#findDuplicateAsset" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>find<wbr/>Duplicate<wbr/>Asset</span></a></li>
+<li><a href="#generateAssetName" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>generate<wbr/>Asset<wbr/>Name</span></a></li>
+<li><a href="#getAssetAndFolderType" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>get<wbr/>Asset<wbr/>And<wbr/>Folder<wbr/>Type</span></a></li>
+<li><a href="#handleExistingAsset" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>Existing<wbr/>Asset</span></a></li>
+<li><a href="#handleFileAsset" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>File<wbr/>Asset</span></a></li>
+<li><a href="#saveAsset" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>save<wbr/>Asset</span></a></li>
+<li><a href="#storeNewAsset" class="tsd-is-private"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>store<wbr/>New<wbr/>Asset</span></a></li></ul></div></details></div>
+<div class="site-menu">
+<nav class="tsd-navigation"><a href="../index.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)"></path></g></svg><span>nova-<wbr/>up-<wbr/>api</span></a>
+<ul class="tsd-small-nested-navigation">
+<li>
+<details class="tsd-index-accordion" open data-key="assets/assets.service"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><use href="#icon-chevronDown"></use></svg><a href="../modules/assets_assets_service.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>assets/assets.service</span></a></summary>
+<div class="tsd-accordion-details">
+<ul class="tsd-nested-navigation">
+<li><a href="assets_assets_service.AssetsService.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-128"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g></svg><span>Assets<wbr/>Service</span></a></li></ul></div></details></li>
+<li><a href="../modules/posts_posts_service.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-4"></use></svg><span>posts/posts.service</span></a></li></ul></nav></div></div></div>
+<div class="tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div></body></html>
