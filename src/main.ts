@@ -24,6 +24,7 @@ async function bootstrap() {
    );
 
    app.use('/assets', express.static(path.join(__dirname, '../assets')));
+   app.use('/docs', express.static(path.join(__dirname, '../docs')));
 
    await app.listen(process.env.PORT ? parseInt(process.env.PORT, 10) : 3000);
 }
