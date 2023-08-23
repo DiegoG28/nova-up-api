@@ -21,7 +21,8 @@
       "typeorm": "yarn build && npx typeorm -d dist/database/db-config.js",
       "migration:generate": "yarn typeorm -- migration:generate",
       "migration:run": "yarn typeorm -- migration:run",
-      "migration:revert": "yarn typeorm --migration:revert"
+      "migration:revert": "yarn typeorm --migration:revert",
+      "generate-docs": "typedoc --out docs src"
    },
    "dependencies": {
       "@nestjs/common": "^9.0.0",
@@ -67,6 +68,7 @@
       "ts-loader": "^9.2.3",
       "ts-node": "^10.9.1",
       "tsconfig-paths": "4.2.0",
+      "typedoc": "^0.24.8",
       "typescript": "^5.0.0"
    },
    "jest": {
