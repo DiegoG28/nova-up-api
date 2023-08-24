@@ -53,8 +53,8 @@ export class Post {
    @Column({ type: 'datetime', name: 'fecha', nullable: true })
    publishDate: Date | null;
 
-   @Column({ name: 'fecha_evento', nullable: true })
-   eventDate: Date;
+   @Column({ type: 'datetime', name: 'fecha_evento', nullable: true })
+   eventDate: Date | null;
 
    @Column({ name: 'aprobado', default: false })
    isApproved: boolean;

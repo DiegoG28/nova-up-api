@@ -28,7 +28,7 @@ export class Asset {
    name: string;
 
    @Column({ type: 'varchar', length: 64, nullable: true })
-   hash?: string;
+   hash: string | null;
 
    @Column({ name: 'portada', default: false })
    isCoverImage: boolean;

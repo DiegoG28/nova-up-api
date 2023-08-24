@@ -25,7 +25,7 @@ export class BasePostDto {
 
    @IsISO8601()
    @IsOptional()
-   eventDate?: Date;
+   eventDate?: Date | null;
 
    @IsEnum(PostTypeEnum)
    @IsNotEmpty()
