@@ -231,14 +231,14 @@ export class PostsRepository {
    async updateApproved(
       post: Post,
       approvedStatus: boolean,
-      comments: string,
+      comments: string | null,
    ): Promise<void> {
       post.isApproved = approvedStatus;
       if (approvedStatus) {
          post.publishDate = new Date();
-         post.comments = '';
+         post.comments = null;
       } else {
-         post.publishDate = null as any;
+         post.publishDate = null;
          post.comments = comments;
       }
       await this.postsRepository.save(post);

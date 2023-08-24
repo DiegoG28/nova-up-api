@@ -363,13 +363,13 @@ export class PostsService {
     * @returns An object indicating the success status and a success message.
     * @throws NotFoundException if the post with the given ID is not found.
     */
-   async updateApprovedStatus(postId: number, comments?: string) {
+   async updateApprovedStatus(postId: number, comments?: string | null) {
       const currentPost = await this.findOne(postId);
       await this.postsRepository.updateApproved(
          currentPost,
          //If user sends comments, we should always set approved to true because means that an admin or supervisor is adding comments to a no approved post.
          comments ? false : !currentPost.isApproved,
-         comments || '',
+         comments || null,
       );
       return {
          status: 'Success',

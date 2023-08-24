@@ -37,5 +37,5 @@ export class BasePostDto {
    @IsString()
    @IsOptional()
    @MaxLength(255)
-   comments?: string;
+   comments?: string | null;
 }

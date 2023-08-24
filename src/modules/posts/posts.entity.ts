@@ -50,8 +50,8 @@ export class Post {
    @Column({ name: 'resumen', length: 110 })
    summary: string;
 
-   @Column({ name: 'fecha', nullable: true })
-   publishDate: Date;
+   @Column({ type: 'datetime', name: 'fecha', nullable: true })
+   publishDate: Date | null;
 
    @Column({ name: 'fecha_evento', nullable: true })
    eventDate: Date;
@@ -75,6 +75,6 @@ export class Post {
    @Column({ type: 'text', name: 'etiquetas' })
    tags: string;
 
-   @Column({ name: 'comentario', length: 255, nullable: true })
-   comments: string;
+   @Column({ type: 'varchar', name: 'comentario', length: 255, nullable: true })
+   comments: string | null;
 }

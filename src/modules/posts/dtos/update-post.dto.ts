@@ -18,5 +18,5 @@ export class UpdateApprovedDto {
    @IsString()
    @IsOptional()
    @MaxLength(255)
-   comments?: string;
+   comments?: string | null;
 }
