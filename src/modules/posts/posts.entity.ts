@@ -28,7 +28,7 @@ export class Post {
    @JoinColumn({ name: 'id_categoria' })
    category: Category;
 
-   @ManyToOne(() => User, (user) => user.posts)
+   @ManyToOne(() => User, (user) => user.posts, { onDelete: 'SET NULL' })
    @JoinColumn({ name: 'id_usuario' })
    user: User;
 

@@ -219,7 +219,6 @@ export class PostsController {
       type: StatusResponse,
    })
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
-   @Public()
    @Patch(':id')
    async update(
       @Param('id', ParseIntPipe) postId: number,
@@ -299,7 +298,6 @@ export class PostsController {
    //FOR DEVS ONLY
    @ApiOperation({ summary: 'FOR DEV PURPOSE' })
    @Get('assets/:filepath')
-   @Public()
    async getFile(
       @Param('filepath') filepath: string,
       @Res() response: Response,
