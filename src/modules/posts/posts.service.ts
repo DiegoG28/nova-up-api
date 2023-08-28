@@ -43,8 +43,8 @@ export class PostsService {
    ) {}
 
    /**
-    * Retrieves all the posts based on approval status.
-    * Editors and users can only access approved posts.
+    * Retrieves all the posts based on their status. If no status is sended, it will return all
+    * posts. Editors and users can only access approved posts.
     *
     * @param userRole - The role of the user making the request.
     * @param status - Optional parameter filter posts by status.
