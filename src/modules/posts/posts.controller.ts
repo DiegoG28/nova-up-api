@@ -41,6 +41,7 @@ import * as path from 'path';
 import { Res } from '@nestjs/common';
 import { Response } from 'express';
 import * as mime from 'mime-types';
+import { PostStatusEnum } from './posts.entity';
 
 @ApiTags('Publicaciones')
 @ApiBearerAuth()
@@ -61,13 +62,12 @@ export class PostsController {
    @Get()
    async findAll(
       @Request() req: RequestWithPayload,
-      @Query('approved') approved?: string,
+      @Query('status') status?: PostStatusEnum,
    ): Promise<PostCardDto[]> {
       //We need validate possible undefined because the route is public
       const userRole = req.userPayload?.user?.role?.name || '';
-      const showApproved =
-         approved !== undefined ? approved === 'true' : undefined;
-      const posts = await this.postsService.findAll(userRole, showApproved);
+
+      const posts = await this.postsService.findAll(userRole, status);
       return posts;
    }
 

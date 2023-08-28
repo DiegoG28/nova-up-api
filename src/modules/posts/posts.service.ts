@@ -53,7 +53,7 @@ export class PostsService {
     */
    async findAll(
       userRole: string,
-      status: PostStatusEnum,
+      status?: PostStatusEnum,
    ): Promise<PostCardDto[]> {
       const isRestrictedStatus =
          status === PostStatusEnum.Rejected ||
