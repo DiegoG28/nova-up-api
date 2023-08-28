@@ -22,7 +22,7 @@ export enum PostTypeEnum {
 export enum PostStatusEnum {
    Approved = 'aprobado',
    Pending = 'pendiente',
-   Canceled = 'cancelado',
+   Rejected = 'rechazado',
 }
 
 @Entity({ name: 'publicacion' })

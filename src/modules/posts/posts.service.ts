@@ -9,7 +9,7 @@ import { PostsMapperService } from './posts-mapper.service';
 import { PostBannerDto } from './dtos/posts-banner.dto';
 import { PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
-import { Post, PostTypeEnum } from './posts.entity';
+import { Post, PostStatusEnum, PostTypeEnum } from './posts.entity';
 import { CatalogsService } from '../catalogs/catalogs.service';
 import { AssetsService } from '../assets/assets.service';
 import { UpdatePostDto } from './dtos/update-post.dto';
@@ -47,20 +47,25 @@ export class PostsService {
     * Editors and users can only access approved posts.
     *
     * @param userRole - The role of the user making the request.
-    * @param showApproved - Optional parameter to indicate if only approved posts should be
-    * shown.
+    * @param status - Optional parameter filter posts by status.
     * @returns An array of posts in DTO format.
-    * @throws ForbiddenException If an unauthorized user tries to access unapproved posts.
+    * @throws ForbiddenException If an unauthorized user tries to access unapproved or rejected posts.
     */
    async findAll(
       userRole: string,
-      showApproved?: boolean,
+      status: PostStatusEnum,
    ): Promise<PostCardDto[]> {
-      if (!showApproved && (!userRole || userRole === 'Editor')) {
+      const isRestrictedStatus =
+         status === PostStatusEnum.Rejected ||
+         status === PostStatusEnum.Pending;
+      const isGuestUserOrEditor = !userRole || userRole === 'Editor';
+      const isUnauthorizedAccess = isRestrictedStatus && isGuestUserOrEditor;
+
+      if (isUnauthorizedAccess) {
          throw new ForbiddenException(Errors.ACCESS_DENIED_TO_RESOURCE);
       }
 
-      const posts = await this.postsRepository.findAll(showApproved);
+      const posts = await this.postsRepository.findAll(status);
       const postsCardDto = this.postsMapperService.mapToPostCardDto(posts);
       return postsCardDto;
    }

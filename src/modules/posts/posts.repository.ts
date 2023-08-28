@@ -8,7 +8,7 @@ import {
    QueryRunner,
    Repository,
 } from 'typeorm';
-import { Post, PostTypeEnum } from './posts.entity';
+import { Post, PostStatusEnum, PostTypeEnum } from './posts.entity';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 /**
@@ -36,17 +36,17 @@ export class PostsRepository {
    ) {}
 
    /**
-    * Retrieves all posts based on their approval status.
+    * Retrieves all posts based on their status.
     *
     * This method fetches all the posts from the database, optionally filtering them based on
-    * whether they're approved or not.
+    * their status.
     *
-    * @param showApproved - Optional flag to filter posts based on their approval status.
+    * @param status - Optional flag to filter posts based on their status.
     *
     * @returns An array of `Post` entities fitting the specified criteria.
     */
-   async findAll(showApproved?: boolean): Promise<Post[]> {
-      const queryOptions = this.getPostCardQueryOptions(showApproved);
+   async findAll(status?: PostStatusEnum): Promise<Post[]> {
+      const queryOptions = this.getPostCardQueryOptions(status);
 
       const posts = await this.postsRepository.find(queryOptions);
 
@@ -65,7 +65,7 @@ export class PostsRepository {
     */
    async findLatest(limit: number): Promise<Post[]> {
       const queryOptions: FindManyOptions<Post> = {
-         where: { isApproved: true },
+         where: { status: PostStatusEnum.Approved },
          select: ['id', 'title', 'summary', 'assets', 'publishDate'],
          relations: ['assets'],
          order: { publishDate: 'DESC' },
@@ -84,7 +84,9 @@ export class PostsRepository {
     * @returns An array of `Post` entities that are pinned convocatories.
     */
    async findPinned(): Promise<Post[]> {
-      const queryOptions = this.getPostCardQueryOptions(true);
+      const queryOptions = this.getPostCardQueryOptions(
+         PostStatusEnum.Approved,
+      );
       queryOptions.where = {
          isPinned: true,
          type: In([
@@ -129,7 +131,9 @@ export class PostsRepository {
     * @returns An array of `Post` entities belonging to the specified category.
     */
    async findByCategory(categoryId: number): Promise<Post[]> {
-      const queryOptions = this.getPostCardQueryOptions(true);
+      const queryOptions = this.getPostCardQueryOptions(
+         PostStatusEnum.Approved,
+      );
 
       queryOptions.where = {
          ...queryOptions.where,
@@ -275,12 +279,12 @@ export class PostsRepository {
     *
     * This method is used to construct a more performant and specific query when only a subset * of post fields are needed, such as for a post overview or listing. By specifying only the * necessary fields and relations, it helps reduce the overhead of data retrieval.
     *
-    * @param showApproved - Optional flag to filter posts based on their approval status.
+    * @param status - Optional flag to filter posts based on their status.
     *
     * @returns A set of query options suitable for the TypeORM `find` method.
     */
    private getPostCardQueryOptions(
-      showApproved?: boolean,
+      status?: PostStatusEnum,
    ): FindManyOptions<Post> {
       const queryOptions: FindManyOptions<Post> = {
          select: [
@@ -291,15 +295,16 @@ export class PostsRepository {
             'category',
             'assets',
             'isApproved',
+            'status',
             'comments',
             'tags',
          ],
          relations: ['category', 'assets'],
       };
 
-      if (typeof showApproved !== 'undefined') {
+      if (typeof status !== 'undefined') {
          queryOptions.where = {
-            isApproved: showApproved,
+            status: status,
          };
       }
 
