@@ -57,7 +57,8 @@ export class PostsService {
    ): Promise<PostCardDto[]> {
       const isRestrictedStatus =
          status === PostStatusEnum.Rejected ||
-         status === PostStatusEnum.Pending;
+         status === PostStatusEnum.Pending ||
+         typeof status === 'undefined';
       const isGuestUserOrEditor = !userRole || userRole === 'Editor';
       const isUnauthorizedAccess = isRestrictedStatus && isGuestUserOrEditor;
 

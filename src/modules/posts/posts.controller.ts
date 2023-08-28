@@ -51,10 +51,10 @@ export class PostsController {
 
    @ApiOperation({ summary: 'Obtener todas las publicaciones' })
    @ApiQuery({
-      name: 'approved',
+      name: 'status',
       description:
-         'Determina si se desea obtener las publicaciones aprobadas o no aprobadas',
-      type: Boolean,
+         'Query param opcional para filtrar por status, en caso de no enviarlo se devuelven todas las publicaciones.',
+      enum: PostStatusEnum,
       required: false,
    })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
@@ -66,7 +66,6 @@ export class PostsController {
    ): Promise<PostCardDto[]> {
       //We need validate possible undefined because the route is public
       const userRole = req.userPayload?.user?.role?.name || '';
-
       const posts = await this.postsService.findAll(userRole, status);
       return posts;
    }
