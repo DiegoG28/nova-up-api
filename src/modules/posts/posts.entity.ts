@@ -19,6 +19,12 @@ export enum PostTypeEnum {
    Research = 'Investigación',
 }
 
+export enum PostStatusEnum {
+   Approved = 'aprobado',
+   Pending = 'pendiente',
+   Canceled = 'cancelado',
+}
+
 @Entity({ name: 'publicacion' })
 export class Post {
    @PrimaryGeneratedColumn({ name: 'id_publicacion' })
@@ -49,6 +55,14 @@ export class Post {
 
    @Column({ name: 'resumen', length: 110 })
    summary: string;
+
+   @Column({
+      type: 'enum',
+      enum: PostStatusEnum,
+      name: 'status',
+      default: PostStatusEnum.Pending,
+   })
+   status: PostStatusEnum;
 
    @Column({ type: 'datetime', name: 'fecha', nullable: true })
    publishDate: Date | null;
