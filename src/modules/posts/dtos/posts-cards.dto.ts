@@ -5,6 +5,7 @@ export class PostCardDto {
    id: number;
    title: string;
    summary: string;
+   comments: string | null;
    type: PostTypeEnum;
    category: CategoryDto;
    coverImage: string;

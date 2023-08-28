@@ -291,6 +291,7 @@ export class PostsRepository {
             'category',
             'assets',
             'isApproved',
+            'comments',
             'tags',
          ],
          relations: ['category', 'assets'],

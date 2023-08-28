@@ -20,6 +20,7 @@ export class PostsMapperService {
             id: post.id,
             title: post.title,
             summary: post.summary,
+            comments: post.comments,
             type: post.type,
             category: post.category,
             coverImage,
