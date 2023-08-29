@@ -29,7 +29,7 @@ import { PostSummaryDto, PostCardDto, PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { RequestWithPayload } from 'src/libs/interfaces';
 import { Public, Roles } from '../auth/auth.decorators';
-import { UpdateApprovedDto, UpdatePostDto } from './dtos/update-post.dto';
+import { UpdatePostStatusDto, UpdatePostDto } from './dtos/update-post.dto';
 import { StatusResponse } from 'src/libs/status-response.dto';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ParseCategoryPipe } from 'src/pipes/category-parse.pipe';
@@ -225,17 +225,17 @@ export class PostsController {
    })
    @Roles('Admin', 'Supervisor')
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
-   @Patch('pin/:id')
+   @Patch(':id/pin')
    async updatePinStatus(@Param('id', ParseIntPipe) postId: number) {
       const response = await this.postsService.updatePinStatus(postId);
       return response;
    }
 
-   /*@ApiOperation({
-      summary: 'Actualizar el status aprobado de una publicación',
+   @ApiOperation({
+      summary: 'Actualizar el status de una publicación',
    })
    @ApiBody({
-      type: UpdateApprovedDto,
+      type: UpdatePostStatusDto,
    })
    @ApiResponse({
       status: 200,
@@ -244,18 +244,18 @@ export class PostsController {
    })
    @Roles('Admin', 'Supervisor')
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
-   @Patch('approve/:id')
+   @Patch(':id/status')
    async updateApprovedStatus(
       @Param('id', ParseIntPipe) postId: number,
-      @Body() updateApprovedRequest: UpdateApprovedDto,
+      @Body() updateApprovedRequest: UpdatePostStatusDto,
    ) {
-      const { comments } = updateApprovedRequest;
-      const response = await this.postsService.updateApprovedStatus(
+      const { comments, status } = updateApprovedRequest;
+      /*const response = await this.postsService.updateApprovedStatus(
          postId,
          comments,
       );
-      return response;
-   }*/
+      return response;}*/
+   }
 
    @ApiOperation({ summary: 'Elimina una publicación' })
    @ApiResponse({
