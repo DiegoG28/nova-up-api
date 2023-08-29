@@ -70,9 +70,6 @@ export class Post {
    @Column({ type: 'datetime', name: 'fecha_evento', nullable: true })
    eventDate: Date | null;
 
-   @Column({ name: 'aprobado', default: false })
-   isApproved: boolean;
-
    @Column({ name: 'cancelado', default: false })
    isCanceled: boolean;
 

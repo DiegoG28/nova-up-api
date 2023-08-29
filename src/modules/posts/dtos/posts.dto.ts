@@ -1,14 +1,26 @@
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
-import { BasePostDto } from './base-post.dto';
 import { AssetDto } from 'src/modules/assets/dtos/assets.dto';
+import { PostStatusEnum, PostTypeEnum } from '../posts.entity';
 
-export class PostDto extends BasePostDto {
+export class PostSummaryDto {
    id: number;
-   category: CategoryDto;
+   title: string;
+   summary: string;
    coverImage: string;
+}
+
+export class PostCardDto extends PostSummaryDto {
+   category: CategoryDto;
+   status: PostStatusEnum;
+   type: PostTypeEnum;
+   comments: string | null;
+   tags: string;
+}
+export class PostDto extends PostCardDto {
+   description: string;
+   publishDate: Date | null;
+   eventDate: Date | null;
    assets: AssetDto[];
    isPinned: boolean;
-   isApproved: boolean;
    isCanceled: boolean;
-   publishDate: Date | null;
 }

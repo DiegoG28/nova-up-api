@@ -88,12 +88,14 @@ export class PostsRepository {
          PostStatusEnum.Approved,
       );
       queryOptions.where = {
+         ...queryOptions.where,
          isPinned: true,
          type: In([
             PostTypeEnum.InternalConvocatory,
             PostTypeEnum.ExternalConvocatory,
          ]),
       };
+
       const posts = await this.postsRepository.find(queryOptions);
       return posts;
    }
@@ -232,7 +234,7 @@ export class PostsRepository {
     * @param comments - Comments or feedback related to the approval process. Only relevant
     *                   when `approvedStatus` is false.
     */
-   async updateApproved(
+   /*async updateApproved(
       post: Post,
       approvedStatus: boolean,
       comments: string | null,
@@ -246,7 +248,7 @@ export class PostsRepository {
          post.comments = comments;
       }
       await this.postsRepository.save(post);
-   }
+   }*/
 
    /**
     * Deletes a post from the database.
@@ -294,14 +296,12 @@ export class PostsRepository {
             'type',
             'category',
             'assets',
-            'isApproved',
             'status',
             'comments',
             'tags',
          ],
          relations: ['category', 'assets'],
       };
-
       if (typeof status !== 'undefined') {
          queryOptions.where = {
             status: status,

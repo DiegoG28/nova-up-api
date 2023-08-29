@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Asset } from '../assets/assets.entity';
 import { Post } from './posts.entity';
-import { PostCardDto } from './dtos/posts-cards.dto';
-import { PostBannerDto } from './dtos/posts-banner.dto';
-import { PostDto } from './dtos/posts.dto';
+import { PostSummaryDto, PostCardDto, PostDto } from './dtos/posts.dto';
 
 @Injectable()
 export class PostsMapperService {
@@ -25,13 +23,12 @@ export class PostsMapperService {
             status: post.status,
             category: post.category,
             coverImage,
-            isApproved: post.isApproved,
             tags: post.tags,
          };
       });
    }
 
-   mapToPostBannerDto(posts: Post[]): PostBannerDto[] {
+   mapToPostSummaryDto(posts: Post[]): PostSummaryDto[] {
       return posts.map((post) => {
          const coverImage = this.getCoverImage(post.assets);
          return {

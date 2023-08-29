@@ -4,10 +4,8 @@ import {
    NotFoundException,
 } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
-import { PostCardDto } from './dtos/posts-cards.dto';
 import { PostsMapperService } from './posts-mapper.service';
-import { PostBannerDto } from './dtos/posts-banner.dto';
-import { PostDto } from './dtos/posts.dto';
+import { PostSummaryDto, PostCardDto, PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { Post, PostStatusEnum, PostTypeEnum } from './posts.entity';
 import { CatalogsService } from '../catalogs/catalogs.service';
@@ -78,9 +76,9 @@ export class PostsService {
     * Default is 5.
     * @returns An array of the latest posts in DTO format.
     */
-   async findLatest(limit = 5): Promise<PostBannerDto[]> {
+   async findLatest(limit = 5): Promise<PostSummaryDto[]> {
       const posts = await this.postsRepository.findLatest(limit);
-      const postsBannerDto = this.postsMapperService.mapToPostBannerDto(posts);
+      const postsBannerDto = this.postsMapperService.mapToPostSummaryDto(posts);
       return postsBannerDto;
    }
 
@@ -369,7 +367,7 @@ export class PostsService {
     * @returns An object indicating the success status and a success message.
     * @throws NotFoundException if the post with the given ID is not found.
     */
-   async updateApprovedStatus(postId: number, comments?: string | null) {
+   /*async updateApprovedStatus(postId: number, comments?: string | null) {
       const currentPost = await this.findOne(postId);
       await this.postsRepository.updateApproved(
          currentPost,
@@ -381,7 +379,7 @@ export class PostsService {
          status: 'Success',
          message: `Post ${postId} successfully approved`,
       };
-   }
+   }*/
 
    /**
     * Deletes a post based on its ID and also removes its associated assets.

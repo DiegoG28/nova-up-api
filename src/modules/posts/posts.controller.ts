@@ -25,10 +25,8 @@ import {
    ApiResponse,
    ApiTags,
 } from '@nestjs/swagger';
-import { PostDto } from './dtos/posts.dto';
-import { PostCardDto } from './dtos/posts-cards.dto';
+import { PostSummaryDto, PostCardDto, PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
-import { PostBannerDto } from './dtos/posts-banner.dto';
 import { RequestWithPayload } from 'src/libs/interfaces';
 import { Public, Roles } from '../auth/auth.decorators';
 import { UpdateApprovedDto, UpdatePostDto } from './dtos/update-post.dto';
@@ -78,10 +76,10 @@ export class PostsController {
       required: false,
       schema: { default: 5 },
    })
-   @ApiResponse({ status: 200, description: 'Éxito', type: [PostBannerDto] })
+   @ApiResponse({ status: 200, description: 'Éxito', type: [PostSummaryDto] })
    @Public()
    @Get('latest')
-   async findLatest(@Query('limit') limit: string): Promise<PostBannerDto[]> {
+   async findLatest(@Query('limit') limit: string): Promise<PostSummaryDto[]> {
       const latestPosts = await this.postsService.findLatest(parseInt(limit));
       return latestPosts;
    }
@@ -95,7 +93,7 @@ export class PostsController {
       return pinnedPosts;
    }
 
-   @ApiOperation({ summary: 'Obtener las publicaciones por usuario' })
+   @ApiOperation({ summary: 'Obtener las publicaciones del usuario logueado' })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Get('user')
    async findByUser(
@@ -233,7 +231,7 @@ export class PostsController {
       return response;
    }
 
-   @ApiOperation({
+   /*@ApiOperation({
       summary: 'Actualizar el status aprobado de una publicación',
    })
    @ApiBody({
@@ -257,7 +255,7 @@ export class PostsController {
          comments,
       );
       return response;
-   }
+   }*/
 
    @ApiOperation({ summary: 'Elimina una publicación' })
    @ApiResponse({
