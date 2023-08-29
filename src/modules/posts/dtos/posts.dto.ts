@@ -22,5 +22,4 @@ export class PostDto extends PostCardDto {
    eventDate: Date | null;
    assets: AssetDto[];
    isPinned: boolean;
-   isCanceled: boolean;
 }
