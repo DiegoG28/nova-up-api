@@ -68,6 +68,15 @@ export class PostsController {
       return posts;
    }
 
+   @ApiOperation({ summary: 'Obtener una publicación' })
+   @ApiParam({ name: 'id', description: 'ID de la publicación' })
+   @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
+   @Public()
+   @Get(':id')
+   async findById(@Param('id', ParseIntPipe) postId: number): Promise<PostDto> {
+      return await this.postsService.findById(postId);
+   }
+
    @ApiOperation({ summary: 'Obtener las últimas publicaciones' })
    @ApiQuery({
       name: 'limit',
@@ -114,15 +123,6 @@ export class PostsController {
    ): Promise<PostCardDto[]> {
       const posts = await this.postsService.findByCategory(categoryId);
       return posts;
-   }
-
-   @ApiOperation({ summary: 'Obtener una publicación' })
-   @ApiParam({ name: 'id', description: 'ID de la publicación' })
-   @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
-   @Public()
-   @Get(':id')
-   async findById(@Param('id', ParseIntPipe) postId: number): Promise<PostDto> {
-      return await this.postsService.findById(postId);
    }
 
    @ApiOperation({ summary: 'Crear una nueva publicación' })
@@ -283,34 +283,5 @@ export class PostsController {
    @Delete('/assets/:id')
    async deleteAsset(@Param('id') id: number) {
       return await this.postsService.removePostAsset(id);
-   }
-
-   //FOR DEVS ONLY
-   @ApiOperation({ summary: 'FOR DEV PURPOSE' })
-   @Get('assets/:filepath')
-   async getFile(
-      @Param('filepath') filepath: string,
-      @Res() response: Response,
-   ) {
-      const fullPath = path.resolve('assets', filepath);
-      const fileExists = fs.existsSync(fullPath);
-
-      if (!fileExists) {
-         throw new NotFoundException(`El archivo ${filepath} no existe.`);
-      }
-
-      const fileType = mime.lookup(filepath); // Buscar el tipo MIME basado en la extensión del archivo
-
-      if (!fileType) {
-         throw new Error(
-            `No se pudo determinar el tipo de contenido para el archivo ${filepath}.`,
-         );
-      }
-
-      const file = fs.readFileSync(fullPath);
-      console.log(fileType);
-
-      response.setHeader('Content-Type', fileType); // Establecer el tipo de contenido basado en el tipo MIME
-      response.send(file); // Enviar archivo como respuesta
    }
 }
