@@ -6,6 +6,7 @@ import { PostsMapperService } from './posts-mapper.service';
 import { DataSource } from 'typeorm';
 import { AssetsService } from '../assets/assets.service';
 import { CatalogsService } from '../catalogs/catalogs.service';
+import { PostStatusEnum } from './posts.entity';
 
 describe('PostsService', () => {
    let service: PostsService;
@@ -49,9 +50,9 @@ describe('PostsService', () => {
    });
 
    it('should throw ForbiddenException for unauthorized access to unapproved posts', async () => {
-      await expect(service.findAll('Editor', false)).rejects.toThrow(
-         ForbiddenException,
-      );
+      await expect(
+         service.findAll('Editor', PostStatusEnum.Rejected),
+      ).rejects.toThrow(ForbiddenException);
    });
 
    it('should allow authorized roles to access all posts', async () => {
@@ -64,7 +65,7 @@ describe('PostsService', () => {
       mockPostsRepository.findAll.mockReturnValue(Promise.resolve(mockPosts));
       mockPostsMapperService.mapToPostCardDto.mockReturnValue(mockPostCardDto);
 
-      const result = await service.findAll('Admin', false);
+      const result = await service.findAll('Admin', PostStatusEnum.Rejected);
       console.log(mockPostsMapperService);
       expect(result).toEqual(mockPostCardDto);
       expect(mockPostsRepository.findAll).toHaveBeenCalledWith(false);

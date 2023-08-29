@@ -22,6 +22,7 @@ export class PostsMapperService {
             summary: post.summary,
             comments: post.comments,
             type: post.type,
+            status: post.status,
             category: post.category,
             coverImage,
             isApproved: post.isApproved,

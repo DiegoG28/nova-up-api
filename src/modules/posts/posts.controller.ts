@@ -108,13 +108,6 @@ export class PostsController {
 
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
    @ApiParam({ name: 'id', description: 'ID de la categoría' })
-   @ApiQuery({
-      name: 'approved',
-      description:
-         'Determina si se desea obtener las publicaciones aprobadas o no aprobadas',
-      type: Boolean,
-      required: false,
-   })
    @ApiResponse({ status: 200, description: 'Éxito', type: [PostCardDto] })
    @Public()
    @Get('category/:id')

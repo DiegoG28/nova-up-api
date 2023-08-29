@@ -1,5 +1,5 @@
 import { CategoryDto } from 'src/modules/catalogs/dtos/categories.dto';
-import { PostTypeEnum } from '../posts.entity';
+import { PostStatusEnum, PostTypeEnum } from '../posts.entity';
 
 export class PostCardDto {
    id: number;
@@ -7,6 +7,7 @@ export class PostCardDto {
    summary: string;
    comments: string | null;
    type: PostTypeEnum;
+   status: PostStatusEnum;
    category: CategoryDto;
    coverImage: string;
    isApproved: boolean;
