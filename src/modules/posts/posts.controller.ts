@@ -6,7 +6,6 @@ import {
    Param,
    ParseIntPipe,
    Delete,
-   NotFoundException,
    Query,
    Request,
    Patch,
@@ -14,7 +13,6 @@ import {
    UseInterceptors,
    UsePipes,
 } from '@nestjs/common';
-import { PostsService } from './posts.service';
 import {
    ApiBearerAuth,
    ApiBody,
@@ -25,6 +23,7 @@ import {
    ApiResponse,
    ApiTags,
 } from '@nestjs/swagger';
+import { PostsService } from './posts.service';
 import { PostSummaryDto, PostCardDto, PostDto } from './dtos/posts.dto';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { RequestWithPayload } from 'src/libs/interfaces';
@@ -34,11 +33,6 @@ import { StatusResponse } from 'src/libs/status-response.dto';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ParseCategoryPipe } from 'src/pipes/category-parse.pipe';
 import { CreateAssetDto } from '../assets/dtos/create-asset.dto';
-import * as fs from 'fs';
-import * as path from 'path';
-import { Res } from '@nestjs/common';
-import { Response } from 'express';
-import * as mime from 'mime-types';
 import { PostStatusEnum } from './posts.entity';
 
 @ApiTags('Publicaciones')
@@ -66,15 +60,6 @@ export class PostsController {
       const userRole = req.userPayload?.user?.role?.name || '';
       const posts = await this.postsService.findAll(userRole, status);
       return posts;
-   }
-
-   @ApiOperation({ summary: 'Obtener una publicación' })
-   @ApiParam({ name: 'id', description: 'ID de la publicación' })
-   @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
-   @Public()
-   @Get(':id')
-   async findById(@Param('id', ParseIntPipe) postId: number): Promise<PostDto> {
-      return await this.postsService.findById(postId);
    }
 
    @ApiOperation({ summary: 'Obtener las últimas publicaciones' })
@@ -111,6 +96,15 @@ export class PostsController {
       const userId = req.userPayload.sub;
       const posts = await this.postsService.findByUser(userId);
       return posts;
+   }
+
+   @ApiOperation({ summary: 'Obtener una publicación' })
+   @ApiParam({ name: 'id', description: 'ID de la publicación' })
+   @ApiResponse({ status: 200, description: 'Éxito', type: PostDto })
+   @Public()
+   @Get(':id')
+   async findById(@Param('id', ParseIntPipe) postId: number): Promise<PostDto> {
+      return await this.postsService.findById(postId);
    }
 
    @ApiOperation({ summary: 'Obtener las publicaciones por categoría' })
@@ -242,8 +236,7 @@ export class PostsController {
       description: 'Publicación actualizada',
       type: StatusResponse,
    })
-   // @Roles('Admin', 'Supervisor')
-   @Public()
+   @Roles('Admin', 'Supervisor')
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
    @Patch(':id/status')
    async updatePostStatus(
