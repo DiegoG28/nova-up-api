@@ -10,6 +10,7 @@ export class PostSummaryDto {
 }
 
 export class PostCardDto extends PostSummaryDto {
+   publishDate: Date | null;
    category: CategoryDto;
    status: PostStatusEnum;
    type: PostTypeEnum;
@@ -18,7 +19,6 @@ export class PostCardDto extends PostSummaryDto {
 }
 export class PostDto extends PostCardDto {
    description: string;
-   publishDate: Date | null;
    eventDate: Date | null;
    assets: AssetDto[];
    isPinned: boolean;

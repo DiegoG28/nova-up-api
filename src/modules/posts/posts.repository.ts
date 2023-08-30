@@ -215,40 +215,27 @@ export class PostsRepository {
    }
 
    /**
-    * Updates the approval status and related fields of a post in the database.
+    * Updates a post's approval status and associated fields.
     *
-    * This method updates the `isApproved` attribute of a post and modifies associated fields
-    * like `publishDate` and `comments` accordingly:
-    * - When a post is approved (`approvedStatus` is true):
-    *   - The `publishDate` is set to the current date and time.
-    *   - Any existing comments are cleared.
-    * - When a post is not approved (`approvedStatus` is false):
-    *   - The `publishDate` is set to null.
-    *   - The comments are updated based on the `comments` parameter.
+    * - Sets the post's status according to the given PostStatusEnum value.
+    * - Updates comments.
+    * - Sets the `publishDate` to the current date if approved; null otherwise.
     *
-    * This behavior ensures that only approved posts have a publish date, and any feedback
-    * or comments from the approval process can be stored when a post is not approved.
-    *
-    * @param post - The post entity whose approval status and related fields need to be updated.
-    * @param approvedStatus - A boolean indicating the new approval status for the post.
-    * @param comments - Comments or feedback related to the approval process. Only relevant
-    *                   when `approvedStatus` is false.
+    * @param post - The post to update.
+    * @param status - New status from PostStatusEnum.
+    * @param comments - Feedback or comments.
+    * @returns Promise<void> - Completes upon successful update.
     */
-   /*async updateApproved(
+   async updatePostStatus(
       post: Post,
-      approvedStatus: boolean,
+      status: PostStatusEnum,
       comments: string | null,
    ): Promise<void> {
-      post.isApproved = approvedStatus;
-      if (approvedStatus) {
-         post.publishDate = new Date();
-         post.comments = null;
-      } else {
-         post.publishDate = null;
-         post.comments = comments;
-      }
+      post.status = status;
+      post.comments = comments;
+      post.publishDate = status === PostStatusEnum.Approved ? new Date() : null;
       await this.postsRepository.save(post);
-   }*/
+   }
 
    /**
     * Deletes a post from the database.
@@ -293,6 +280,7 @@ export class PostsRepository {
             'id',
             'title',
             'summary',
+            'publishDate',
             'type',
             'category',
             'assets',
@@ -301,6 +289,7 @@ export class PostsRepository {
             'tags',
          ],
          relations: ['category', 'assets'],
+         order: { publishDate: 'DESC' },
       };
       if (typeof status !== 'undefined') {
          queryOptions.where = {

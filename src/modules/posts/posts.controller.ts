@@ -242,19 +242,21 @@ export class PostsController {
       description: 'Publicación actualizada',
       type: StatusResponse,
    })
-   @Roles('Admin', 'Supervisor')
+   // @Roles('Admin', 'Supervisor')
+   @Public()
    @ApiParam({ name: 'id', description: 'ID de la publicación' })
    @Patch(':id/status')
-   async updateApprovedStatus(
+   async updatePostStatus(
       @Param('id', ParseIntPipe) postId: number,
-      @Body() updateApprovedRequest: UpdatePostStatusDto,
+      @Body() request: UpdatePostStatusDto,
    ) {
-      const { comments, status } = updateApprovedRequest;
-      /*const response = await this.postsService.updateApprovedStatus(
+      const { comments, status } = request;
+      const response = await this.postsService.updatePostStatus(
          postId,
+         status,
          comments,
       );
-      return response;}*/
+      return response;
    }
 
    @ApiOperation({ summary: 'Elimina una publicación' })

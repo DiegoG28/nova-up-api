@@ -18,6 +18,7 @@ export class PostsMapperService {
             id: post.id,
             title: post.title,
             summary: post.summary,
+            publishDate: post.publishDate,
             comments: post.comments,
             type: post.type,
             status: post.status,

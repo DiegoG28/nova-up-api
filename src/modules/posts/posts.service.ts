@@ -354,32 +354,35 @@ export class PostsService {
    }
 
    /**
-    * Updates the approval status of a given post. If comments are provided in the request,
-    * it implies that an admin or supervisor is adding comments to a non-approved post, and
-    * thus, the post's approval status should be set to 'false' (not approved). In the
-    * absence of comments, the approval status is simply toggled.
+    * Updates the approval status of a given post based on a specific status enum value.
+    * If comments are provided in the request, it implies that an admin or supervisor is
+    * adding comments to the post, but the approval status is explicitly set by the 'status' parameter.
     *
     * This mechanism aids in making the approval process more transparent, where admins or
-    * supervisors can provide reasons or feedback when they choose not to approve a post.
+    * supervisors can provide reasons or feedback when they choose to approve or not approve a post.
     *
     * @param postId - The ID of the post whose approval status needs to be updated.
+    * @param status - The new status of the post, as defined by PostStatusEnum.
     * @param comments - Optional comments added by an admin or supervisor explaining the reason for the approval status.
     * @returns An object indicating the success status and a success message.
     * @throws NotFoundException if the post with the given ID is not found.
     */
-   /*async updateApprovedStatus(postId: number, comments?: string | null) {
+   async updatePostStatus(
+      postId: number,
+      status: PostStatusEnum,
+      comments?: string | null,
+   ) {
       const currentPost = await this.findOne(postId);
-      await this.postsRepository.updateApproved(
+      await this.postsRepository.updatePostStatus(
          currentPost,
-         //If user sends comments, we should always set approved to true because means that an admin or supervisor is adding comments to a no approved post.
-         comments ? false : !currentPost.isApproved,
+         status,
          comments || null,
       );
       return {
          status: 'Success',
-         message: `Post ${postId} successfully approved`,
+         message: `Post ${postId} successfully updated`,
       };
-   }*/
+   }
 
    /**
     * Deletes a post based on its ID and also removes its associated assets.
