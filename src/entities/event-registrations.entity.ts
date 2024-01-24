@@ -12,6 +12,9 @@ export class EventRegistration {
    student: Student;
 
    @ManyToOne(() => Post, (post) => post.eventRegistrations)
-   @JoinColumn({ name: 'id_publicacion' })
+   @JoinColumn({
+      name: 'id_publicacion',
+      foreignKeyConstraintName: 'fk_regist_event_post',
+   })
    post: Post;
 }

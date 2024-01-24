@@ -21,7 +21,10 @@ export class Asset {
 
    @ManyToOne(() => Post, (post) => post.assets)
    @Exclude()
-   @JoinColumn({ name: 'id_publicacion' })
+   @JoinColumn({
+      name: 'id_publicacion',
+      foreignKeyConstraintName: 'fk_post_asset',
+   })
    post: Post;
 
    @Column({ name: 'nombre_recurso', length: 500 })
